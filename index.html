@@ -1576,6 +1576,8 @@
             }
         }
     </style>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' stroke='rgba(28,107,69,0.2)' stroke-width='1' fill='%23020408'/><path d='M15,60 C35,60 40,15 68,15 C80,15 82,30 90,30' stroke='%2322C55E' stroke-width='8' stroke-linecap='round' fill='none'/><circle cx='68' cy='15' r='6' fill='%23FFFFFF'/></svg>">
 </head>
 
 <body>
@@ -1595,11 +1597,40 @@
     <!-- NAV -->
     <nav id="mainNav">
         <div class="nav-inner">
-            <a href="#" class="nav-logo">
-                <div class="nav-logo-mark">S</div>
-                <div>
-                    <div class="nav-logo-name">Savanna Capital</div>
-                    <div class="nav-logo-sub">Advisors Ltd</div>
+            <a href="#hero" class="brand-link"
+                style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="display: block;">
+                    <defs>
+                        <linearGradient id="horizonGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#475569" />
+                            <stop offset="45%" stop-color="#1C6B45" />
+                            <stop offset="100%" stop-color="#22C55E" />
+                        </linearGradient>
+                        <linearGradient id="goldAccentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#C9A03A" stop-opacity="0.2" />
+                            <stop offset="100%" stop-color="#C9A03A" stop-opacity="0.9" />
+                        </linearGradient>
+                    </defs>
+
+                    <circle cx="50" cy="50" r="44" stroke="rgba(28, 107, 69, 0.15)" stroke-width="1"
+                        stroke-dasharray="3 3" />
+
+                    <path d="M15,75 C30,75 35,25 60,25 C75,25 80,45 85,45" stroke="url(#goldAccentGradient)"
+                        stroke-width="3" stroke-linecap="round" />
+
+                    <path d="M15,60 C35,60 40,15 68,15 C80,15 82,30 90,30" stroke="url(#horizonGradient)"
+                        stroke-width="5.5" stroke-linecap="round" />
+
+                    <circle cx="68" cy="15" r="3.5" fill="#22C55E" style="animation: pulse 2s infinite;" />
+                </svg>
+
+                <div style="display: flex; flex-direction: column; font-family: 'Inter', sans-serif;">
+                    <span
+                        style="font-size: 15px; font-weight: 600; letter-spacing: 2px; color: #FFFFFF; text-transform: uppercase; line-height: 1.1;">Savanna</span>
+                    <span
+                        style="font-size: 9px; font-weight: 400; letter-spacing: 1px; color: #C9A03A; text-transform: uppercase; line-height: 1.1; margin-top: 2px;">Capital
+                        Advisors</span>
                 </div>
             </a>
             <ul class="nav-links">
