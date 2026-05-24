@@ -1990,31 +1990,76 @@
                     </div>
                 </div>
                 <div class="reveal d2">
-                    <div class="con-form">
-                        <form onsubmit="handleForm(event)">
+                    <!-- Added glowing border and subtle background transformation styles to the container -->
+                    <div class="con-form"
+                        style="position: relative; border: 1px solid rgba(13, 61, 34, 0.3); box-shadow: 0 0 25px rgba(13, 61, 34, 0.15); transition: box-shadow 0.4s ease, border-color 0.4s ease; border-radius: 4px;"
+                        onmouseenter="this.style.boxShadow='0 0 40px rgba(13, 61, 34, 0.35)'; this.style.borderColor='rgba(13, 61, 34, 0.6)'"
+                        onmouseleave="this.style.boxShadow='0 0 25px rgba(13, 61, 34, 0.15)'; this.style.borderColor='rgba(13, 61, 34, 0.3)'">
+
+                        <!-- Added form ID and connected your submit handler directly via native EventListener -->
+                        <form id="savannaForm">
                             <div class="f2">
                                 <div class="fg"><label class="fl" for="fn">Full Name</label><input class="fi" id="fn"
-                                        type="text" placeholder="Brian Angwenyi" required autocomplete="name" /></div>
+                                        type="text" placeholder="Brian Angwenyi" required autocomplete="name"
+                                        style="transition: all 0.3s ease;"
+                                        onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                        onblur="this.style.boxShadow='none'; this.style.borderColor=''" /></div>
                                 <div class="fg"><label class="fl" for="fe">Email Address</label><input class="fi"
                                         id="fe" type="email" placeholder="brian@example.com" required
-                                        autocomplete="email" /></div>
+                                        autocomplete="email" style="transition: all 0.3s ease;"
+                                        onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                        onblur="this.style.boxShadow='none'; this.style.borderColor=''" /></div>
                             </div>
-                            <div class="fg"><label class="fl" for="fo">Organisation</label><input class="fi" id="fo"
-                                    type="text" placeholder="Your organisation or fund" /></div>
+
+                            <div class="f2">
+                                <div class="fg"><label class="fl" for="fo">Organisation</label><input class="fi" id="fo"
+                                        type="text" placeholder="Your organisation or fund"
+                                        style="transition: all 0.3s ease;"
+                                        onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                        onblur="this.style.boxShadow='none'; this.style.borderColor=''" /></div>
+                                <div class="fg"><label class="fl" for="fph">Phone Number</label><input class="fi"
+                                        id="fph" type="tel" placeholder="e.g., +254700000000"
+                                        style="transition: all 0.3s ease;"
+                                        onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                        onblur="this.style.boxShadow='none'; this.style.borderColor=''" /></div>
+                            </div>
+
                             <div class="fg">
-                                <label class="fl" for="fiv">Investment Interest</label>
-                                <select class="fi" id="fiv">
+                                <label class="fl" for="fiv">Investment Interest & Type</label>
+                                <select class="fi" id="fiv" required style="transition: all 0.3s ease;"
+                                    onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                    onblur="this.style.boxShadow='none'; this.style.borderColor=''">
                                     <option value="">Select tier…</option>
-                                    <option>Tier 1 — Under KES 13M</option>
-                                    <option>Tier 2 — KES 13M to 65M</option>
-                                    <option>Tier 3 — KES 65M+</option>
-                                    <option>Strategic Partnership</option>
-                                    <option>Research Collaboration</option>
+                                    <option value="Investor Enquiry|Tier 1 — Under KES 13M">Investor Enquiry — Under KES
+                                        13M</option>
+                                    <option value="Investor Enquiry|Tier 2 — KES 13M to 65M">Investor Enquiry — KES 13M
+                                        to 65M</option>
+                                    <option value="Investor Enquiry|Tier 3 — KES 65M+">Investor Enquiry — KES 65M+
+                                    </option>
+                                    <option value="Strategic Partnership|N/A">Strategic Partnership</option>
+                                    <option value="Research Collaboration|N/A">Research Collaboration</option>
+                                    <option value="Fund Operations|N/A">Fund Operations</option>
+                                    <option value="Media/Inquiry|N/A">Media/Inquiry</option>
                                 </select>
                             </div>
                             <div class="fg"><label class="fl" for="fm">Message</label><textarea class="ft" id="fm"
-                                    placeholder="Tell us about your investment interests or enquiry…"></textarea></div>
-                            <button type="submit" class="fs" id="fsb">Submit Enquiry →</button>
+                                    placeholder="Tell us about your investment interests or enquiry…" required
+                                    style="transition: all 0.3s ease;"
+                                    onfocus="this.style.boxShadow='0 0 10px rgba(13, 61, 34, 0.5)'; this.style.borderColor='#0D3D22'"
+                                    onblur="this.style.boxShadow='none'; this.style.borderColor=''"></textarea></div>
+
+                            <!-- Submit Button with clean hover transition styles -->
+                            <button type="submit" class="fs" id="fsb"
+                                style="transition: all 0.3s ease; cursor: pointer; position: relative;"
+                                onmouseenter="this.style.boxShadow='0 0 15px rgba(13, 61, 34, 0.6)'; this.style.backgroundColor='#0F4627'"
+                                onmouseleave="this.style.boxShadow='none'; this.style.backgroundColor=''">Submit Enquiry
+                                →</button>
+
+                            <!-- Dynamic UI feedback box for submission feedback -->
+                            <div id="formStatus"
+                                style="display: none; padding: 12px; margin-top: 15px; font-size: 13px; font-weight: bold; border-radius: 4px; text-align: center;">
+                            </div>
+
                             <p class="f-d">By submitting you agree to our privacy policy. This is not an offer or
                                 solicitation to invest. Capital is at risk.</p>
                         </form>
@@ -2023,6 +2068,73 @@
             </div>
         </div>
     </section>
+
+    <!-- Async Form Controller — Interfacing directly with Savanna Capital Advisors Script Engine -->
+    <script>
+        document.getElementById('savannaForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('fsb');
+            const statusBox = document.getElementById('formStatus');
+
+            // Set loading state UI
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Securing Data Stream...';
+            statusBox.style.display = 'none';
+
+            // IMPORTANT: Paste your exact deployed Google Apps Script Macro URL below
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec';
+
+            // Split Enquiry Type and Investment range values cleanly
+            const strategicValue = document.getElementById('fiv').value;
+            const valueParts = strategicValue.includes('|') ? strategicValue.split('|') : [strategicValue, 'N/A'];
+
+            const payload = {
+                apiKey: "savanna_private_key_2026", // Validates with your configuration key
+                name: document.getElementById('fn').value,
+                email: document.getElementById('fe').value,
+                phone: document.getElementById('fph').value || "N/A",
+                organisation: document.getElementById('fo').value || "Individual / Retail",
+                enquiryType: valueParts[0],
+                investmentRange: valueParts[1],
+                message: document.getElementById('fm').value,
+                source: window.location.href
+            };
+
+            // Transmit payload using un-preflighted plain text streams
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Bypasses cross-domain validation requirements
+                headers: {
+                    'Content-Type': 'text/plain' // Crucial: Prevents browser from sending an OPTIONS request
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(() => {
+                    // Under 'no-cors' mode, responses are opaque. 
+                    // We safely assume delivery if the browser didn't throw a network failure.
+                    statusBox.style.display = 'block';
+                    statusBox.style.backgroundColor = 'rgba(13, 61, 34, 0.2)';
+                    statusBox.style.color = '#FFFFFF';
+                    statusBox.style.border = '1px solid #0D3D22';
+                    statusBox.style.boxShadow = '0 0 15px rgba(13, 61, 34, 0.4)';
+                    statusBox.innerText = 'Enquiry securely transmitted. Our investment desk will review your profile.';
+                    document.getElementById('savannaForm').reset();
+                })
+                .catch(error => {
+                    console.error('Pipeline Error:', error);
+                    statusBox.style.display = 'block';
+                    statusBox.style.backgroundColor = 'rgba(155, 28, 28, 0.2)';
+                    statusBox.style.color = '#FBD5D5';
+                    statusBox.style.border = '1px solid #9B1C1C';
+                    statusBox.innerText = 'Submission failed: Network link disconnected.';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Submit Enquiry →';
+                });
+        });
+    </script>
 
     <!-- ═══ FOOTER ════════════════════════════════════════════════════════════════ -->
     <footer>
