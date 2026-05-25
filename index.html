@@ -1236,9 +1236,21 @@
                     .from('investors').select('*')
                     .eq('email', emailInput).eq('passcode', passcodeInput);
                 if (error) throw error;
+                // ⚡ PASTE THIS INSTEAD (UPGRADED ROUTING MATRIX):
                 if (investors && investors.length > 0) {
-                    sessionStorage.setItem("activeInvestorSession", JSON.stringify(investors[0]));
-                    window.location.href = "dashboard.html";
+                    const authenticatedInvestor = investors[0];
+
+                    // Save the profile packet to browser session storage
+                    sessionStorage.setItem("activeInvestorSession", JSON.stringify(authenticatedInvestor));
+
+                    // CEO Command Guardrail Check
+                    if (authenticatedInvestor.email === "brian@savannacapital.com" || authenticatedInvestor.email === "admin@savannacapital.com") {
+                        // If it's you, bypass standard portal and route straight to executive dashboard
+                        window.location.href = "admin.html";
+                    } else {
+                        // Otherwise, route them to the standard client view dashboard
+                        window.location.href = "dashboard.html";
+                    }
                 } else {
                     alert("ACCESS DENIED: Invalid credentials.");
                     btn.querySelector('span').textContent = 'Initialize Session →';

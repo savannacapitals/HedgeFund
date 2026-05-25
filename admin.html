@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Command | Savanna Capital Advisors</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,300;0,400;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Inter', 'sans-serif'] },
+                    colors: { brandDark: '#050708', brandCard: '#0D1113', brandGold: '#C5A880' },
+                    letterSpacing: { widest: '0.18em', mega: '0.25em' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050708;
+            color: #E2E8F0;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #050708;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased pt-16 flex h-screen overflow-hidden">
+
+    <nav
+        class="w-full border-b border-white/5 bg-brandDark/90 backdrop-blur-md fixed top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6 text-brandGold" viewBox="0 0 100 100" fill="currentColor">
+                <path
+                    d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+            </svg>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-serif tracking-mega uppercase font-light">Savanna Capital</span>
+                <span class="text-[8px] text-brandGold tracking-widest uppercase font-mono -mt-0.5">CEO Central Command
+                    Terminal</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-6 text-[10px] font-mono tracking-widest">
+            <span class="text-amber-500 bg-amber-500/5 px-2 py-1 border border-amber-500/10 uppercase text-[9px]">Root
+                Admin Session</span>
+            <a href="index.html" class="text-gray-400 hover:text-white transition uppercase text-[9px]">Logout ✕</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="border border-white/5 bg-brandCard p-4">
+                <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Consolidated Fund AUM</span>
+                <div id="totalAUM" class="text-2xl font-light text-white mt-1 font-mono">$0.00</div>
+            </div>
+            <div class="border border-white/5 bg-brandCard p-4">
+                <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Active Allocators</span>
+                <div id="totalInvestors" class="text-2xl font-light text-brandGold mt-1 font-mono">0</div>
+            </div>
+            <div class="border border-white/5 bg-brandCard p-4">
+                <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Macro Strategy Sharpe</span>
+                <div class="text-2xl font-light text-emerald-500 mt-1 font-mono">2.68</div>
+            </div>
+            <div class="border border-white/5 bg-brandCard p-4">
+                <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Pending Intake Audits</span>
+                <div id="pendingIntakesCount" class="text-2xl font-light text-amber-500 mt-1 font-mono">0</div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 border border-white/5 bg-brandCard p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+                        <div>
+                            <h3 class="text-sm font-serif text-white uppercase tracking-wider">Live Investor Management
+                                Matrix</h3>
+                            <p class="text-[9px] text-gray-500 font-mono">REAL-TIME WRITE/UPDATE CONTROL TO SUPABASE
+                                SYSTEM</p>
+                        </div>
+                        <button onclick="openInvestorModal(null)"
+                            class="bg-brandGold text-brandDark font-mono font-medium text-[9px] px-3 py-1.5 uppercase tracking-wider hover:bg-white transition">
+                            + Issue New Account
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left font-mono text-[11px]">
+                            <thead>
+                                <tr class="text-gray-500 border-b border-white/5 uppercase text-[9px]">
+                                    <th class="py-2">Investor Name</th>
+                                    <th class="py-2">Email Node</th>
+                                    <th class="py-2">Secure Passcode</th>
+                                    <th class="py-2 text-right">Net Valuation (NAV)</th>
+                                    <th class="py-2 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="investorTableBody" class="divide-y divide-white/5 text-gray-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border border-white/5 bg-brandCard p-5">
+                <div class="border-b border-white/5 pb-3 mb-4">
+                    <h3 class="text-sm font-serif text-white uppercase tracking-wider">Inbound Network Request Leads
+                    </h3>
+                    <p class="text-[9px] text-amber-500 font-mono">STREAMING PIPELINE FROM GOOGLE MACRO MATRIX</p>
+                </div>
+
+                <div id="leadsContainer" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                    <p class="text-gray-500 font-mono text-[10px] text-center py-4">Syncing with Google Pipeline...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="investorModal"
+        class="fixed inset-0 bg-brandDark/95 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-brandCard border border-white/10 max-w-md w-full p-6 relative">
+            <button onclick="closeInvestorModal()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-white font-mono text-xs">✕</button>
+
+            <h3 id="modalTitle"
+                class="text-base font-serif text-white uppercase tracking-wider mb-4 border-b border-white/5 pb-2">
+                Configure Investor Node</h3>
+
+            <form id="investorForm" onsubmit="saveInvestorData(event)"
+                class="space-y-3 font-mono text-xs text-gray-300">
+                <input type="hidden" id="investorId">
+                <div>
+                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Legal Name</label>
+                    <input type="text" id="invName" required
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                </div>
+                <div>
+                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Login Institutional Email</label>
+                    <input type="email" id="invEmail" required
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                </div>
+                <div>
+                    <label class="block text-[9px] text-gray-500 uppercase mb-1">Access Passcode</label>
+                    <input type="text" id="invPasscode" required
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-1">NAV Valuation (USD/KES)</label>
+                        <input type="text" id="invNAV" placeholder="$250,000" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-1">Monthly Return Curve</label>
+                        <input type="text" id="invReturn" placeholder="+3.24%" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-1">Sharpe Variance Index</label>
+                        <input type="text" id="invSharpe" placeholder="2.45" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-1">Capital Exposure %</label>
+                        <input type="text" id="invExposure" placeholder="68.4%" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-brandGold text-brandDark py-2.5 font-medium uppercase tracking-widest mt-2 hover:bg-white transition">Commit
+                    Data Matrix Node</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 📋 Paste your Deployed Google App Script URL ending in /exec here to view real-time leads
+        const GOOGLE_READ_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+        let localInvestorsCache = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchLiveInvestors();
+            fetchInboundGoogleLeads();
+        });
+
+        // 🔄 PULL LIVE SUPABASE ACCOUNT RECORDS
+        async function fetchLiveInvestors() {
+            try {
+                const { data, error } = await supabaseClient.from('investors').select('*').order('id', { ascending: true });
+                if (error) throw error;
+
+                localInvestorsCache = data;
+                renderInvestorMatrix(data);
+                calculateFundAggregates(data);
+            } catch (err) {
+                console.error("System Matrix Fault:", err.message);
+            }
+        }
+
+        function renderInvestorMatrix(investors) {
+            const tbody = document.getElementById("investorTableBody");
+            tbody.innerHTML = "";
+
+            investors.forEach(inv => {
+                tbody.innerHTML += `
+          <tr class="hover:bg-white/[0.02] transition border-b border-white/5">
+            <td class="py-3 font-medium text-white">${inv.client_name}</td>
+            <td class="py-3 text-gray-400">${inv.email}</td>
+            <td class="py-3 font-mono text-gray-500">${inv.passcode}</td>
+            <td class="py-3 text-right text-emerald-400 font-medium">${inv.nav}</td>
+            <td class="py-3 text-center space-x-2">
+              <button onclick="openInvestorModal(${inv.id})" class="text-brandGold hover:underline text-[10px] uppercase">Modify</button>
+              <button onclick="purgeInvestorNode(${inv.id})" class="text-red-400 hover:underline text-[10px] uppercase">Purge</button>
+            </td>
+          </tr>
+        `;
+            });
+            document.getElementById("totalInvestors").innerText = investors.length;
+        }
+
+        function calculateFundAggregates(investors) {
+            let numericAUM = 0;
+            investors.forEach(inv => {
+                if (inv.nav) {
+                    const parsed = parseFloat(inv.nav.replace(/[^0-9.-]+/g, ""));
+                    if (!isNaN(parsed)) numericAUM += parsed;
+                }
+            });
+            document.getElementById("totalAUM").innerText = "$" + numericAUM.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        // 🔄 PULL INBOUND DATA FROM GOOGLE SHEETS PIPELINE VIA APPS SCRIPT
+        async function fetchInboundGoogleLeads() {
+            if (!GOOGLE_READ_URL || GOOGLE_READ_URL.includes("YOUR_")) return;
+            try {
+                const response = await fetch(GOOGLE_READ_URL);
+                const result = await response.json();
+                // Since Apps Script doGet yields service telemetry or your sheet, we populate layout conditionally
+                if (result && result.status === "online") {
+                    // System link verified
+                    document.getElementById("leadsContainer").innerHTML = `
+            <div class="border border-white/5 bg-brandDark p-3 rounded font-mono text-[10px]">
+              <span class="text-emerald-400 block font-medium">● PIPELINE STREAM LINK ACTIVE</span>
+              <span class="text-gray-500">Check your synced Master Sheet ledger row indexes to process and register individual applicants instantly.</span>
+            </div>`;
+                }
+            } catch (err) {
+                console.error("Google sync error:", err);
+            }
+        }
+
+        // ⚙️ MODIFICATION AND CONFIGURATION CONTROLS
+        function openInvestorModal(id = null) {
+            const modal = document.getElementById("investorModal");
+            const form = document.getElementById("investorForm");
+            form.reset();
+            document.getElementById("investorId").value = id || "";
+
+            if (id !== null) {
+                document.getElementById("modalTitle").innerText = "Modify Investor Node Configuration";
+                const record = localInvestorsCache.find(x => x.id === id);
+                if (record) {
+                    document.getElementById("invName").value = record.client_name;
+                    document.getElementById("invEmail").value = record.email;
+                    document.getElementById("invPasscode").value = record.passcode;
+                    document.getElementById("invNAV").value = record.nav;
+                    document.getElementById("invReturn").value = record.monthly_return;
+                    document.getElementById("invSharpe").value = record.sharpe_ratio;
+                    document.getElementById("invExposure").value = record.exposure;
+                }
+            } else {
+                document.getElementById("modalTitle").innerText = "Configure Brand New Investor Node";
+            }
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closeInvestorModal() {
+            const modal = document.getElementById("investorModal");
+            modal.classList.remove("flex");
+            modal.classList.add("hidden");
+        }
+
+        async function saveInvestorData(e) {
+            e.preventDefault();
+            const id = document.getElementById("investorId").value;
+
+            const payload = {
+                client_name: document.getElementById("invName").value,
+                email: document.getElementById("invEmail").value.trim().toLowerCase(),
+                passcode: document.getElementById("invPasscode").value,
+                nav: document.getElementById("invNAV").value,
+                monthly_return: document.getElementById("invReturn").value,
+                sharpe_ratio: document.getElementById("invSharpe").value,
+                exposure: document.getElementById("invExposure").value
+            };
+
+            try {
+                if (id) {
+                    // Update existing row match
+                    const { error } = await supabaseClient.from('investors').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    // Create entirely new investor record row
+                    const { error } = await supabaseClient.from('investors').insert([payload]);
+                    if (error) throw error;
+                }
+                closeInvestorModal();
+                fetchLiveInvestors();
+            } catch (err) {
+                alert("CRITICAL COMPOSTING FAULT: " + err.message);
+            }
+        }
+
+        async function purgeInvestorNode(id) {
+            if (confirm("CRITICAL WARNING: Are you completely certain you want to purge this investor account from the system matrices? This action is absolute.")) {
+                try {
+                    const { error } = await supabaseClient.from('investors').delete().eq('id', id);
+                    if (error) throw error;
+                    fetchLiveInvestors();
+                } catch (err) {
+                    alert("PURGE FAULT: " + err.message);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
