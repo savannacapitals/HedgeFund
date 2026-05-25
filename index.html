@@ -1089,9 +1089,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ── Supabase ──────────────────────────────────────────────────
-        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co/rest/v1/";
-        const SUPABASE_ANON_KEY = "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD";
+        // 🔗 CONNECT TO YOUR LIVE SUPABASE INFRASTRUCTURE
+        // Cleaned up: Removed "/rest/v1/" from the end of the URL
+        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ── Hero canvas: network graph ────────────────────────────────
