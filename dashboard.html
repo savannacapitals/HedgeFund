@@ -5,371 +5,1043 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investor Terminal | Savanna Capital</title>
-
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,300;0,400;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500&display=swap"
         rel="stylesheet">
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        serif: ['Playfair Display', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brandDark: '#050708',
-                        brandCard: '#0D1113',
-                        brandGold: '#C5A880',
-                        brandGoldMuted: '#9A8059',
-                    },
-                    letterSpacing: {
-                        widest: '0.18em',
-                        mega: '0.25em'
-                    }
-                }
-            }
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --gold: #C8A96E;
+            --gold-light: #EDD9A3;
+            --gold-dim: #8A7148;
+            --dark: #03050A;
+            --card: #080C12;
+            --card2: #0C1018;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            background-color: #050708;
-            color: #E2E8F0;
+            background: var(--dark);
+            color: #C8D0DC;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #EAD6B7 0%, #C5A880 50%, #9A8059 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* ── Grain overlay ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.022;
         }
 
+        /* ── Scrollbar ── */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #050708;
+            background: var(--dark);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #1E293B;
+            background: var(--gold-dim);
+        }
+
+        /* ── Gold text ── */
+        .gold-text {
+            background: linear-gradient(115deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Scanline top bar ── */
+        .scanline-bar {
+            background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(200, 169, 110, 0.03) 3px, rgba(200, 169, 110, 0.03) 4px);
+            border-bottom: 1px solid rgba(200, 169, 110, 0.08);
+        }
+
+        /* ── Nav ── */
+        #dash-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(3, 5, 10, 0.96);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        #dash-nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold-light) 60%, transparent 100%);
+            opacity: 0.2;
+        }
+
+        /* ── Pulse dot ── */
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(74, 222, 128, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+            }
+        }
+
+        /* ── Hero header ── */
+        .hero-header {
+            background: linear-gradient(160deg, #070C14 0%, var(--dark) 70%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: radial-gradient(ellipse at 80% 40%, rgba(200, 169, 110, 0.06) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* Animated corner bracket */
+        .bracket {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-color: rgba(200, 169, 110, 0.25);
+            border-style: solid;
+        }
+
+        .bracket-tl {
+            top: 24px;
+            left: 24px;
+            border-width: 1px 0 0 1px;
+        }
+
+        .bracket-tr {
+            top: 24px;
+            right: 24px;
+            border-width: 1px 1px 0 0;
+        }
+
+        .bracket-bl {
+            bottom: 24px;
+            left: 24px;
+            border-width: 0 0 1px 1px;
+        }
+
+        .bracket-br {
+            bottom: 24px;
+            right: 24px;
+            border-width: 0 1px 1px 0;
+        }
+
+        /* ── Stat cards ── */
+        .stat-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--card);
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease, transform 0.4s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(200, 169, 110, 0.05) 0%, transparent 55%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(200, 169, 110, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Big ghost number */
+        .stat-card .ghost-num {
+            position: absolute;
+            bottom: -10px;
+            right: 8px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 80px;
+            font-weight: 300;
+            line-height: 1;
+            color: rgba(200, 169, 110, 0.04);
+            pointer-events: none;
+            user-select: none;
+            transition: color 0.4s ease;
+        }
+
+        .stat-card:hover .ghost-num {
+            color: rgba(200, 169, 110, 0.08);
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.6rem;
+            font-weight: 300;
+            line-height: 1;
+            color: #fff;
+        }
+
+        /* ── Gold divider ── */
+        .gold-rule {
+            height: 1px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        /* ── Animated chart line ── */
+        #perf-path {
+            stroke-dasharray: 700;
+            stroke-dashoffset: 700;
+            transition: stroke-dashoffset 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+        }
+
+        #perf-path.go {
+            stroke-dashoffset: 0;
+        }
+
+        /* ── Progress bars ── */
+        .bar-track {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-light));
+            transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ── Table rows ── */
+        .perf-row {
+            transition: background 0.2s ease;
+            cursor: default;
+        }
+
+        .perf-row:hover {
+            background: rgba(200, 169, 110, 0.025);
+        }
+
+        .perf-row td {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* ── Document cards ── */
+        .doc-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(8, 12, 18, 0.8);
+            transition: border-color 0.35s ease, background 0.35s ease, transform 0.35s ease;
+            cursor: pointer;
+        }
+
+        .doc-card:hover {
+            border-color: rgba(200, 169, 110, 0.3);
+            background: rgba(200, 169, 110, 0.04);
+            transform: translateY(-3px);
+        }
+
+        .doc-badge {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border: 1px solid rgba(200, 169, 110, 0.2);
+            background: rgba(200, 169, 110, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+        }
+
+        /* ── Scroll reveal ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        .d1 {
+            transition-delay: 0.08s;
+        }
+
+        .d2 {
+            transition-delay: 0.16s;
+        }
+
+        .d3 {
+            transition-delay: 0.24s;
+        }
+
+        .d4 {
+            transition-delay: 0.32s;
+        }
+
+        /* ── Ticker ── */
+        .ticker-rail {
+            overflow: hidden;
+            background: rgba(200, 169, 110, 0.02);
+            border-bottom: 1px solid rgba(200, 169, 110, 0.06);
+        }
+
+        .ticker-belt {
+            display: flex;
+            width: max-content;
+            animation: beltScroll 35s linear infinite;
+        }
+
+        .ticker-belt:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes beltScroll {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .t-item {
+            padding: 6px 24px;
+            white-space: nowrap;
+            font-family: 'DM Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.13em;
+            color: rgba(200, 169, 110, 0.45);
+            border-right: 1px solid rgba(200, 169, 110, 0.07);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .t-up {
+            color: #4ade80;
+        }
+
+        .t-dn {
+            color: #f87171;
+        }
+
+        /* ── Disconnect btn hover ── */
+        .disc-btn {
+            transition: color 0.25s, border-color 0.25s;
+        }
+
+        .disc-btn:hover {
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.3) !important;
+        }
+
+        /* ── Section header ── */
+        .sec-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0.75;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .sec-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.35rem;
+            font-weight: 300;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* ── Rebalancing card ── */
+        .rebal-card {
+            background: linear-gradient(135deg, #0C1018 0%, #04060A 100%);
+            border: 1px solid rgba(200, 169, 110, 0.1);
+        }
+
+        /* ── Heatmap cells ── */
+        .hm-cell {
+            padding: 6px 4px;
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: background 0.2s ease;
+        }
+
+        .hm-pos {
+            background: rgba(74, 222, 128, 0.06);
+            color: #4ade80;
+        }
+
+        .hm-neg {
+            background: rgba(248, 113, 113, 0.06);
+            color: #f87171;
+        }
+
+        .hm-nil {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hm-head {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.25);
+            text-align: center;
+            padding: 4px;
+        }
+
+        /* ── Footer ── */
+        #dash-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            background: #02040A;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body class="font-sans antialiased selection:bg-brandGold selection:text-brandDark pt-20">
+<body class="antialiased">
 
-    <nav
-        class="w-full border-b border-white/5 bg-brandDark/90 backdrop-blur-md fixed top-0 z-50 px-6 md:px-12 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-3">
-            <svg class="w-7 h-7 text-brandGold" viewBox="0 0 100 100" fill="currentColor">
+    <!-- ── TICKER ─────────────────────────────────────────────────── -->
+    <div class="ticker-rail">
+        <div class="ticker-belt" id="ticker-belt"></div>
+    </div>
+
+    <!-- ── NAV ────────────────────────────────────────────────────── -->
+    <nav id="dash-nav" class="px-6 md:px-12 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <svg class="w-7 h-7" style="color:var(--gold)" viewBox="0 0 100 100" fill="currentColor">
                 <path
                     d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
             </svg>
-            <div class="flex flex-col">
-                <span class="text-white text-xs font-serif tracking-mega uppercase font-light">Savanna Capital</span>
-                <span class="text-[8px] text-brandGold tracking-widest uppercase font-mono -mt-1">Investor Portal</span>
+            <div>
+                <div
+                    style="font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#fff;font-weight:300">
+                    Savanna Capital</div>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-top:-2px">
+                    Investor Portal</div>
             </div>
         </div>
 
-        <div class="flex items-center space-x-6 text-[10px] tracking-widest uppercase font-medium">
-            <div
-                class="hidden sm:flex items-center space-x-2 text-emerald-500 bg-emerald-500/5 px-2.5 py-1 border border-emerald-500/10 font-mono text-[9px]">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Secure Session Active</span>
+        <div class="flex items-center gap-5">
+            <div class="hidden sm:flex items-center gap-2 px-3 py-1.5"
+                style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.1)">
+                <div class="pulse-dot"></div>
+                <span
+                    style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:#4ade80">Secure
+                    Session</span>
             </div>
-            <button onclick="window.location.href='index.html'"
-                class="text-gray-400 hover:text-white transition uppercase tracking-widest font-mono text-[9px]">
+            <div class="hidden md:block"
+                style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:rgba(255,255,255,0.2)"
+                id="live-clock"></div>
+            <button onclick="disconnectSession()" class="disc-btn px-3 py-1.5"
+                style="border:1px solid rgba(255,255,255,0.07);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.35)">
                 Disconnect ✕
             </button>
         </div>
     </nav>
 
-    <header class="py-12 px-6 md:px-12 bg-gradient-to-b from-[#0A0D0E] to-brandDark border-b border-white/5">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+    <!-- ── HERO HEADER ─────────────────────────────────────────────── -->
+    <header class="hero-header px-6 md:px-12 py-14 relative">
+        <div class="bracket bracket-tl"></div>
+        <div class="bracket bracket-tr"></div>
+        <div class="bracket bracket-bl"></div>
+        <div class="bracket bracket-br"></div>
+
+        <!-- Decorative bg chart -->
+        <svg class="absolute right-0 bottom-0 pointer-events-none" style="opacity:0.05;width:45%;height:100%"
+            viewBox="0 0 500 160" preserveAspectRatio="none">
+            <path d="M0,140 Q80,110 160,80 T320,40 T500,10" fill="none" stroke="var(--gold)" stroke-width="1.5" />
+            <path d="M0,140 Q80,110 160,80 T320,40 T500,10 L500,160 L0,160 Z" fill="url(#heroGrad)" />
+            <defs>
+                <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#C8A96E" stop-opacity="0.3" />
+                    <stop offset="100%" stop-color="#C8A96E" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             <div>
-                <span class="text-[9px] font-mono tracking-widest text-brandGold uppercase block mb-1">Portfolio
-                    Terminal</span>
-                <h1 class="text-3xl font-serif font-light text-white uppercase tracking-wide">Welcome back, Partner</h1>
-                <p class="text-xs text-gray-400 font-light mt-1 max-w-md">
+                <div class="flex items-center gap-3 mb-4">
+                    <div style="width:2px;height:36px;background:var(--gold);opacity:0.5"></div>
+                    <div>
+                        <div
+                            style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8">
+                            Portfolio Terminal</div>
+                        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;color:rgba(255,255,255,0.2);margin-top:2px"
+                            id="session-badge">Session Active</div>
+                    </div>
+                </div>
+                <h1 id="welcome-heading"
+                    style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:300;color:#fff;text-transform:uppercase;letter-spacing:0.04em;line-height:1.05">
+                    Welcome Back, <span class="gold-text" style="-webkit-text-fill-color:transparent">Partner</span>
+                </h1>
+                <p
+                    style="font-size:12px;color:rgba(255,255,255,0.35);font-weight:300;margin-top:10px;max-width:420px;line-height:1.7">
                     Performance and risk reporting models updated through trailing market close.
                 </p>
             </div>
-            <div class="flex gap-4 border-l border-white/5 pl-4 md:pl-0 md:border-none font-mono">
+
+            <div class="flex gap-6 md:gap-10" style="font-family:'DM Mono',monospace">
                 <div>
-                    <span class="block text-[8px] text-gray-500 uppercase tracking-widest">Reporting Currency</span>
-                    <span class="text-sm font-medium text-white">USD ($) / KES (Sh)</span>
+                    <div
+                        style="font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:5px">
+                        Reporting</div>
+                    <div style="font-size:13px;color:#fff;font-weight:300">USD / KES</div>
                 </div>
-                <div class="ml-8">
-                    <span class="block text-[8px] text-gray-500 uppercase tracking-widest">Last Audit Date</span>
-                    <span class="text-sm font-medium text-brandGold">May 2026</span>
+                <div style="border-left:1px solid rgba(255,255,255,0.05);padding-left:20px">
+                    <div
+                        style="font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:5px">
+                        Last Audit</div>
+                    <div style="font-size:13px;color:var(--gold);font-weight:300">May 2026</div>
+                </div>
+                <div style="border-left:1px solid rgba(255,255,255,0.05);padding-left:20px">
+                    <div
+                        style="font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:5px">
+                        Session Time</div>
+                    <div id="session-timer" style="font-size:13px;color:#4ade80;font-weight:300">0:00</div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="p-6 md:p-12 space-y-12">
+    <!-- ── MAIN ────────────────────────────────────────────────────── -->
+    <main style="padding:32px 24px;max-width:1560px;margin:0 auto" class="md:px-12 space-y-8">
 
-        <section
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-white/5 divide-y sm:divide-y-0 sm:divide-x divide-white/5 bg-brandCard/20">
-            <div class="p-6">
-                <span class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-2">Total Net Asset
-                    Value (NAV)</span>
-                <span class="text-2xl font-light text-white tracking-wide">$1,248,500</span>
-                <span class="block text-[10px] text-emerald-500 font-mono mt-2">+14.2% YTD performance</span>
-            </div>
-            <div class="p-6">
-                <span class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-2">Current Month
-                    Return</span>
-                <span class="text-2xl font-light text-white tracking-wide gold-gradient-text">+3.84%</span>
-                <span class="block text-[10px] text-gray-500 font-mono mt-2">Alpha vs benchmark index</span>
-            </div>
-            <div class="p-6">
-                <span class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-2">Sharpe Ratio
-                    (Trailing)</span>
-                <span class="text-2xl font-light text-white tracking-wide">2.41</span>
-                <span
-                    class="block text-[10px] text-brandGold uppercase tracking-widest text-[8px] mt-2.5 font-mono">Institutional
-                    Grade Risk Controls</span>
-            </div>
-            <div class="p-6">
-                <span class="block text-[9px] uppercase tracking-widest text-gray-500 font-mono mb-2">Active Strategic
-                    Capital Exposure</span>
-                <span class="text-2xl font-light text-white tracking-wide">68.5%</span>
-                <span class="block text-[10px] text-amber-500 font-mono mt-2">Tactical liquid cash reserve held</span>
-            </div>
-        </section>
+        <!-- STAT CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="stat-card p-6 reveal d1">
+                <span class="ghost-num">01</span>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px">
+                    Total NAV</div>
+                <div class="stat-value" id="stat-nav">$1,248,500</div>
+                <div class="gold-rule" style="width:32px;margin:12px 0 10px"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:9.5px;color:#4ade80">+14.2% YTD</div>
+            </div>
 
-            <div class="lg:col-span-2 border border-white/5 bg-brandCard/20 p-6 flex flex-col justify-between">
-                <div class="mb-6">
-                    <div class="flex justify-between items-baseline mb-4">
-                        <h3 class="text-xs uppercase tracking-widest font-medium text-white">Historical Compounded
-                            Returns Matrix</h3>
-                        <span class="text-[9px] font-mono text-gray-500">NET OF FEES (%)</span>
+            <div class="stat-card p-6 reveal d2">
+                <span class="ghost-num">02</span>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px">
+                    Month Return</div>
+                <div class="stat-value gold-text" id="stat-monthly">+3.84%</div>
+                <div class="gold-rule" style="width:32px;margin:12px 0 10px"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:9.5px;color:rgba(255,255,255,0.3)">Alpha vs
+                    benchmark</div>
+            </div>
+
+            <div class="stat-card p-6 reveal d3">
+                <span class="ghost-num">03</span>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px">
+                    Sharpe Ratio</div>
+                <div class="stat-value" id="stat-sharpe">2.41</div>
+                <div class="gold-rule" style="width:32px;margin:12px 0 10px"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:9.5px;color:var(--gold)">Institutional Grade</div>
+            </div>
+
+            <div class="stat-card p-6 reveal d4"
+                style="border-color:rgba(200,169,110,0.12);background:linear-gradient(135deg,#0D1118 0%,var(--card) 100%)">
+                <span class="ghost-num">04</span>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px">
+                    Capital Exposure</div>
+                <div class="stat-value" id="stat-exposure">68.5%</div>
+                <div class="gold-rule" style="width:32px;margin:12px 0 10px"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:9.5px;color:#f59e0b">Cash reserve held</div>
+            </div>
+        </div>
+
+        <!-- CHART + HEATMAP TABLE -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Performance chart + table -->
+            <div class="lg:col-span-2 reveal"
+                style="border:1px solid rgba(255,255,255,0.05);background:var(--card);padding:28px">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="sec-label">Historical Record</span>
+                        <div class="sec-title">Returns Matrix</div>
                     </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left font-mono text-[11px] border-collapse">
-                            <thead>
-                                <tr class="border-b border-white/10 text-gray-500 text-[9px] tracking-wider uppercase">
-                                    <th class="py-3 font-normal">YEAR</th>
-                                    <th class="py-3 font-normal">Q1</th>
-                                    <th class="py-3 font-normal">Q2</th>
-                                    <th class="py-3 font-normal">Q3</th>
-                                    <th class="py-3 font-normal">Q4</th>
-                                    <th class="py-3 font-normal text-right">YTD</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5 text-gray-300">
-                                <tr>
-                                    <td class="py-3.5 text-white font-medium">2026</td>
-                                    <td class="py-3.5 text-emerald-500">+5.12%</td>
-                                    <td class="py-3.5 text-emerald-500">+3.84%</td>
-                                    <td class="py-3.5 text-gray-600">—</td>
-                                    <td class="py-3.5 text-gray-600">—</td>
-                                    <td class="py-3.5 text-right font-medium text-white">+9.16%</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 text-white font-medium">2025</td>
-                                    <td class="py-3.5 text-emerald-500">+4.20%</td>
-                                    <td class="py-3.5 text-emerald-500">+6.15%</td>
-                                    <td class="py-3.5 text-red-400">-1.80%</td>
-                                    <td class="py-3.5 text-emerald-500">+7.40%</td>
-                                    <td class="py-3.5 text-right font-medium text-white">+16.63%</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 text-white font-medium">2024</td>
-                                    <td class="py-3.5 text-emerald-500">+3.80%</td>
-                                    <td class="py-3.5 text-emerald-500">+2.90%</td>
-                                    <td class="py-3.5 text-emerald-500">+4.10%</td>
-                                    <td class="py-3.5 text-emerald-500">+5.22%</td>
-                                    <td class="py-3.5 text-right font-medium text-white">+17.04%</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="flex items-center gap-4"
+                        style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:rgba(255,255,255,0.25)">
+                        <span class="flex items-center gap-1.5"><span
+                                style="display:inline-block;width:20px;height:1px;background:var(--gold)"></span>Fund
+                            NAV</span>
+                        <span class="flex items-center gap-1.5"><span
+                                style="display:inline-block;width:20px;height:1px;background:rgba(255,255,255,0.15)"></span>Benchmark</span>
                     </div>
                 </div>
 
-                <p class="text-[10px] text-gray-500 font-light leading-relaxed border-t border-white/5 pt-4">
-                    * Past performance model estimates do not completely guarantee future absolute return metrics.
-                    Portfolios are scaled strictly through quantitative mathematical risk matrices.
+                <!-- Animated chart -->
+                <div style="position:relative;margin-bottom:24px">
+                    <svg id="perf-svg" style="width:100%" viewBox="0 0 620 120" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="fundAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#C8A96E" stop-opacity="0.18" />
+                                <stop offset="100%" stop-color="#C8A96E" stop-opacity="0" />
+                            </linearGradient>
+                            <linearGradient id="bmAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#fff" stop-opacity="0.04" />
+                                <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Grid lines -->
+                        <line x1="0" y1="30" x2="620" y2="30" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                        <line x1="0" y1="60" x2="620" y2="60" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                        <line x1="0" y1="90" x2="620" y2="90" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                        <!-- Vertical markers -->
+                        <line x1="207" y1="0" x2="207" y2="120" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                        <line x1="414" y1="0" x2="414" y2="120" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                        <!-- Benchmark area -->
+                        <path d="M0,95 Q80,85 155,78 T310,65 T465,52 T620,42 L620,120 L0,120 Z"
+                            fill="url(#bmAreaGrad)" />
+                        <path d="M0,95 Q80,85 155,78 T310,65 T465,52 T620,42" fill="none"
+                            stroke="rgba(255,255,255,0.12)" stroke-width="1.2" />
+                        <!-- Fund area fill -->
+                        <path d="M0,100 Q70,78 140,60 T280,35 T420,18 T560,6 T620,3 L620,120 L0,120 Z"
+                            fill="url(#fundAreaGrad)" style="opacity:0.7" />
+                        <!-- Fund line animated -->
+                        <path id="perf-path" d="M0,100 Q70,78 140,60 T280,35 T420,18 T560,6 T620,3" fill="none"
+                            stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <!-- Data dots -->
+                        <circle cx="0" cy="100" r="2.5" fill="var(--gold)" opacity="0.6" />
+                        <circle cx="140" cy="60" r="2.5" fill="var(--gold)" opacity="0.6" />
+                        <circle cx="280" cy="35" r="2.5" fill="var(--gold)" opacity="0.6" />
+                        <circle cx="420" cy="18" r="2.5" fill="var(--gold)" opacity="0.6" />
+                        <circle cx="560" cy="6" r="2.5" fill="var(--gold)" opacity="0.6" />
+                        <circle cx="620" cy="3" r="4" fill="var(--gold)" />
+                        <circle cx="620" cy="3" r="8" fill="var(--gold)" opacity="0.1" />
+                        <!-- Year labels -->
+                        <text x="2" y="116" font-family="DM Mono" font-size="7.5"
+                            fill="rgba(255,255,255,0.18)">2024</text>
+                        <text x="209" y="116" font-family="DM Mono" font-size="7.5"
+                            fill="rgba(255,255,255,0.18)">2025</text>
+                        <text x="416" y="116" font-family="DM Mono" font-size="7.5"
+                            fill="rgba(255,255,255,0.18)">2026</text>
+                    </svg>
+                </div>
+
+                <!-- Returns heatmap grid -->
+                <div style="overflow-x:auto">
+                    <table style="width:100%;border-collapse:collapse">
+                        <thead>
+                            <tr>
+                                <th class="hm-head" style="text-align:left;padding-left:0">YEAR</th>
+                                <th class="hm-head">Q1</th>
+                                <th class="hm-head">Q2</th>
+                                <th class="hm-head">Q3</th>
+                                <th class="hm-head">Q4</th>
+                                <th class="hm-head" style="text-align:right;padding-right:0">YTD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="perf-row">
+                                <td
+                                    style="font-family:'DM Mono',monospace;font-size:10px;color:#fff;padding-right:12px">
+                                    2026</td>
+                                <td class="hm-cell hm-pos">+5.12%</td>
+                                <td class="hm-cell hm-pos">+3.84%</td>
+                                <td class="hm-cell hm-nil">—</td>
+                                <td class="hm-cell hm-nil">—</td>
+                                <td
+                                    style="text-align:right;font-family:'DM Mono',monospace;font-size:10px;color:#fff;font-weight:500">
+                                    +9.16%</td>
+                            </tr>
+                            <tr class="perf-row">
+                                <td
+                                    style="font-family:'DM Mono',monospace;font-size:10px;color:#fff;padding-right:12px">
+                                    2025</td>
+                                <td class="hm-cell hm-pos">+4.20%</td>
+                                <td class="hm-cell hm-pos">+6.15%</td>
+                                <td class="hm-cell hm-neg">-1.80%</td>
+                                <td class="hm-cell hm-pos">+7.40%</td>
+                                <td
+                                    style="text-align:right;font-family:'DM Mono',monospace;font-size:10px;color:#fff;font-weight:500">
+                                    +16.63%</td>
+                            </tr>
+                            <tr class="perf-row">
+                                <td
+                                    style="font-family:'DM Mono',monospace;font-size:10px;color:#fff;padding-right:12px">
+                                    2024</td>
+                                <td class="hm-cell hm-pos">+3.80%</td>
+                                <td class="hm-cell hm-pos">+2.90%</td>
+                                <td class="hm-cell hm-pos">+4.10%</td>
+                                <td class="hm-cell hm-pos">+5.22%</td>
+                                <td
+                                    style="text-align:right;font-family:'DM Mono',monospace;font-size:10px;color:#fff;font-weight:500">
+                                    +17.04%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cumulative stats row -->
+                <div
+                    style="display:flex;gap:24px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)">
+                    <div>
+                        <div
+                            style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:4px">
+                            Cumulative</div>
+                        <div
+                            style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold-light)">
+                            +46.83%</div>
+                    </div>
+                    <div style="border-left:1px solid rgba(255,255,255,0.05);padding-left:24px">
+                        <div
+                            style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:4px">
+                            Max Drawdown</div>
+                        <div
+                            style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:#f87171">
+                            -1.80%</div>
+                    </div>
+                    <div style="border-left:1px solid rgba(255,255,255,0.05);padding-left:24px">
+                        <div
+                            style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:4px">
+                            Win Rate</div>
+                        <div
+                            style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold-light)">
+                            90.9%</div>
+                    </div>
+                </div>
+
+                <p
+                    style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,0.18);line-height:1.7;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.04)">
+                    * Past performance does not guarantee future returns. Portfolios are managed through quantitative
+                    risk matrices.
                 </p>
             </div>
 
-            <div class="border border-white/5 bg-brandCard/20 p-6 flex flex-col justify-between">
+            <!-- Allocation sidebar -->
+            <div class="reveal d1"
+                style="border:1px solid rgba(255,255,255,0.05);background:var(--card);padding:28px;display:flex;flex-direction:column;gap:24px">
                 <div>
-                    <h3 class="text-xs uppercase tracking-widest font-medium text-white mb-6">Asset Allocation Framework
-                    </h3>
+                    <span class="sec-label">Breakdown</span>
+                    <div class="sec-title">Asset Allocation</div>
+                </div>
 
-                    <div class="space-y-5">
-                        <div>
-                            <div class="flex justify-between text-[11px] uppercase tracking-wider mb-1.5 font-mono">
-                                <span class="text-gray-400">Global Macro & FX Derivatives</span>
-                                <span class="text-white">42%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1">
-                                <div class="bg-brandGold h-1" style="width: 42%"></div>
-                            </div>
+                <div style="display:flex;flex-direction:column;gap:18px;flex:1">
+                    <div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;margin-bottom:8px">
+                            <span style="color:rgba(255,255,255,0.4);text-transform:uppercase">Global Macro & FX</span>
+                            <span style="color:#fff">42%</span>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[11px] uppercase tracking-wider mb-1.5 font-mono">
-                                <span class="text-gray-400">African Cross-Border Equities</span>
-                                <span class="text-white">28%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1">
-                                <div class="bg-brandGold h-1" style="width: 28%"></div>
-                            </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" data-w="42"></div>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[11px] uppercase tracking-wider mb-1.5 font-mono">
-                                <span class="text-gray-400">Quantitative System Overlays</span>
-                                <span class="text-white">18%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1">
-                                <div class="bg-brandGold h-1" style="width: 18%"></div>
-                            </div>
+                    </div>
+                    <div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;margin-bottom:8px">
+                            <span style="color:rgba(255,255,255,0.4);text-transform:uppercase">African Equities</span>
+                            <span style="color:#fff">28%</span>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-[11px] uppercase tracking-wider mb-1.5 font-mono">
-                                <span class="text-gray-400">Tactical Fixed Income & Cash equivalents</span>
-                                <span class="text-white">12%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-1">
-                                <div class="bg-brandGold h-1" style="width: 12%"></div>
-                            </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" data-w="28"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;margin-bottom:8px">
+                            <span style="color:rgba(255,255,255,0.4);text-transform:uppercase">Quant Overlays</span>
+                            <span style="color:#fff">18%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" data-w="18"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div
+                            style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;margin-bottom:8px">
+                            <span style="color:rgba(255,255,255,0.4);text-transform:uppercase">Fixed Income &
+                                Cash</span>
+                            <span style="color:#fff">12%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" data-w="12"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-[#050708] border border-white/5 p-4 mt-6">
-                    <span class="text-[9px] text-brandGold uppercase tracking-widest font-mono block mb-1">Rebalancing
-                        Event Monitor</span>
-                    <p class="text-[11px] text-gray-400 font-light">
-                        Portfolio models were last optimized on May 12, 2026, rotating profits from tactical commodity
-                        spreads into long equities positions.
+                <!-- Donut chart -->
+                <div style="display:flex;align-items:center;gap:16px">
+                    <svg viewBox="0 0 80 80" style="width:80px;height:80px;flex-shrink:0;transform:rotate(-90deg)">
+                        <!-- 42% -->
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(200,169,110,0.8)" stroke-width="8"
+                            stroke-dasharray="79 188" stroke-dashoffset="0" stroke-linecap="butt" />
+                        <!-- 28% -->
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(200,169,110,0.45)" stroke-width="8"
+                            stroke-dasharray="53 214" stroke-dashoffset="-79" stroke-linecap="butt" />
+                        <!-- 18% -->
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(200,169,110,0.25)" stroke-width="8"
+                            stroke-dasharray="34 233" stroke-dashoffset="-132" stroke-linecap="butt" />
+                        <!-- 12% -->
+                        <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(200,169,110,0.1)" stroke-width="8"
+                            stroke-dasharray="23 244" stroke-dashoffset="-166" stroke-linecap="butt" />
+                    </svg>
+                    <div
+                        style="font-family:'DM Mono',monospace;font-size:8px;display:flex;flex-direction:column;gap:6px">
+                        <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4)"><span
+                                style="display:inline-block;width:8px;height:2px;background:rgba(200,169,110,0.8)"></span>Macro
+                            42%</div>
+                        <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4)"><span
+                                style="display:inline-block;width:8px;height:2px;background:rgba(200,169,110,0.45)"></span>Africa
+                            28%</div>
+                        <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4)"><span
+                                style="display:inline-block;width:8px;height:2px;background:rgba(200,169,110,0.25)"></span>Quant
+                            18%</div>
+                        <div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4)"><span
+                                style="display:inline-block;width:8px;height:2px;background:rgba(200,169,110,0.1)"></span>Fixed
+                            12%</div>
+                    </div>
+                </div>
+
+                <div class="rebal-card" style="padding:16px">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                        <div style="width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0.7"></div>
+                        <span
+                            style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);opacity:0.8">Rebalancing
+                            Monitor</span>
+                    </div>
+                    <p
+                        style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.35);line-height:1.7">
+                        Last optimized May 12, 2026 — rotating commodity spread profits into long equity positions.
                     </p>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="border border-white/5 bg-brandCard/20 p-6">
-            <h3 class="text-xs uppercase tracking-widest font-medium text-white mb-6">Secure Document Repository Vault
-            </h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div
-                    class="border border-white/5 bg-[#050708] p-4 flex items-center justify-between group hover:border-brandGold/30 transition duration-300">
-                    <div class="flex items-center space-x-4">
-                        <div
-                            class="text-brandGold text-lg font-mono font-light border border-white/10 p-2 bg-brandCard/40">
-                            PDF</div>
-                        <div>
-                            <h4 class="text-xs text-white uppercase tracking-wider font-medium">Q1 2026 Fund Tear Sheet
-                            </h4>
-                            <p class="text-[10px] text-gray-500 font-mono mt-0.5">2.4 MB • VERIFIED SECURE</p>
-                        </div>
-                    </div>
-                    <button onclick="alert('Downloading Document Pipeline Asset...')"
-                        class="text-gray-400 group-hover:text-brandGold transition text-xs font-mono tracking-widest uppercase">
-                        Download ↓
-                    </button>
+        <!-- DOCUMENT VAULT -->
+        <div class="reveal" style="border:1px solid rgba(255,255,255,0.05);background:var(--card);padding:28px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px">
+                <div>
+                    <span class="sec-label">Confidential</span>
+                    <div class="sec-title">Secure Document Vault</div>
                 </div>
-                <div
-                    class="border border-white/5 bg-[#050708] p-4 flex items-center justify-between group hover:border-brandGold/30 transition duration-300">
-                    <div class="flex items-center space-x-4">
-                        <div
-                            class="text-brandGold text-lg font-mono font-light border border-white/10 p-2 bg-brandCard/40">
-                            PDF</div>
-                        <div>
-                            <h4 class="text-xs text-white uppercase tracking-wider font-medium">2025 Audited Annual
-                                Report</h4>
-                            <p class="text-[10px] text-gray-500 font-mono mt-0.5">5.1 MB • ARCHIVED ASSET</p>
-                        </div>
-                    </div>
-                    <button onclick="alert('Downloading Document Pipeline Asset...')"
-                        class="text-gray-400 group-hover:text-brandGold transition text-xs font-mono tracking-widest uppercase">
-                        Download ↓
-                    </button>
-                </div>
-                <div
-                    class="border border-white/5 bg-[#050708] p-4 flex items-center justify-between group hover:border-brandGold/30 transition duration-300">
-                    <div class="flex items-center space-x-4">
-                        <div
-                            class="text-brandGold text-lg font-mono font-light border border-white/10 p-2 bg-brandCard/40">
-                            PDF</div>
-                        <div>
-                            <h4 class="text-xs text-white uppercase tracking-wider font-medium">Savanna Fund Prospectus
-                                v2</h4>
-                            <p class="text-[10px] text-gray-500 font-mono mt-0.5">1.8 MB • PRIVATE ACCESS</p>
-                        </div>
-                    </div>
-                    <button onclick="alert('Downloading Document Pipeline Asset...')"
-                        class="text-gray-400 group-hover:text-brandGold transition text-xs font-mono tracking-widest uppercase">
-                        Download ↓
-                    </button>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="pulse-dot" style="width:4px;height:4px"></div>
+                    <span
+                        style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:#4ade80">End-to-End
+                        Encrypted</span>
                 </div>
             </div>
-        </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="doc-card p-5 flex items-center justify-between reveal d1">
+                    <div style="display:flex;align-items:center;gap:14px">
+                        <div class="doc-badge">PDF</div>
+                        <div>
+                            <div
+                                style="font-size:11px;color:#fff;text-transform:uppercase;letter-spacing:0.1em;font-weight:400;margin-bottom:4px">
+                                Q1 2026 Fund Tear Sheet</div>
+                            <div style="font-family:'DM Mono',monospace;font-size:8.5px;color:rgba(255,255,255,0.25)">
+                                2.4 MB &nbsp;·&nbsp; Verified</div>
+                        </div>
+                    </div>
+                    <button onclick="alert('Initiating secure download...')"
+                        style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(200,169,110,0.5);flex-shrink:0;margin-left:12px;transition:color 0.2s ease"
+                        onmouseover="this.style.color='var(--gold)'"
+                        onmouseout="this.style.color='rgba(200,169,110,0.5)'">↓</button>
+                </div>
+                <div class="doc-card p-5 flex items-center justify-between reveal d2">
+                    <div style="display:flex;align-items:center;gap:14px">
+                        <div class="doc-badge">PDF</div>
+                        <div>
+                            <div
+                                style="font-size:11px;color:#fff;text-transform:uppercase;letter-spacing:0.1em;font-weight:400;margin-bottom:4px">
+                                2025 Audited Annual Report</div>
+                            <div style="font-family:'DM Mono',monospace;font-size:8.5px;color:rgba(255,255,255,0.25)">
+                                5.1 MB &nbsp;·&nbsp; Archived</div>
+                        </div>
+                    </div>
+                    <button onclick="alert('Initiating secure download...')"
+                        style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(200,169,110,0.5);flex-shrink:0;margin-left:12px;transition:color 0.2s ease"
+                        onmouseover="this.style.color='var(--gold)'"
+                        onmouseout="this.style.color='rgba(200,169,110,0.5)'">↓</button>
+                </div>
+                <div class="doc-card p-5 flex items-center justify-between reveal d3">
+                    <div style="display:flex;align-items:center;gap:14px">
+                        <div class="doc-badge">PDF</div>
+                        <div>
+                            <div
+                                style="font-size:11px;color:#fff;text-transform:uppercase;letter-spacing:0.1em;font-weight:400;margin-bottom:4px">
+                                Savanna Fund Prospectus v2</div>
+                            <div style="font-family:'DM Mono',monospace;font-size:8.5px;color:rgba(255,255,255,0.25)">
+                                1.8 MB &nbsp;·&nbsp; Private</div>
+                        </div>
+                    </div>
+                    <button onclick="alert('Initiating secure download...')"
+                        style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(200,169,110,0.5);flex-shrink:0;margin-left:12px;transition:color 0.2s ease"
+                        onmouseover="this.style.color='var(--gold)'"
+                        onmouseout="this.style.color='rgba(200,169,110,0.5)'">↓</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 
-    <footer
-        class="border-t border-white/5 bg-[#050708] py-8 px-6 md:px-12 text-center text-[9px] text-gray-600 uppercase tracking-widest font-mono">
-        <div>Savanna Capital Security Terminal v2.4.0 • Encrypted End-to-End</div>
-        <div class="text-[8px] text-gray-700 mt-1">Nairobi Hub Connected • Authorization Clear</div>
+    <!-- ── FOOTER ──────────────────────────────────────────────────── -->
+    <footer id="dash-footer" style="padding:24px 48px;margin-top:40px">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px">
+            <div
+                style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.15)">
+                Savanna Capital Security Terminal v2.4.0
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+                <div class="pulse-dot" style="width:3px;height:3px"></div>
+                <span
+                    style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.15)">Nairobi
+                    Hub &nbsp;·&nbsp; Authorization Clear &nbsp;·&nbsp; Encrypted</span>
+            </div>
+        </div>
     </footer>
 
     <script>
+        // ── Security gate ──────────────────────────────────────────
         document.addEventListener("DOMContentLoaded", () => {
-            // Pull down the active encrypted investor profile packet from session storage
-            const sessionPacket = sessionStorage.getItem("activeInvestorSession");
+            const packet = sessionStorage.getItem("activeInvestorSession");
+            if (!packet) { window.location.href = "index.html"; return; }
 
-            if (!sessionPacket) {
-                // Security fallback boot if a user tries to bookmark or access dashboard.html directly without logging in
-                alert("SECURITY EXCEPTION: No active authorization key token verified. Returning to terminal.");
-                window.location.href = "index.html";
-                return;
+            const investor = JSON.parse(packet);
+
+            // Personalize greeting
+            if (investor.client_name) {
+                document.getElementById('welcome-heading').innerHTML =
+                    `Welcome Back, <span class="gold-text" style="-webkit-text-fill-color:transparent">${investor.client_name}</span>`;
             }
 
-            const investor = JSON.parse(sessionPacket);
-
-            // 👤 Update greeting personalized header card
-            const welcomeHeader = document.querySelector("h1");
-            if (welcomeHeader && investor.client_name) {
-                welcomeHeader.innerText = `Welcome back, ${investor.client_name}`;
-            }
-
-            // 📊 Map dynamic portfolio matrix arrays straight to the display elements
-            const displayGrids = document.querySelectorAll("main section div");
-
-            if (displayGrids.length >= 4) {
-                // Dynamic Allocation Override for Net Asset Value (NAV) card position
-                displayGrids[0].querySelector("span.text-2xl").innerText = investor.nav || "$0.00";
-
-                // Dynamic Allocation Override for Month Return card position
-                displayGrids[1].querySelector("span.text-2xl").innerText = investor.monthly_return || "0.00%";
-
-                // Dynamic Allocation Override for Sharpe Ratio card position
-                displayGrids[2].querySelector("span.text-2xl").innerText = investor.sharpe_ratio || "0.00";
-
-                // Dynamic Allocation Override for Cash Capital Exposure metric position
-                displayGrids[3].querySelector("span.text-2xl").innerText = investor.exposure || "0.0%";
-            }
+            // Populate stat cards
+            if (investor.nav) document.getElementById('stat-nav').textContent = investor.nav;
+            if (investor.monthly_return) document.getElementById('stat-monthly').textContent = investor.monthly_return;
+            if (investor.sharpe_ratio) document.getElementById('stat-sharpe').textContent = investor.sharpe_ratio;
+            if (investor.exposure) document.getElementById('stat-exposure').textContent = investor.exposure;
         });
 
-        // Handle session end and cleanup
+        // ── Scroll reveal ──────────────────────────────────────────
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // ── Animate chart line ─────────────────────────────────────
+        const lineObs = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                document.getElementById('perf-path').classList.add('go');
+                lineObs.disconnect();
+            }
+        }, { threshold: 0.2 });
+        lineObs.observe(document.getElementById('perf-svg'));
+
+        // ── Animate progress bars ──────────────────────────────────
+        const barObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                e.target.querySelectorAll('.bar-fill').forEach(f => { f.style.width = f.dataset.w + '%'; });
+                barObs.unobserve(e.target);
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.bar-track').forEach(b => barObs.observe(b));
+
+        // ── Live clock ─────────────────────────────────────────────
+        const clockEl = document.getElementById('live-clock');
+        function tick() {
+            clockEl.textContent = new Date().toLocaleTimeString('en-US',
+                { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + ' EAT';
+        }
+        tick(); setInterval(tick, 1000);
+
+        // ── Session timer ──────────────────────────────────────────
+        let s = 0;
+        setInterval(() => {
+            s++;
+            document.getElementById('session-timer').textContent =
+                Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+        }, 1000);
+
+        // ── Ticker ─────────────────────────────────────────────────
+        const ticks = [
+            { s: 'NSE:SAFCOM', v: '+1.6%', u: true }, { s: 'GOLD', v: '+0.9%', u: true },
+            { s: 'USD/KES', v: '129.4', u: false }, { s: 'NSE:EABL', v: '+3.8%', u: true },
+            { s: 'BTC', v: '+5.2%', u: true }, { s: 'S&P 500', v: '+0.7%', u: true },
+            { s: 'DXY', v: '-0.4%', u: false }, { s: 'WTI', v: '+1.3%', u: true },
+            { s: 'MSFT', v: '+1.1%', u: true }, { s: 'EM BONDS', v: '-0.2%', u: false },
+        ];
+        const belt = document.getElementById('ticker-belt');
+        const row = ticks.map(t =>
+            `<div class="t-item"><span style="color:rgba(255,255,255,0.35)">${t.s}</span><span class="${t.u ? 't-up' : 't-dn'}">${t.v}</span></div>`
+        ).join('');
+        belt.innerHTML = row + row;
+
+        // ── Disconnect ─────────────────────────────────────────────
         function disconnectSession() {
             sessionStorage.removeItem("activeInvestorSession");
             window.location.href = "index.html";
         }
     </script>
-
 </body>
 
 </html>
