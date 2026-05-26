@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savanna Academy | Strategic Knowledge Matrix</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,300;0,400;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Inter', 'sans-serif'] },
+                    colors: { brandDark: '#050708', brandCard: '#0D1113', brandGold: '#C5A880' },
+                    letterSpacing: { widest: '0.18em', mega: '0.25em' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050708;
+            color: #E2E8F0;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #050708;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased min-h-screen bg-brandDark text-gray-300 pt-24 pb-12">
+
+    <nav
+        class="w-full border-b border-white/5 bg-brandDark/90 backdrop-blur-md fixed top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6 text-brandGold" viewBox="0 0 100 100" fill="currentColor">
+                <path
+                    d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+            </svg>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-serif tracking-mega uppercase font-light">Savanna Capital</span>
+                <span class="text-[8px] text-brandGold tracking-widest uppercase font-mono -mt-0.5">Intelligence Academy
+                    Terminal</span>
+            </div>
+        </div>
+        <a href="index.html"
+            class="text-gray-400 hover:text-white transition uppercase font-mono text-[9px] tracking-widest">Terminal
+            Gate</a>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 mb-12 text-center">
+        <span
+            class="text-[9px] font-mono tracking-mega text-brandGold uppercase bg-brandGold/5 border border-brandGold/10 px-3 py-1">Tiered
+            Knowledge Matrix</span>
+        <h1 class="text-3xl md:text-4xl font-serif text-white uppercase tracking-wider mt-4 font-light">The Allocation &
+            Execution Academy</h1>
+        <p class="text-xs text-gray-500 font-mono mt-2 max-w-xl mx-auto uppercase">Unlock institutional mechanics.
+            Choose your tier of clearance to interface with our educational infrastructure.</p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 mb-16 grid grid-cols-1 md:grid-cols-3 gap-6 font-mono">
+
+        <div
+            class="border border-white/5 bg-brandCard p-6 flex flex-col justify-between hover:border-white/10 transition">
+            <div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Clearance Tier 01</div>
+                <h3 class="text-white text-base font-serif uppercase tracking-wide">Free Access</h3>
+                <div class="text-2xl font-light text-white my-4">$0 <span class="text-xs text-gray-500 font-sans">/
+                        forever</span></div>
+                <ul class="text-[11px] text-gray-400 space-y-2 border-t border-white/5 pt-4">
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Standard Technical
+                            PDFs</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Basic Shared
+                            Google Drive Link</span></li>
+                    <li class="flex items-center text-red-500/70">✕ <span
+                            class="text-gray-600 ml-2 line-through">Advanced Spreadsheet Models</span></li>
+                    <li class="flex items-center text-red-500/70">✕ <span class="text-gray-600 ml-2 line-through">Live
+                            Online Cohort Classes</span></li>
+                </ul>
+            </div>
+            <button onclick="scrollToModule('free-modules')"
+                class="w-full mt-6 bg-white/5 text-white py-2 text-xs uppercase tracking-widest hover:bg-white/10 transition">Access
+                Public Stream</button>
+        </div>
+
+        <div
+            class="border border-brandGold/30 bg-brandCard p-6 flex flex-col justify-between relative shadow-lg shadow-brandGold/5">
+            <span
+                class="absolute -top-2.5 right-4 bg-brandGold text-brandDark text-[8px] uppercase tracking-widest px-2 py-0.5 font-bold">Recommended</span>
+            <div>
+                <div class="text-[9px] text-brandGold uppercase tracking-widest mb-1">Clearance Tier 02</div>
+                <h3 class="text-white text-base font-serif uppercase tracking-wide">Pro Trader Suite</h3>
+                <div class="text-2xl font-light text-brandGold my-4">$49 <span class="text-xs text-gray-500 font-sans">/
+                        month</span></div>
+                <ul class="text-[11px] text-gray-400 space-y-2 border-t border-white/5 pt-4">
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Complete Google
+                            Drive Vault</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Proprietary
+                            Valuation Models (.xlsx)</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-white ml-2 font-medium">Weekly
+                            Live Stream Classes</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Private Trader
+                            Discord Channel</span></li>
+                </ul>
+            </div>
+            <button onclick="openPaymentModal('pro', 'KES 6,300 / Month', 6300)"
+                class="w-full mt-6 bg-brandGold text-brandDark text-center font-bold py-2 text-xs uppercase tracking-widest hover:bg-amber-100 transition">
+                Upgrade to Pro ➔
+            </button>
+        </div>
+
+        <div
+            class="border border-white/5 bg-brandCard p-6 flex flex-col justify-between hover:border-white/10 transition">
+            <div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Clearance Tier 03</div>
+                <h3 class="text-white text-base font-serif uppercase tracking-wide">Elite Institutional</h3>
+                <div class="text-2xl font-light text-white my-4">$199 <span class="text-xs text-gray-500 font-sans">/
+                        month</span></div>
+                <ul class="text-[11px] text-gray-400 space-y-2 border-t border-white/5 pt-4">
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">All Pro Assets +
+                            Algo Toolkits</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-white font-medium ml-2">1-on-1
+                            Private Video Coaching</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Direct WhatsApp
+                            Hotline to CEO Desk</span></li>
+                    <li class="flex items-center text-emerald-500">✓ <span class="text-gray-400 ml-2">Fund Management
+                            Incubation</span></li>
+                </ul>
+            </div>
+            <button onclick="openPaymentModal('elite', 'KES 25,500 / Month', 25500)"
+                class="w-full mt-6 bg-white/5 text-white text-center py-2 text-xs uppercase tracking-widest hover:bg-white/10 transition">
+                Request Elite Gate
+            </button>
+        </div>
+    </section>
+
+    <main class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <section id="free-modules" class="border border-white/5 bg-brandCard p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start border-b border-white/5 pb-3 mb-4">
+                    <div>
+                        <span class="text-[8px] font-mono text-emerald-400 tracking-widest uppercase">FREE CLEARANCE
+                            NODE</span>
+                        <h2 class="text-base font-serif text-white uppercase mt-0.5">Decentralized Finance (DeFi)</h2>
+                    </div>
+                    <span
+                        class="text-[10px] font-mono text-cyan-400 bg-cyan-500/5 px-2 py-0.5 border border-cyan-500/10">Module
+                        01</span>
+                </div>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">Deconstruct basic smart contracts,
+                    wallets setups, automated market makers (AMMs), and decentralized credit pools from scratch.</p>
+
+                <div class="space-y-3">
+                    <a href="YOUR_PUBLIC_GOOGLE_DRIVE_URL" target="_blank"
+                        class="group flex justify-between items-center border border-white/5 bg-brandDark/50 p-3 hover:border-brandGold/30 transition">
+                        <span class="text-xs font-mono group-hover:text-white transition">📄
+                            Defi_Liquidity_Risk_Framework.pdf</span>
+                        <span class="text-[9px] font-mono text-brandGold group-hover:underline">View File ➔</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="border border-white/5 bg-brandCard p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start border-b border-white/5 pb-3 mb-4">
+                    <div>
+                        <span class="text-[8px] font-mono text-emerald-400 tracking-widest uppercase">FREE CLEARANCE
+                            NODE</span>
+                        <h2 class="text-base font-serif text-white uppercase mt-0.5">Equities & Stock Markets</h2>
+                    </div>
+                    <span
+                        class="text-[10px] font-mono text-purple-400 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10">Module
+                        02</span>
+                </div>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">Introduction to market structures,
+                    ticker analysis, corporate equity metrics, and basic Nairobi Securities Exchange configurations.</p>
+
+                <div class="space-y-3">
+                    <a href="YOUR_PUBLIC_GOOGLE_DRIVE_URL" target="_blank"
+                        class="group flex justify-between items-center border border-white/5 bg-brandDark/50 p-3 hover:border-brandGold/30 transition">
+                        <span class="text-xs font-mono group-hover:text-white transition">📄
+                            Stock_Market_Foundations_Guide.pdf</span>
+                        <span class="text-[9px] font-mono text-brandGold group-hover:underline">View File ➔</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section
+            class="border border-brandGold/10 bg-gradient-to-b from-brandCard to-brandDark p-6 md:col-span-2 relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 transform translate-x-12 -translate-y-6 text-white/[0.02] font-serif text-9xl select-none pointer-events-none">
+                LIVE</div>
+            <div class="max-w-xl">
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-[9px] font-mono text-brandGold tracking-widest uppercase font-bold">PRO & ELITE
+                        SYNDICATE PIPELINE</span>
+                </div>
+                <h2 class="text-xl font-serif text-white uppercase tracking-wide">Advanced Core Cohort: Live Online
+                    Classes</h2>
+                <p class="text-xs text-gray-400 font-mono leading-relaxed mt-2 mb-6">
+                    Skip static reading. This module opens up our immersive interactive online digital classrooms. Learn
+                    advanced financial engineering models, live macro economic data tape tracking, and full Inner Circle
+                    Trader (ICT) algorithmic footprints via screen-share sessions.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono mb-6">
+                    <div class="border border-white/5 bg-brandDark/40 p-3">
+                        <div class="text-brandGold font-bold">🎥 WEEKLY WEBINARS</div>
+                        <div class="text-gray-500 text-[11px] mt-1">Every Saturday: Interactive screen studies &
+                            backtesting logs.</div>
+                    </div>
+                    <div class="border border-white/5 bg-brandDark/40 p-3">
+                        <div class="text-brandGold font-bold">💻 LIVE TAPE REVIEW</div>
+                        <div class="text-gray-500 text-[11px] mt-1">Real-time analysis of CBK interest announcements &
+                            currency trends.</div>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
+                    target="_blank"
+                    class="inline-block bg-brandGold text-brandDark font-mono font-bold px-6 py-3 text-xs uppercase tracking-widest hover:bg-amber-100 transition">
+                    Unlock Corporate Class Schedule ➔
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function scrollToModule(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+        function openPaymentModal(tierName, costString, numericAmountKES) {
+            document.getElementById("selectedTierName").value = tierName;
+            document.getElementById("selectedTierPrice").value = numericAmountKES;
+            document.getElementById("modalTierText").innerText = tierName.toUpperCase();
+            document.getElementById("modalPriceText").innerText = costString;
+            document.getElementById("paymentModal").classList.remove("hidden");
+        }
+
+        function closePaymentModal() {
+            document.getElementById("paymentModal").classList.add("hidden");
+            document.getElementById("academyRegistrationForm").reset();
+        }
+
+        // Intercept your previous button clicks to map to the automated form
+        // Update your Tier 2 button link to: onclick="openPaymentModal('pro', 'KES 6,300 / Month', 6300)"
+        // Update your Tier 3 button link to: onclick="openPaymentModal('elite', 'KES 25,500 / Month', 25500)"
+
+        async function triggerSTKPush(e) {
+            e.preventDefault();
+            const btn = document.getElementById("paySubmitBtn");
+            btn.innerText = "TRANSMITTING TO HANDSET SECURELY...";
+            btn.disabled = true;
+
+            // 1. Pack the client registration metadata payload
+            const payload = {
+                name: document.getElementById("acName").value,
+                email: document.getElementById("acEmail").value,
+                phone: document.getElementById("acPhone").value,
+                amount: document.getElementById("selectedTierPrice").value,
+                tier: document.getElementById("selectedTierName").value
+            };
+
+            try {
+                // 📡 2. Routes directly to your secure, credential-armed Edge gateway
+                const response = await fetch("https://YOUR_SUPABASE_PROJECT_REF.supabase.co/functions/v1/mpesa-stkpush", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer YOUR_SUPABASE_ANON_KEY"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("TRANSMISSION LOGGED: Enter your M-PESA PIN on your mobile phone to complete payment configuration.");
+                    closePaymentModal();
+                } else {
+                    throw new Error(result.error || "Gateway verification failed");
+                }
+            } catch (err) {
+                alert("GATEWAY FAULT: " + err.message);
+                btn.innerText = "Initialize STK Push Prompt ➔";
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+    <div id="paymentModal"
+        class="fixed inset-0 bg-brandDark/90 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="border border-brandGold/20 bg-brandCard max-w-md w-full p-6 font-mono text-xs relative">
+            <button onclick="closePaymentModal()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-white text-sm">✕</button>
+
+            <div class="border-b border-white/5 pb-3 mb-4">
+                <h3 class="text-sm font-serif text-brandGold uppercase tracking-wider">Initialize Premium Node Clearance
+                </h3>
+                <p class="text-[9px] text-gray-500">ACCOUNT CREATION & LIPA NA M-PESA GATEWAY LINK</p>
+            </div>
+
+            <form id="academyRegistrationForm" onsubmit="triggerSTKPush(event)" class="space-y-4">
+                <input type="hidden" id="selectedTierPrice">
+                <input type="hidden" id="selectedTierName">
+
+                <div>
+                    <label class="block text-[9px] text-gray-400 uppercase mb-1">Full Legal Name</label>
+                    <input type="text" id="acName" required placeholder="e.g. David Sterling"
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:border-brandGold focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] text-gray-400 uppercase mb-1">Secure Delivery Email</label>
+                    <input type="email" id="acEmail" required placeholder="e.g. david@sterling.com"
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:border-brandGold focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] text-gray-400 uppercase mb-1">M-PESA Operational Number
+                        (254...)</label>
+                    <input type="text" id="acPhone" required placeholder="e.g. 254700021380"
+                        class="w-full bg-brandDark border border-white/5 p-2 text-white focus:border-brandGold focus:outline-none">
+                </div>
+
+                <div class="bg-brandDark/50 border border-white/5 p-3 text-gray-400 text-[10px] space-y-1">
+                    <div class="flex justify-between"><span>Selected Tier:</span> <span id="modalTierText"
+                            class="text-white font-bold">-</span></div>
+                    <div class="flex justify-between"><span>Total Processing Cost:</span> <span id="modalPriceText"
+                            class="text-emerald-400 font-bold">-</span></div>
+                </div>
+
+                <button type="submit" id="paySubmitBtn"
+                    class="w-full bg-emerald-600 text-white font-medium py-2.5 uppercase tracking-widest hover:bg-emerald-500 transition">
+                    Initialize STK Push Prompt ➔
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

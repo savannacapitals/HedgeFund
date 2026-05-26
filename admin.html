@@ -67,9 +67,13 @@
         </div>
     </nav>
 
+
+
     <main class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
 
-        <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+
+        <<section class="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div class="border border-white/5 bg-brandCard p-4">
                 <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Consolidated Fund AUM</span>
                 <div id="totalAUM" class="text-2xl font-light text-white mt-1 font-mono">$0.00</div>
@@ -79,6 +83,11 @@
                 <div id="totalInvestors" class="text-2xl font-light text-brandGold mt-1 font-mono">0</div>
             </div>
             <div class="border border-white/5 bg-brandCard p-4">
+                <span class="text-[9px] uppercase tracking-widest text-emerald-500/80 font-mono">OpCo Accumulated
+                    Revenue</span>
+                <div id="corporateRevenueVault" class="text-2xl font-light text-emerald-400 mt-1 font-mono">$0.00</div>
+            </div>
+            <div class="border border-white/5 bg-brandCard p-4">
                 <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Macro Strategy Sharpe</span>
                 <div class="text-2xl font-light text-emerald-500 mt-1 font-mono">2.68</div>
             </div>
@@ -86,54 +95,122 @@
                 <span class="text-[9px] uppercase tracking-widest text-gray-400 font-mono">Pending Intake Audits</span>
                 <div id="pendingIntakesCount" class="text-2xl font-light text-amber-500 mt-1 font-mono">0</div>
             </div>
-        </section>
+            </section>
 
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 border border-white/5 bg-brandCard p-5 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
-                        <div>
-                            <h3 class="text-sm font-serif text-white uppercase tracking-wider">Live Investor Management
-                                Matrix</h3>
-                            <p class="text-[9px] text-gray-500 font-mono">REAL-TIME WRITE/UPDATE CONTROL TO SUPABASE
-                                SYSTEM</p>
-                        </div>
-                        <button onclick="openInvestorModal(null)"
-                            class="bg-brandGold text-brandDark font-mono font-medium text-[9px] px-3 py-1.5 uppercase tracking-wider hover:bg-white transition">
-                            + Issue New Account
-                        </button>
+            <section class="border border-brandGold/20 bg-brandCard p-5">
+                <div class="border-b border-white/5 pb-3 mb-4 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-sm font-serif text-brandGold uppercase tracking-wider">Execute Master Profit
+                            Allocation</h3>
+                        <p class="text-[9px] text-gray-500 font-mono">DISTRIBUTES GAINS PRO-RATA & COMPUTES PERFORMANCE
+                            RETENTION</p>
                     </div>
+                    <span
+                        class="text-[10px] font-mono text-emerald-400 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10">Target
+                        Pacing: 18.00% p.a.</span>
+                </div>
 
-                    <div class="overflow-x-auto custom-scrollbar">
+                <form id="profitForm" onsubmit="allocateProfits(event)"
+                    class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end font-mono text-xs">
+                    <div>
+                        <label class="block text-[9px] text-gray-400 uppercase mb-1">Gross Trading Profit (USD or
+                            KES)</label>
+                        <input type="number" id="grossProfit" step="any" placeholder="e.g. 500000" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-gray-400 uppercase mb-1">Fund Management Fee Cut (%)</label>
+                        <input type="number" id="managementFee" value="2" step="0.1" required
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-gray-400 uppercase mb-1">Distribution Interval</label>
+                        <select id="pacingInterval"
+                            class="w-full bg-brandDark border border-white/5 p-2 text-white focus:outline-none focus:border-brandGold">
+                            <option value="month">Monthly Distribution (1.50%)</option>
+                            <option value="week">Weekly Distribution (0.346%)</option>
+                            <option value="spot">Direct Spot Capital Injection</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="bg-emerald-600 text-white font-medium py-2 uppercase tracking-widest hover:bg-emerald-500 transition">
+                        Execute Allocation ➔
+                    </button>
+                </form>
+            </section>
+
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 border border-white/5 bg-brandCard p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+                            <div>
+                                <h3 class="text-sm font-serif text-white uppercase tracking-wider">Live Investor
+                                    Management
+                                    Matrix</h3>
+                                <p class="text-[9px] text-gray-500 font-mono">REAL-TIME WRITE/UPDATE CONTROL TO SUPABASE
+                                    SYSTEM</p>
+                            </div>
+                            <button onclick="openInvestorModal(null)"
+                                class="bg-brandGold text-brandDark font-mono font-medium text-[9px] px-3 py-1.5 uppercase tracking-wider hover:bg-white transition">
+                                + Issue New Account
+                            </button>
+                        </div>
+
+
+
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left font-mono text-[11px]">
+                                <thead>
+                                    <tr class="text-gray-500 border-b border-white/5 uppercase text-[9px]">
+                                        <th class="py-2">Investor Name</th>
+                                        <th class="py-2">Email Node</th>
+                                        <th class="py-2">Secure Passcode</th>
+                                        <th class="py-2 text-right">Net Valuation (NAV)</th>
+                                        <th class="py-2 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="investorTableBody" class="divide-y divide-white/5 text-gray-300">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-white/5 bg-brandCard p-5 mt-6">
+                    <div class="border-b border-white/5 pb-3 mb-4">
+                        <h3 class="text-sm font-serif text-emerald-400 uppercase tracking-wider">OpCo Treasury Revenue
+                            Ledger</h3>
+                        <p class="text-[9px] text-gray-500 font-mono">REAL-TIME INFLOW LOGS GENERATED FROM HEDGE FUND
+                            MANAGEMENT & PERFORMANCE FEES</p>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar max-h-[250px]">
                         <table class="w-full text-left font-mono text-[11px]">
                             <thead>
                                 <tr class="text-gray-500 border-b border-white/5 uppercase text-[9px]">
-                                    <th class="py-2">Investor Name</th>
-                                    <th class="py-2">Email Node</th>
-                                    <th class="py-2">Secure Passcode</th>
-                                    <th class="py-2 text-right">Net Valuation (NAV)</th>
-                                    <th class="py-2 text-center">Actions</th>
+                                    <th class="py-2">Timestamp (UTC)</th>
+                                    <th class="py-2">Fee Allocation Event / Source</th>
+                                    <th class="py-2 text-right">Revenue Captured</th>
                                 </tr>
                             </thead>
-                            <tbody id="investorTableBody" class="divide-y divide-white/5 text-gray-300">
+                            <tbody id="corporateTableBody" class="divide-y divide-white/5 text-gray-300">
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
 
-            <div class="border border-white/5 bg-brandCard p-5">
-                <div class="border-b border-white/5 pb-3 mb-4">
-                    <h3 class="text-sm font-serif text-white uppercase tracking-wider">Inbound Network Request Leads
-                    </h3>
-                    <p class="text-[9px] text-amber-500 font-mono">STREAMING PIPELINE FROM GOOGLE MACRO MATRIX</p>
-                </div>
+                <div class="border border-white/5 bg-brandCard p-5">
+                    <div class="border-b border-white/5 pb-3 mb-4">
+                        <h3 class="text-sm font-serif text-white uppercase tracking-wider">Inbound Network Request Leads
+                        </h3>
+                        <p class="text-[9px] text-amber-500 font-mono">STREAMING PIPELINE FROM GOOGLE MACRO MATRIX</p>
+                    </div>
 
-                <div id="leadsContainer" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
-                    <p class="text-gray-500 font-mono text-[10px] text-center py-4">Syncing with Google Pipeline...</p>
+                    <div id="leadsContainer" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                        <p class="text-gray-500 font-mono text-[10px] text-center py-4">Syncing with Google Pipeline...
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
     </main>
 
     <div id="investorModal"
@@ -208,6 +285,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             fetchLiveInvestors();
             fetchInboundGoogleLeads();
+            fetchCorporateRevenue(); // Adds company balance scanning
         });
 
         // 🔄 PULL LIVE SUPABASE ACCOUNT RECORDS
@@ -350,6 +428,146 @@
                 }
             }
         }
+        // 🧮 PRO-RATA PROFIT DISTRIBUTION LOGIC
+        async function allocateProfits(e) {
+            e.preventDefault();
+
+            const grossProfit = parseFloat(document.getElementById("grossProfit").value);
+            const feePercent = parseFloat(document.getElementById("managementFee").value) / 100;
+            const interval = document.getElementById("pacingInterval").value;
+
+            if (localInvestorsCache.length === 0) {
+                alert("ALLOCATION ERROR: No active investor records available in cache matrices.");
+                return;
+            }
+
+            // 1. Calculate the Fund's Cut (Management Fee)
+            const fundCut = grossProfit * feePercent;
+            const netDistributableProfit = grossProfit - fundCut;
+
+            // 2. Calculate current Total Fund AUM numerically
+            let totalFundAUM = 0;
+            const parsedInvestors = localInvestorsCache.map(inv => {
+                const rawNAV = parseFloat(inv.nav.replace(/[^0-9.-]+/g, "")) || 0;
+                totalFundAUM += rawNAV;
+                return { ...inv, numericNAV: rawNAV };
+            });
+
+            if (totalFundAUM === 0) {
+                alert("ERROR: Fund AUM is zero. Cannot allocate to empty balances.");
+                return;
+            }
+
+            // Define target increments to hit exactly 18% per year
+            let returnLabel = "+1.50%"; // Monthly default
+            if (interval === "week") returnLabel = "+0.346%";
+            else if (interval === "spot") returnLabel = "+" + ((netDistributableProfit / totalFundAUM) * 100).toFixed(2) + "%";
+
+            let updatesCounter = 0;
+
+            // 3. Loop through every single investor row and apply their pro-rata credit
+            for (let inv of parsedInvestors) {
+                // Skip administrative profiles
+                if (inv.email === "brian@savannacapital.com" || inv.email.includes("admin@")) continue;
+
+                // Pro-rata distribution calculation
+                const investorShare = inv.numericNAV / totalFundAUM;
+                const rawAllocationGains = netDistributableProfit * investorShare;
+
+                // Scale updates smoothly to guarantee exactly 18% p.a.
+                let finalNewNAV = inv.numericNAV + rawAllocationGains;
+
+                // Format back into clean database string structures
+                const updatedNAVString = "$" + finalNewNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+                try {
+                    // Stream updates live to Supabase for this row matching index ID
+                    const { error } = await supabaseClient
+                        .from('investors')
+                        .update({
+                            nav: updatedNAVString,
+                            monthly_return: returnLabel
+                        })
+                        .eq('id', inv.id);
+
+                    if (error) throw error;
+                    updatesCounter++;
+                } catch (err) {
+                    console.error(`Failed updating node for ${inv.client_name}:`, err.message);
+                }
+            }
+
+            // Place this directly inside your allocateProfits(e) function right before the final alert box:
+            try {
+                // Record your earnings directly into your corporate revenue ledger table
+                const { error: corpError } = await supabaseClient
+                    .from('corporate_revenue')
+                    .insert([{
+                        source_event: `Performance Retainer (${(feePercent * 100).toFixed(1)}%) from Gross Return of $${grossProfit.toLocaleString()}`,
+                        amount: fundCut
+                    }]);
+
+                if (corpError) throw corpError;
+
+                // Refresh your corporate tracking card dynamically
+                fetchCorporateRevenue();
+            } catch (err) {
+                console.error("Failed logging corporate transaction receipt:", err.message);
+            }
+
+            // Old alert box follows here smoothly...
+            alert(`SUCCESS: Distributed KES/USD ${grossProfit.toLocaleString()} gross profits.\n` +
+                `● Fund Fee Captured: $${fundCut.toLocaleString()}\n` +
+                `● Net Disbursed: $${netDistributableProfit.toLocaleString()}\n` +
+                `● Active Nodes Rebalanced: ${updatesCounter}`);
+
+            alert(`SUCCESS: Distributed KES/USD ${grossProfit.toLocaleString()} gross profits.\n` +
+                `● Fund Fee Captured: $${fundCut.toLocaleString()}\n` +
+                `● Net Disbursed: $${netDistributableProfit.toLocaleString()}\n` +
+                `● Active Nodes Rebalanced: ${updatesCounter}`);
+
+            // Refresh layout grids live without page resets
+            document.getElementById("profitForm").reset();
+            fetchLiveInvestors();
+
+
+        }
+
+
+        // 🏢 PULL OPCO CORPORATE TREASURY REVENUE
+        async function fetchCorporateRevenue() {
+            try {
+                const { data, error } = await supabaseClient.from('corporate_revenue').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                const tbody = document.getElementById("corporateTableBody");
+                tbody.innerHTML = "";
+
+                let consolidatedRevenue = 0;
+
+                data.forEach(item => {
+                    consolidatedRevenue += item.amount;
+                    const formattedDate = new Date(item.created_at).toLocaleString();
+                    tbody.innerHTML += `
+        <tr class="hover:bg-white/[0.01] transition border-b border-white/5">
+          <td class="py-2 text-gray-500">${formattedDate}</td>
+          <td class="py-2 text-gray-300 font-medium">${item.source_event}</td>
+          <td class="py-2 text-right text-emerald-400 font-medium">+$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        </tr>
+      `;
+                });
+
+                document.getElementById("corporateRevenueVault").innerText = "$" + consolidatedRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-gray-600 py-4 font-mono text-[10px]">No corporate fees captured in this cycle yet.</td></tr>`;
+                }
+            } catch (err) {
+                console.error("Corporate Matrix Connection Fault:", err.message);
+            }
+        }
+
+
     </script>
 </body>
 

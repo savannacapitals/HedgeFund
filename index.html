@@ -403,6 +403,71 @@
         .link-gold:hover::after {
             width: 100%;
         }
+
+        /* --- SAVANNA TERMINAL INTERACTION COMPONENT --- */
+        .terminal-action-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .savanna-intel-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #0D1113;
+            /* High-end dark slate base */
+            color: #E2E8F0;
+            /* Soft off-white text */
+            border: 1px solid rgba(197, 168, 128, 0.3);
+            /* Subtle gold boundary frame */
+            padding: 14px 28px;
+            font-family: 'Space Mono', 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            border-radius: 0px;
+            /* Monolithic sharp corners */
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 🟢 The Live System Pulse Indicator */
+        .btn-status-indicator {
+            width: 6px;
+            height: 6px;
+            background-color: #10B981;
+            /* Terminal Green Active Node */
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10B981;
+        }
+
+        .btn-arrow-vector {
+            color: #C5A880;
+            /* Savanna Gold Accent Arrow */
+            transition: transform 0.3s ease;
+        }
+
+        /* ✨ Elite Interactive Hover Mechanics */
+        .savanna-intel-btn:hover {
+            background-color: #050708;
+            border-color: rgba(197, 168, 128, 1);
+            /* Full gold glow activation */
+            color: #C5A880;
+            /* Text shifts to signature gold */
+            box-shadow: 0 0 25px rgba(197, 168, 128, 0.15);
+            cursor: pointer;
+        }
+
+        /* Vector micro-animation shift */
+        .savanna-intel-btn:hover .btn-arrow-vector {
+            transform: translateX(6px);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -453,6 +518,9 @@
             style="background: radial-gradient(ellipse 60% 50% at 70% 50%, rgba(200,169,110,0.07) 0%, transparent 70%);">
         </div>
 
+
+
+
         <div class="relative z-10 flex flex-col md:flex-row items-stretch flex-1 pt-24">
             <!-- Left content -->
             <div class="w-full md:w-[55%] flex flex-col justify-center px-8 md:px-16 py-16">
@@ -487,6 +555,14 @@
                         Strategies <span>→</span>
                     </a>
                 </div>
+                <div class="terminal-action-container">
+                    <a href="academy.html" class="savanna-intel-btn">
+                        <span class="btn-status-indicator"></span>
+                        INITIALIZE ACADEMY GATEWAY
+                        <span class="btn-arrow-vector">➔</span>
+                    </a>
+                </div>
+
 
                 <!-- Stats row -->
                 <div class="mt-16 grid grid-cols-3 gap-6 hero-fade" style="animation-delay:0.9s">
@@ -508,6 +584,8 @@
                 </div>
             </div>
 
+
+
             <!-- Right image -->
             <div class="hidden md:block md:w-[45%] relative">
                 <div class="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-brandDark to-transparent z-10"></div>
@@ -526,6 +604,8 @@
             <div class="ticker-track" id="ticker"></div>
         </div>
     </section>
+
+
 
     <!-- PHILOSOPHY -->
     <section id="philosophy" class="py-28 px-8 md:px-16 bg-[#070A0F] border-t border-white/5 scroll-mt-20">
@@ -546,6 +626,7 @@
                     Explore Strategies <span>→</span>
                 </a>
             </div>
+
 
             <div class="lg:col-span-3 lg:pl-12 lg:border-l lg:border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-10">
                 <div class="reveal reveal-delay-1">
