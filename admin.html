@@ -278,7 +278,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // 📋 Paste your Deployed Google App Script URL ending in /exec here to view real-time leads
-        const GOOGLE_READ_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+        const GOOGLE_READ_URL = "https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec";
 
         let localInvestorsCache = [];
 
@@ -397,21 +397,46 @@
                 nav: document.getElementById("invNAV").value,
                 monthly_return: document.getElementById("invReturn").value,
                 sharpe_ratio: document.getElementById("invSharpe").value,
-                exposure: document.getElementById("invExposure").value
+                exposure: document.getElementById("invExposure").value,
             };
 
             try {
                 if (id) {
-                    // Update existing row match
+                    // Update existing row match in Supabase
                     const { error } = await supabaseClient.from('investors').update(payload).eq('id', id);
                     if (error) throw error;
                 } else {
-                    // Create entirely new investor record row
+                    // Create entirely new investor record row in Supabase
                     const { error } = await supabaseClient.from('investors').insert([payload]);
                     if (error) throw error;
+
+                    // 📡 Fire welcome email via Google Apps Script — non-blocking
+                    try {
+                        await fetch(GOOGLE_READ_URL, {
+                            method: "POST",
+                            mode: "no-cors",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                apiKey: "savanna_private_key_2026",
+                                name: payload.client_name,
+                                email: payload.email,
+                                passcode: payload.passcode,
+                                navValuation: payload.nav,
+                                monthlyReturn: payload.monthly_return,
+                                sharpeIndex: payload.sharpe_ratio,
+                                capitalExposure: payload.exposure
+                            })
+                        });
+                        console.log("Email dispatch fired successfully.");
+                    } catch (emailErr) {
+                        console.warn("Email dispatch failed silently:", emailErr.message);
+                        // Investor still saved to Supabase — email failure won't block the process
+                    }
                 }
+
                 closeInvestorModal();
                 fetchLiveInvestors();
+
             } catch (err) {
                 alert("CRITICAL COMPOSTING FAULT: " + err.message);
             }

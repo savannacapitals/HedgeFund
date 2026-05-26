@@ -539,6 +539,8 @@
 
                 <div class="gold-line mb-6 hero-fade"></div>
 
+
+
                 <p class="text-gray-400 max-w-sm text-sm leading-relaxed font-light hero-fade"
                     style="animation-delay:0.6s">
                     A research-driven hedge fund generating consistent, risk-adjusted returns across global and African
@@ -682,6 +684,316 @@
             </div>
         </div>
     </section>
+
+    <div class="network-visualization-container">
+        <div class="terminal-matrix-hud">
+            <div class="hud-readout">SYS.LOC // NBO_HUB_ACTIVE</div>
+            <div class="hud-readout status-pulse">NETWORK STATUS: OPTIMAL</div>
+        </div>
+
+        <canvas id="globalNetworkCanvas"></canvas>
+    </div>
+
+    <style>
+        /* --- VISUALIZATION STRUCTURAL WRAPPER --- */
+        .network-visualization-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            /* Responsive sizing: 450px high on desktop, down to 320px on small mobile */
+            height: 450px;
+            margin: 24px auto;
+            background-color: #050708;
+            /* Premium deep matte black */
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            box-shadow: inset 0 0 80px rgba(0, 163, 136, 0.03);
+            /* Controlled volumetric atmosphere */
+            overflow: hidden;
+        }
+
+        /* Responsive height reduction for standard mobile screens to keep it non-distracting */
+        @media (max-width: 768px) {
+            .network-visualization-container {
+                height: 320px;
+                margin: 16px auto;
+            }
+        }
+
+        #globalNetworkCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+        }
+
+        /* --- HUD OVERLAY TYPOGRAPHY --- */
+        .terminal-matrix-hud {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 2;
+            pointer-events: none;
+            font-family: 'Space Mono', 'Courier New', monospace;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: rgba(226, 232, 240, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .terminal-matrix-hud {
+                font-size: 8px;
+                /* Slightly crisper microtypography for small handsets */
+            }
+        }
+
+        .status-pulse {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pulse::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background-color: #00A388;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #00A388;
+            animation: terminalBlink 2.5s infinite ease-in-out;
+        }
+
+        @keyframes terminalBlink {
+
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <script>
+            (function () {
+                const canvas = document.getElementById('globalNetworkCanvas');
+                const ctx = canvas.getContext('2d');
+
+                let width = 0;
+                let height = 0;
+                let centerNode = { name: "NAIROBI", x: 0, y: 0, radius: 6, glow: 20 };
+                let cities = [];
+                const stars = [];
+
+                // Configuration angles for the pentagonal network symmetry
+                const cityConfigs = [
+                    { name: "LONDON", angle: -Math.PI / 2, pulseDelay: 0.0 },
+                    { name: "TOKYO", angle: -Math.PI / 10, pulseDelay: 0.2 },
+                    { name: "SYDNEY", angle: Math.PI * 0.3, pulseDelay: 0.4 },
+                    { name: "JOHANNESBURG", angle: Math.PI * 0.7, pulseDelay: 0.6 },
+                    { name: "NEW YORK", angle: Math.PI * 1.1, pulseDelay: 0.8 }
+                ];
+
+                // 1. ADAPTIVE CALIBRATION ENGINE
+                function resizeAndRecalculate() {
+                    const rect = canvas.parentElement.getBoundingClientRect();
+
+                    // Scale canvas pixels up for crystal clear high-DPI/Retina mobile displays
+                    canvas.width = rect.width * window.devicePixelRatio;
+                    canvas.height = rect.height * window.devicePixelRatio;
+                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+                    width = rect.width;
+                    height = rect.height;
+
+                    // Anchor Nairobi perfectly to the geometric center
+                    centerNode.x = width / 2;
+                    centerNode.y = height / 2 + 8;
+
+                    // Dynamically compress the network span radius based on screen width
+                    // Ensures nodes never bleed past the viewport boundaries on narrow mobile devices
+                    let dynamicRadius = width > 768 ? 160 : width * 0.24;
+
+                    cities = cityConfigs.map(config => {
+                        return {
+                            name: config.name,
+                            x: centerNode.x + Math.cos(config.angle) * dynamicRadius,
+                            y: centerNode.y + Math.sin(config.angle) * dynamicRadius,
+                            radius: width > 768 ? 3.5 : 2.5, // Cleaner scaled node diameters for compact displays
+                            pulseDelay: config.pulseDelay,
+                            angle: config.angle
+                        };
+                    });
+                }
+
+                window.addEventListener('resize', resizeAndRecalculate);
+                resizeAndRecalculate();
+
+                // Populate background macro star fields 
+                for (let i = 0; i < 35; i++) {
+                    stars.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        size: Math.random() * 1.0,
+                        speed: Math.random() * 0.12 + 0.04
+                    });
+                }
+
+                let timeGlobal = 0;
+
+                // 2. CURVED LIQUIDITY DATA CONNECTOR
+                function drawBezierPath(startX, startY, endX, endY, progress) {
+                    const midX = (startX + endX) / 2;
+                    const midY = (startY + endY) / 2;
+                    const dx = endX - startX;
+                    const dy = endY - startY;
+
+                    // Curves adapt fluidly based on the distance vectors
+                    const curvatureLength = width > 768 ? 0.16 : 0.12;
+                    const cpX = midX + (-dy) * curvatureLength;
+                    const cpY = midY + dx * curvatureLength;
+
+                    if (progress === undefined) {
+                        ctx.beginPath();
+                        ctx.moveTo(startX, startY);
+                        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+                        ctx.strokeStyle = 'rgba(0, 163, 136, 0.06)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    } else {
+                        const t = progress;
+                        const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * cpX + t * t * endX;
+                        const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * cpY + t * t * endY;
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, width > 768 ? 2.2 : 1.6, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 163, 136, 0.9)';
+                        ctx.shadowBlur = width > 768 ? 8 : 4;
+                        ctx.shadowColor = '#00A388';
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+
+                // 3. HARDWARE-ACCELERATED REPAINT ENGINE
+                function animateSystem() {
+                    timeGlobal += 0.01;
+                    ctx.clearRect(0, 0, width, height);
+
+                    // A. Subtle Grid Overlay
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.004)';
+                    ctx.lineWidth = 0.5;
+                    const gridSize = width > 768 ? 40 : 25;
+                    for (let x = 0; x < width; x += gridSize) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+                    }
+                    for (let y = 0; y < height; y += gridSize) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+                    }
+
+                    // B. Drift Cosmic Particle Engine
+                    ctx.fillStyle = 'rgba(226, 232, 240, 0.2)';
+                    stars.forEach(star => {
+                        let absoluteX = star.x * width;
+                        let absoluteY = (star.y * height) - (timeGlobal * star.speed * 15);
+                        if (absoluteY < 0) {
+                            star.y = 1.0;
+                            absoluteY = height;
+                        }
+                        ctx.fillRect(absoluteX, absoluteY, star.size, star.size);
+                    });
+
+                    // C. Pentagonal Web Boundary Outlines
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(0, 163, 136, 0.015)';
+                    for (let i = 0; i < cities.length; i++) {
+                        const nextCity = cities[(i + 1) % cities.length];
+                        ctx.moveTo(cities[i].x, cities[i].y);
+                        ctx.lineTo(nextCity.x, nextCity.y);
+                    }
+                    ctx.stroke();
+
+                    // D. Static Path Curves
+                    cities.forEach(city => drawBezierPath(city.x, city.y, centerNode.x, centerNode.y));
+
+                    // E. Synchronized Data Signals
+                    cities.forEach(city => {
+                        let waveTime = (timeGlobal * 0.4 + city.pulseDelay) % 1.0;
+                        drawBezierPath(city.x, city.y, centerNode.x, centerNode.y, waveTime);
+                    });
+
+                    // F. Node Coordinates & Uppercase Typography
+                    cities.forEach(city => {
+                        const hoverOffset = Math.sin(timeGlobal * 2.5 + city.angle) * 1.2;
+                        const currentY = city.y + hoverOffset;
+
+                        ctx.beginPath();
+                        ctx.arc(city.x, currentY, city.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 163, 136, 0.4)';
+                        ctx.strokeStyle = 'rgba(226, 232, 240, 0.5)';
+                        ctx.lineWidth = 1;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Scaled clean labels mapping
+                        ctx.font = `bold ${width > 768 ? '9px' : '7.5px'} 'Space Mono', 'Courier New', monospace`;
+                        ctx.fillStyle = "rgba(226, 232, 240, 0.45)";
+                        ctx.textAlign = "center";
+
+                        let textYOffset = (city.y > centerNode.y) ? (width > 768 ? 16 : 12) : (width > 768 ? -12 : -8);
+                        ctx.fillText(city.name, city.x, currentY + textYOffset);
+                    });
+
+                    // G. Volumetric Nairobi Anchor Hub
+                    const pulseRadius = centerNode.radius + Math.sin(timeGlobal * 2.5) * (width > 768 ? 4 : 2);
+                    const glowSpan = pulseRadius + (width > 768 ? 20 : 14);
+
+                    let gradientNode = ctx.createRadialGradient(centerNode.x, centerNode.y, 1, centerNode.x, centerNode.y, glowSpan);
+                    gradientNode.addColorStop(0, 'rgba(0, 163, 136, 0.4)');
+                    gradientNode.addColorStop(0.25, 'rgba(0, 163, 136, 0.12)');
+                    gradientNode.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                    ctx.beginPath();
+                    ctx.arc(centerNode.x, centerNode.y, glowSpan, 0, Math.PI * 2);
+                    ctx.fillStyle = gradientNode;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(centerNode.x, centerNode.y, centerNode.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#00A388';
+                    ctx.strokeStyle = 'rgba(226, 232, 240, 0.85)';
+                    ctx.lineWidth = 1.5;
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Core Center Label positioning
+                    ctx.font = `bold ${width > 768 ? '11px' : '9px'} 'Space Mono', 'Courier New', monospace`;
+                    ctx.fillStyle = "#E2E8F0";
+                    ctx.letterSpacing = width > 768 ? "3px" : "1.5px";
+                    ctx.textAlign = "center";
+                    ctx.fillText(centerNode.name, centerNode.x, centerNode.y - (width > 768 ? 15 : 11));
+                    ctx.letterSpacing = "normal"; // Reset properties
+                }
+
+                // Smooth initialization trigger
+                setTimeout(() => {
+                    resizeAndRecalculate();
+                    function loop() {
+                        animateSystem();
+                        requestAnimationFrame(loop);
+                    }
+                    loop();
+                }, 50);
+            })();
+    </script>
 
     <!-- STRATEGIES -->
     <section id="strategies" class="py-28 px-8 md:px-16 border-t border-white/5 bg-[#04060A] scroll-mt-20">
