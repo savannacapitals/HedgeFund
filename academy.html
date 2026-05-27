@@ -166,7 +166,6 @@
                 </div>
                 <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">Deconstruct basic smart contracts,
                     wallets setups, automated market makers (AMMs), and decentralized credit pools from scratch.</p>
-
                 <div class="space-y-3">
                     <a href="YOUR_PUBLIC_GOOGLE_DRIVE_URL" target="_blank"
                         class="group flex justify-between items-center border border-white/5 bg-brandDark/50 p-3 hover:border-brandGold/30 transition">
@@ -192,7 +191,6 @@
                 </div>
                 <p class="text-xs text-gray-400 font-mono leading-relaxed mb-6">Introduction to market structures,
                     ticker analysis, corporate equity metrics, and basic Nairobi Securities Exchange configurations.</p>
-
                 <div class="space-y-3">
                     <a href="YOUR_PUBLIC_GOOGLE_DRIVE_URL" target="_blank"
                         class="group flex justify-between items-center border border-white/5 bg-brandDark/50 p-3 hover:border-brandGold/30 transition">
@@ -222,7 +220,6 @@
                     advanced financial engineering models, live macro economic data tape tracking, and full Inner Circle
                     Trader (ICT) algorithmic footprints via screen-share sessions.
                 </p>
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono mb-6">
                     <div class="border border-white/5 bg-brandDark/40 p-3">
                         <div class="text-brandGold font-bold">🎥 WEEKLY WEBINARS</div>
@@ -235,7 +232,6 @@
                             currency trends.</div>
                     </div>
                 </div>
-
                 <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
                     target="_blank"
                     class="inline-block bg-brandGold text-brandDark font-mono font-bold px-6 py-3 text-xs uppercase tracking-widest hover:bg-amber-100 transition">
@@ -246,70 +242,11 @@
 
     </main>
 
-    <script>
-        function scrollToModule(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-        }
-        function openPaymentModal(tierName, costString, numericAmountKES) {
-            document.getElementById("selectedTierName").value = tierName;
-            document.getElementById("selectedTierPrice").value = numericAmountKES;
-            document.getElementById("modalTierText").innerText = tierName.toUpperCase();
-            document.getElementById("modalPriceText").innerText = costString;
-            document.getElementById("paymentModal").classList.remove("hidden");
-        }
-
-        function closePaymentModal() {
-            document.getElementById("paymentModal").classList.add("hidden");
-            document.getElementById("academyRegistrationForm").reset();
-        }
-
-        // Intercept your previous button clicks to map to the automated form
-        // Update your Tier 2 button link to: onclick="openPaymentModal('pro', 'KES 6,300 / Month', 6300)"
-        // Update your Tier 3 button link to: onclick="openPaymentModal('elite', 'KES 25,500 / Month', 25500)"
-
-        async function triggerSTKPush(e) {
-            e.preventDefault();
-            const btn = document.getElementById("paySubmitBtn");
-            btn.innerText = "TRANSMITTING TO HANDSET SECURELY...";
-            btn.disabled = true;
-
-            // 1. Pack the client registration metadata payload
-            const payload = {
-                name: document.getElementById("acName").value,
-                email: document.getElementById("acEmail").value,
-                phone: document.getElementById("acPhone").value,
-                amount: document.getElementById("selectedTierPrice").value,
-                tier: document.getElementById("selectedTierName").value
-            };
-
-            try {
-                // 📡 2. Routes directly to your secure, credential-armed Edge gateway
-                const response = await fetch("https://YOUR_SUPABASE_PROJECT_REF.supabase.co/functions/v1/mpesa-stkpush", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer YOUR_SUPABASE_ANON_KEY"
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert("TRANSMISSION LOGGED: Enter your M-PESA PIN on your mobile phone to complete payment configuration.");
-                    closePaymentModal();
-                } else {
-                    throw new Error(result.error || "Gateway verification failed");
-                }
-            } catch (err) {
-                alert("GATEWAY FAULT: " + err.message);
-                btn.innerText = "Initialize STK Push Prompt ➔";
-                btn.disabled = false;
-            }
-        }
-    </script>
-
+    <!-- ================================================================
+         PAYMENT MODAL
+    ================================================================= -->
     <div id="paymentModal"
-        class="fixed inset-0 bg-brandDark/90 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        class="fixed inset-0 bg-brandDark/90 backdrop-blur-sm hidden z-50 items-center justify-center p-4">
         <div class="border border-brandGold/20 bg-brandCard max-w-md w-full p-6 font-mono text-xs relative">
             <button onclick="closePaymentModal()"
                 class="absolute top-4 right-4 text-gray-500 hover:text-white text-sm">✕</button>
@@ -355,6 +292,83 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // ================================================================
+        // CONFIGURATION — your Supabase project details
+        // ================================================================
+        const SUPABASE_URL = "https://supabase.com/dashboard/project/prxlshwbirmtajtworzc/functions";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
+
+        // ================================================================
+        // MODAL CONTROLS
+        // ================================================================
+        function scrollToModule(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openPaymentModal(tierName, costString, numericAmountKES) {
+            document.getElementById("selectedTierName").value = tierName;
+            document.getElementById("selectedTierPrice").value = numericAmountKES;
+            document.getElementById("modalTierText").innerText = tierName.toUpperCase();
+            document.getElementById("modalPriceText").innerText = costString;
+            const modal = document.getElementById("paymentModal");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById("paymentModal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            document.getElementById("academyRegistrationForm").reset();
+        }
+
+        // ================================================================
+        // STK PUSH TRIGGER
+        // ================================================================
+        async function triggerSTKPush(e) {
+            e.preventDefault();
+            const btn = document.getElementById("paySubmitBtn");
+            btn.innerText = "TRANSMITTING TO HANDSET SECURELY...";
+            btn.disabled = true;
+
+            const payload = {
+                name: document.getElementById("acName").value,
+                email: document.getElementById("acEmail").value,
+                phone: document.getElementById("acPhone").value,
+                amount: document.getElementById("selectedTierPrice").value,
+                tier: document.getElementById("selectedTierName").value
+            };
+
+            try {
+                // ✅ Correct Edge Function URL
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/mpesa-stkpush`, {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert("TRANSMISSION LOGGED: Enter your M-PESA PIN on your mobile phone to complete payment configuration.");
+                    closePaymentModal();
+                } else {
+                    throw new Error(result.error || "Gateway verification failed");
+                }
+
+            } catch (err) {
+                alert("GATEWAY FAULT: " + err.message);
+                btn.innerText = "Initialize STK Push Prompt ➔";
+                btn.disabled = false;
+            }
+        }
+    </script>
 
 </body>
 
