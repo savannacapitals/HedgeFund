@@ -425,101 +425,103 @@
             line-height: 1.2;
         }
 
-        .modules-grid {
-            max-width: 1200px;
-            margin: 0 auto 64px;
-            padding: 0 48px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        /* ── NEW DYNAMIC CURRICULUM VAULT STYLES ──────────────── */
+        .curriculum-container {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 0 20px;
+            font-family: 'DM Mono', monospace;
         }
 
-        .module-card {
-            background: #fff;
+        .tier-bracket-heading {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .topics-directory-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .topic-node-block {
+            background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             border-radius: 4px;
-            padding: 32px;
-            transition: box-shadow .2s, border-color .2s;
+            transition: all 0.3s ease;
         }
 
-        .module-card:hover {
-            box-shadow: 0 6px 32px rgba(28, 23, 16, .06);
-            border-color: rgba(184, 137, 58, .25);
+        .topic-node-block.unlocked:hover {
+            border-color: var(--gold);
         }
 
-        .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .module-num {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-            background: var(--gold-bg);
-            color: var(--gold);
-            border: 1px solid rgba(184, 137, 58, .2);
-            padding: 4px 10px;
-        }
-
-        .module-clearance {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .1em;
-            color: var(--sage);
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .module-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 22px;
-            font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 12px;
-        }
-
-        .module-desc {
-            font-size: 13px;
-            color: var(--ink-soft);
-            line-height: 1.65;
-            margin-bottom: 20px;
-        }
-
-        .file-row {
+        .topic-header-trigger {
+            padding: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--border);
-            padding: 12px 14px;
-            text-decoration: none;
-            background: var(--cream);
-            transition: all .2s;
-            gap: 12px;
+            cursor: pointer;
+            user-select: none;
         }
 
-        .file-row:hover {
-            border-color: var(--gold);
-            background: var(--gold-bg);
-        }
-
-        .file-row span {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--ink-soft);
-        }
-
-        .file-row:hover span {
+        .topic-title-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
             color: var(--ink);
         }
 
-        .file-arrow {
-            font-size: 11px;
+        .topic-summary {
+            font-size: 12px;
+            color: var(--ink-soft);
+            margin-top: 6px;
+            max-width: 80%;
+        }
+
+        .status-badge {
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+
+        .asset-vault-tray {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .asset-vault-tray.expanded {
+            max-height: 500px;
+            border-top: 1px solid var(--border);
+        }
+
+        .material-row-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 12px;
+            color: var(--ink-soft);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .material-row-link:hover {
+            background-color: var(--gold-bg);
+            color: var(--ink);
+        }
+
+        .download-icon-indicator {
             color: var(--gold);
-            flex-shrink: 0;
+            font-size: 11px;
         }
 
         /* ── LIVE BANNER ──────────────────────────────────── */
@@ -1079,40 +1081,19 @@
     </section>
 
     <!-- FREE MODULES -->
-    <section id="free-modules" class="modules-grid">
-        <div class="module-card">
-            <div class="module-header">
-                <div>
-                    <div class="module-clearance">Free Access Node</div>
-                    <div class="module-name">Decentralized Finance (DeFi)</div>
-                </div>
-                <span class="module-num">Module 01</span>
-            </div>
-            <p class="module-desc">Deconstruct basic smart contracts, wallet setups, automated market makers (AMMs), and
-                decentralized credit pools from scratch.</p>
-            <a href="https://drive.google.com/uc?export=download&id=1xKy-KB_wanIhYGQ5dwQ36RjT9NtLHOEa" target="_blank"
-                class="file-row">
-                <span>📄 Defi_Liquidity_Risk_Framework.pdf</span>
-                <span class="file-arrow">View File →</span>
-            </a>
+    <div class="curriculum-container">
+
+        <div class="tier-bracket">
+            <h3 class="tier-bracket-heading">// CORE MATRIX LEVEL 01: FREE DEPLOYMENTS</h3>
+            <div id="freeTopicsContainer" class="topics-directory-stack"></div>
         </div>
 
-        <div class="module-card">
-            <div class="module-header">
-                <div>
-                    <div class="module-clearance">Free Access Node</div>
-                    <div class="module-name">Equities &amp; Stock Markets</div>
-                </div>
-                <span class="module-num">Module 02</span>
-            </div>
-            <p class="module-desc">Introduction to market structures, ticker analysis, corporate equity metrics, and
-                basic Nairobi Securities Exchange configurations.</p>
-            <a href="18Mep5TBhjKX5OvxTIa4guWEs_CaxB62v" target="_blank" class="file-row">
-                <span>📄 Stock_Market_Foundations_Guide.pdf</span>
-                <span class="file-arrow">View File →</span>
-            </a>
+        <div class="tier-bracket" style="margin-top: 60px;">
+            <h3 class="tier-bracket-heading" style="color: #C5A880;">// CORE MATRIX LEVEL 02: PRO TRADER PIPELINES</h3>
+            <div id="premiumTopicsContainer" class="topics-directory-stack"></div>
         </div>
-    </section>
+
+    </div>
 
     <!-- LIVE BANNER -->
     <div class="live-banner">
@@ -1201,12 +1182,21 @@
         </div>
     </div>
 
+    <!-- Supabase client library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        const SUPABASE_URL = "https://supabase.com/dashboard/project/prxlshwbirmtajtworzc/functions";
+        // ── CONFIG ──────────────────────────────────────────────────────────
+        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
 
+        // ✅ FIX 1: Actually initialize the Supabase client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ── MODAL HELPERS ────────────────────────────────────────────────────
         function scrollToModules() {
-            document.getElementById('free-modules').scrollIntoView({ behavior: 'smooth' });
+            // ✅ FIX 2: Target an ID that actually exists
+            document.getElementById('freeTopicsContainer').scrollIntoView({ behavior: 'smooth' });
         }
 
         function openPaymentModal(tier, costString, amount) {
@@ -1222,8 +1212,10 @@
             document.getElementById('academyRegistrationForm').reset();
         }
 
-        document.getElementById('paymentModal').addEventListener('click', function (e) {
-            if (e.target === this) closePaymentModal();
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('paymentModal').addEventListener('click', function (e) {
+                if (e.target === this) closePaymentModal();
+            });
         });
 
         async function triggerSTKPush(e) {
@@ -1241,9 +1233,14 @@
             };
 
             try {
+                // ✅ FIX 3: Use the correct edge-function endpoint pattern
                 const res = await fetch(`${SUPABASE_URL}/functions/v1/mpesa-stkpush`, {
-                    method: 'POST', mode: 'cors',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
@@ -1259,6 +1256,109 @@
                 btn.disabled = false;
             }
         }
+
+        // ── CURRICULUM ENGINE ────────────────────────────────────────────────
+        const activeProfileTier = "free"; // switch to 'pro' or 'elite' to test gating
+
+        async function initializeCurriculumSystem() {
+            const freeContainer = document.getElementById("freeTopicsContainer");
+            const premiumContainer = document.getElementById("premiumTopicsContainer");
+
+            // Show loading state while fetching
+            freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// LOADING INTEL MATRIX…</div>`;
+            premiumContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// LOADING INTEL MATRIX…</div>`;
+
+            try {
+                const { data: topics, error: topicsErr } = await supabaseClient
+                    .from('academy_topics')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+                if (topicsErr) throw topicsErr;
+
+                const { data: materials, error: matErr } = await supabaseClient
+                    .from('academy_materials')
+                    .select('*');
+                if (matErr) throw matErr;
+
+                freeContainer.innerHTML = "";
+                premiumContainer.innerHTML = "";
+
+                if (!topics || topics.length === 0) {
+                    freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// NO TOPICS FOUND IN DATABASE</div>`;
+                    premiumContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// NO TOPICS FOUND IN DATABASE</div>`;
+                    return;
+                }
+
+                topics.forEach(topic => {
+                    const isFree = topic.tier_requirement === 'free';
+                    const hasClearance = isFree || activeProfileTier === 'pro' || activeProfileTier === 'elite';
+                    const linked = (materials || []).filter(m => m.topic_id === topic.id);
+                    const cardHTML = generateTopicNode(topic, linked, hasClearance);
+
+                    if (isFree) {
+                        freeContainer.insertAdjacentHTML('beforeend', cardHTML);
+                    } else {
+                        premiumContainer.insertAdjacentHTML('beforeend', cardHTML);
+                    }
+                });
+
+            } catch (err) {
+                console.error("Curriculum engine failure:", err.message);
+                freeContainer.innerHTML = `<div style="padding:16px 24px;color:#EF4444;font-size:11px;">// ERROR: ${err.message}</div>`;
+            }
+        }
+
+        function generateTopicNode(topic, materials, hasClearance) {
+            let materialRows = "";
+
+            if (hasClearance) {
+                if (materials.length === 0) {
+                    materialRows = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// INTEL DATA PIPELINE STAGING…</div>`;
+                } else {
+                    materials.forEach(mat => {
+                        materialRows += `
+            <a href="${mat.secure_download_url}" target="_blank" class="material-row-link">
+              <span>📄 ${mat.file_name}</span>
+              <span class="download-icon-indicator">STREAM MODULE ➔</span>
+            </a>`;
+                    });
+                }
+            }
+
+            const lockAction = `alert('Upgrade your clearance tier to unlock this course stream.')`;
+            const openAction = `toggleTray(this)`;
+
+            return `
+      <div class="topic-node-block ${hasClearance ? 'unlocked' : 'locked'}"
+           style="${!hasClearance ? 'opacity:0.45;' : ''}">
+        <div class="topic-header-trigger"
+             onclick="${hasClearance ? openAction : lockAction}">
+          <div>
+            <div class="topic-title-text">${topic.title.toUpperCase()}</div>
+            <div class="topic-summary">${topic.summary}</div>
+          </div>
+          <span class="status-badge"
+                style="${hasClearance
+                    ? 'color:#00A388;border-color:rgba(0,163,136,0.2);'
+                    : 'color:#EF4444;border-color:rgba(239,68,68,0.2);'}">
+            ${hasClearance ? 'OPEN ACCESS' : 'LOCKED // UPGRADE'}
+          </span>
+        </div>
+        <div class="asset-vault-tray">
+          ${materialRows}
+        </div>
+      </div>`;
+        }
+
+        function toggleTray(headerElement) {
+            const tray = headerElement.parentElement.querySelector('.asset-vault-tray');
+            document.querySelectorAll('.asset-vault-tray').forEach(t => {
+                if (t !== tray) t.classList.remove('expanded');
+            });
+            tray.classList.toggle('expanded');
+        }
+
+        document.addEventListener("DOMContentLoaded", initializeCurriculumSystem);
     </script>
 </body>
 
