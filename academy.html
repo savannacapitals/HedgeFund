@@ -1235,6 +1235,617 @@
                 text-align: center;
             }
         }
+
+        /* ── ACADEMY TERMINAL GATE BANNER ──────────────── */
+        .academy-gate-banner {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 16px 24px;
+            background: #0D1113;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .gate-interface-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .gate-status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .gate-status-dot.offline {
+            background: #EF4444;
+            box-shadow: 0 0 8px #EF4444;
+        }
+
+        .gate-status-dot.online {
+            background: #00A388;
+            box-shadow: 0 0 8px #00A388;
+        }
+
+        .gate-status-text {
+            font-size: 11px;
+            color: var(--ink);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .gate-control-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .gate-input {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            color: var(--ink);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 6px 12px;
+            width: 160px;
+        }
+
+        .gate-input:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        .gate-btn {
+            background: var(--gold-bg);
+            border: 1px solid var(--gold);
+            color: var(--ink);
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 6px 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .gate-btn:hover {
+            background: var(--gold);
+        }
+
+        .gate-btn.error-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #EF4444;
+            color: #EF4444;
+        }
+
+        .gate-btn.error-btn:hover {
+            background: #EF4444;
+            color: #fff;
+        }
+
+        /* ── EXPIRY ALERT NOTIFICATION BANNER ──────────────── */
+        .expiry-alert-toast {
+            max-width: 1100px;
+            margin: 10px auto;
+            padding: 12px 20px;
+            background: rgba(197, 168, 128, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        /* ── MODULE CARDS MATRIX LAYOUTS ──────────────── */
+        .academy-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .module-card {
+            background: #090D0E;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .module-card.locked-gate {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        .module-card.unlocked-clearance:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 12px rgba(197, 168, 128, 0.08);
+        }
+
+        .module-card-header {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .module-meta-header {
+            font-size: 9px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .module-card-title {
+            font-size: 16px;
+            color: var(--ink);
+            margin: 0 0 8px 0;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .module-card-desc {
+            font-size: 12px;
+            color: var(--ink-soft);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Clearance Indicators */
+        .clearance-badge {
+            font-size: 9px;
+            padding: 4px 8px;
+            border-radius: 2px;
+            font-weight: bold;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .clearance-badge.status-open {
+            background: rgba(0, 163, 136, 0.1);
+            color: #00A388;
+            border: 1px solid #00A388;
+        }
+
+        .clearance-badge.status-gated {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            border: 1px solid #EF4444;
+        }
+
+        /* Accordion Tray Frameworks */
+        .module-materials-tray {
+            background: rgba(255, 255, 255, 0.01);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .materials-tray-padding {
+            padding: 20px 24px;
+        }
+
+        .tray-divider-label {
+            font-size: 9px;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .material-download-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0D1113;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            border-radius: 2px;
+        }
+
+        .file-icon-badge {
+            background: var(--gold-bg);
+            color: var(--ink);
+            font-size: 8px;
+            padding: 2px 6px;
+            font-weight: bold;
+            border-radius: 1px;
+        }
+
+        .material-title {
+            font-size: 12px;
+            color: var(--ink);
+            font-family: 'DM Mono', monospace;
+            margin-left: 12px;
+            flex-grow: 1;
+        }
+
+        .download-action-link {
+            font-size: 11px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ── CERTIFICATE MODAL CONTAINER OVERLAY ──────────────── */
+        .cert-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 6, 7, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+        }
+
+        .cert-modal-content {
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .cert-close-btn {
+            background: none;
+            border: none;
+            color: #EF4444;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .cert-print-action-btn {
+            background: #111827;
+            border: 1px solid var(--border);
+            color: var(--ink);
+            padding: 12px 24px;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .cert-print-action-btn:hover {
+            border-color: var(--gold);
+            background: #1f2937;
+        }
+
+        /* ── CORE CANVAS FRAME STYLES ──────────────── */
+        .certificate-canvas {
+            background: #06090A;
+            width: 100%;
+            aspect-ratio: 1.414 / 1;
+            padding: 30px;
+            box-sizing: border-box;
+            font-family: 'DM Mono', monospace;
+            position: relative;
+            color: #fff;
+            text-align: center;
+        }
+
+        .cert-border-outer {
+            border: 2px solid #334155;
+            height: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .cert-border-inner {
+            border: 1px dashed #334155;
+            height: 100%;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cert-header {
+            font-size: 11px;
+            color: #64748B;
+            letter-spacing: 2px;
+        }
+
+        .cert-title {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-top: 10px;
+        }
+
+        .cert-subtext {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 20px;
+        }
+
+        .cert-student-name {
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
+
+        .cert-scope {
+            font-size: 10px;
+            color: #64748B;
+            letter-spacing: 1px;
+        }
+
+        .cert-tier-badge {
+            display: inline-block;
+            margin: 15px auto;
+            padding: 8px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border-radius: 2px;
+        }
+
+        .cert-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .cert-signature-block {
+            width: 200px;
+            text-align: center;
+        }
+
+        .cert-sig-line {
+            border-bottom: 1px solid #334155;
+            margin-bottom: 8px;
+        }
+
+        .cert-sig-title {
+            font-size: 9px;
+            color: #64748B;
+            letter-spacing: 1px;
+        }
+
+        .cert-seal-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cert-seal-matrix {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .cert-seal-label {
+            font-size: 8px;
+            color: #64748B;
+            letter-spacing: 1px;
+        }
+
+        .cert-ledger-id {
+            font-size: 8px;
+            color: #334155;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        /* ── 💎 PREMIUM THEME INJECTIONS ──────────────── */
+        /* 1. Elite Tier (Gold) */
+        .cert-theme-elite .cert-border-outer {
+            border-color: #C5A880;
+            box-shadow: inset 0 0 20px rgba(197, 168, 128, 0.1);
+        }
+
+        .cert-theme-elite .cert-border-inner {
+            border-color: rgba(197, 168, 128, 0.3);
+        }
+
+        .cert-theme-elite .cert-title,
+        .cert-theme-elite .cert-student-name {
+            color: #C5A880;
+        }
+
+        .cert-theme-elite .cert-tier-badge {
+            background: rgba(197, 168, 128, 0.1);
+            color: #C5A880;
+            border: 1px solid #C5A880;
+        }
+
+        .cert-theme-elite .cert-seal-matrix {
+            color: #C5A880;
+        }
+
+        /* 2. Pro Tier (Diamond Cyan) */
+        .cert-theme-pro .cert-border-outer {
+            border-color: #00E5FF;
+            box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.1);
+        }
+
+        .cert-theme-pro .cert-border-inner {
+            border-color: rgba(0, 229, 255, 0.3);
+        }
+
+        .cert-theme-pro .cert-title,
+        .cert-theme-pro .cert-student-name {
+            color: #00E5FF;
+        }
+
+        .cert-theme-pro .cert-tier-badge {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00E5FF;
+            border: 1px solid #00E5FF;
+        }
+
+        .cert-theme-pro .cert-seal-matrix {
+            color: #00E5FF;
+        }
+
+        /* 3. Free Tier (Silver) */
+        .cert-theme-free .cert-border-outer {
+            border-color: #94A3B8;
+        }
+
+        .cert-theme-free .cert-border-inner {
+            border-color: rgba(148, 163, 184, 0.3);
+        }
+
+        .cert-theme-free .cert-title,
+        .cert-theme-free .cert-student-name {
+            color: #E2E8F0;
+        }
+
+        .cert-theme-free .cert-tier-badge {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94A3B8;
+            border: 1px solid #94A3B8;
+        }
+
+        .cert-theme-free .cert-seal-matrix {
+            color: #94A3B8;
+        }
+
+        /* Print Mode Adjustment Override */
+        /* ── 🖨️ FOOLPROOF PRINT MEDIA ENGINE OVERRIDE ──────────────── */
+        @media print {
+
+            /* Force absolutely everything on the entire webpage to disappear */
+            html,
+            body,
+            #academyAuthLoggedOut,
+            #academyAuthLoggedIn,
+            .topic-node-block,
+            .curriculum-container,
+            h2,
+            div {
+                visibility: hidden !important;
+                background: none !important;
+            }
+
+            /* Force ONLY the certificate canvas and its children to stay visible */
+            #certificateModal,
+            #certificatePrintCanvas,
+            #certificatePrintCanvas * {
+                visibility: visible !important;
+            }
+
+            /* Isolate and snap the certificate frame directly to the top-left of the page */
+            #certificateModal {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: #06090A !important;
+                display: block !important;
+                z-index: 9999999 !important;
+            }
+
+            .certificate-canvas {
+                position: absolute !important;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 90% !important;
+                max-width: 900px !important;
+                height: auto !important;
+                aspect-ratio: 1.414 / 1 !important;
+                background: #06090A !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Keep UI system utility control buttons completely hidden on document render */
+            .cert-close-btn,
+            .cert-print-action-btn {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        }
+
+        /* ── HANDWRITTEN SIGNATURE CLASS ENGINE ──────────────── */
+        @import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap');
+
+        .cert-signature-font {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 34px;
+            color: #E2E8F0;
+            /* Soft metallic silver-white */
+            line-height: 1;
+            transform: rotate(-3deg);
+            margin-bottom: -2px;
+            letter-spacing: 0px;
+        }
+
+        /* Ensure the gold theme overrides your signature color beautifully for Elite users */
+        .cert-theme-elite .cert-signature-font {
+            color: #C5A880;
+        }
+
+        /* ── SAVANNA BRAND LOGO SYSTEM STYLING ──────────────── */
+        /* ── RESIZED BRAND LOGO SYSTEM ──────────────── */
+        .cert-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+            /* Reduced margin to pull contents up */
+        }
+
+        .cert-logo-img {
+            height: 64px;
+            /* 🎯 Downsized from 42px to look sleeker */
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+
+        .cert-logo-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 15px;
+            /* 🎯 Dropped text size for an ultra-clean look */
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #F3F4F6;
+            text-indent: 4px;
+        }
+
+        /* 💎 Dynamic Tier Theme Injections for the Logo Component */
+        .cert-theme-elite .cert-logo-icon,
+        .cert-theme-elite .cert-logo-text {
+            color: #C5A880 !important;
+            /* Premium Institutional Gold */
+        }
+
+        .cert-theme-pro .cert-logo-icon,
+        .cert-theme-pro .cert-logo-text {
+            color: #00E5FF !important;
+            /* Pro Trader Cyan */
+        }
+
+        .cert-theme-free .cert-logo-icon,
+        .cert-theme-free .cert-logo-text {
+            color: #94A3B8 !important;
+            /* Foundation Silver */
+        }
     </style>
 </head>
 
@@ -1424,405 +2035,615 @@
     </section>
 
     <!-- CURRICULUM VAULT -->
-    <div class="curriculum-container">
-        <div class="tier-bracket" style="margin-bottom:48px;">
-            <h3 class="tier-bracket-heading">Core Matrix Level 01: Free Deployments</h3>
-            <div id="freeTopicsContainer" class="topics-directory-stack"></div>
-        </div>
-        <div class="tier-bracket">
-            <h3 class="tier-bracket-heading" style="color:var(--gold-lt);">Core Matrix Level 02: Pro Trader Pipelines
-            </h3>
-            <div id="premiumTopicsContainer" class="topics-directory-stack"></div>
-        </div>
-    </div>
+    <div class="academy-gate-banner">
 
-    <!-- LIVE BANNER -->
-    <div class="live-banner">
-        <div class="live-inner">
+        <div id="academyAuthLoggedOut" class="gate-interface-row">
             <div>
-                <div class="live-dot">
-                    <div class="pulse"></div>
-                    <span>Pro &amp; Elite Syndicate Pipeline — Live</span>
-                </div>
-                <div class="live-title">Advanced Core Cohort:<br><em>Live Online Classes</em></div>
-                <p class="live-desc">Skip static reading. Join our immersive interactive digital classrooms — advanced
-                    financial engineering models, live macro data tape tracking, and full ICT algorithmic footprints via
-                    screen-share sessions.</p>
-                <div class="live-perks">
-                    <div class="live-perk">
-                        <strong>Weekly Webinars</strong>
-                        <p>Every Saturday — interactive screen studies &amp; backtesting logs.</p>
-                    </div>
-                    <div class="live-perk">
-                        <strong>Live Tape Review</strong>
-                        <p>Real-time CBK interest analysis &amp; currency trend sessions.</p>
-                    </div>
-                </div>
-                <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
-                    target="_blank" class="live-cta">
-                    Unlock Class Schedule →
-                </a>
+                <span class="gate-status-dot offline"></span>
+                <span class="gate-status-text">// TERMINAL ACCESS: RESTRICTED OPEN PUBLIC VIEW</span>
             </div>
-            <div class="live-visual">
-                <div class="stat-box">
-                    <div class="num">47+</div>
-                    <div class="lbl">Active Members</div>
-                </div>
-                <div class="stat-box">
-                    <div class="num">Every<br>Saturday</div>
-                    <div class="lbl">Live Sessions</div>
-                </div>
-                <div class="stat-box">
-                    <div class="num">24/7</div>
-                    <div class="lbl">Discord Access</div>
-                </div>
+            <div class="gate-control-inputs">
+                <input type="text" id="acadUser" placeholder="ASSIGNED USERNAME" class="gate-input">
+                <input type="password" id="acadPass" placeholder="SECURITY PASSWORD" class="gate-input">
+                <button onclick="executeAcademyLogin()" class="gate-btn">AUTHENTICATE TIMELINE</button>
             </div>
         </div>
-    </div>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>© 2025 Savanna Capital · Intelligence Academy</p>
-        <p>All materials for educational purposes only</p>
-    </footer>
+        <div id="academyAuthLoggedIn" class="gate-interface-row" style="display: none;">
+            <div>
+                <span class="gate-status-dot online"></span>
+                <span id="welcomeTerminalMessage" class="gate-status-text">// INITIALIZING TERMINAL MATRIX...</span>
+            </div>
 
-    <!-- PAYMENT MODAL -->
-    <div id="paymentModal" class="modal-overlay">
-        <div class="modal" style="max-width:520px;">
-            <button class="modal-close" onclick="closePaymentModal()">✕</button>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button onclick="generateStudentCertificate()" class="gate-btn"
+                    style="background: rgba(197, 168, 128, 0.1); border-color: var(--gold); color: var(--gold);">
+                    CLAIM COMPLETION CERTIFICATE
+                </button>
 
-            <div id="modalStateForm">
-                <div class="modal-label">Access Request Gateway</div>
-                <div class="modal-title">Request Tier Clearance</div>
-                <p class="modal-sub">Complete the form below. Payment instructions will be sent to your email
-                    immediately.</p>
-
-                <div class="field">
-                    <label>Full Legal Name</label>
-                    <input type="text" id="acName" required placeholder="e.g. David Sterling" />
-                </div>
-                <div class="field">
-                    <label>Email Address</label>
-                    <input type="email" id="acEmail" required placeholder="e.g. david@example.com" />
-                </div>
-                <div class="field">
-                    <label>Phone Number (WhatsApp preferred)</label>
-                    <input type="text" id="acPhone" required placeholder="e.g. 0712345678" />
-                </div>
-
-                <div class="modal-summary">
-                    <span class="sum-label">Selected Tier: <strong id="modalTierText">—</strong></span>
-                    <span class="sum-value" id="modalPriceText">—</span>
-                </div>
-
-                <div class="payment-box">
-                    <div class="pay-label">Payment Channels Available</div>
-                    <div>M-Pesa → <strong>0700021380</strong> (Brian Angwenyi)</div>
-                    <div>PayPal → <strong>atikabryan@gmail.com</strong></div>
-                    <div>KCB Bank → <strong>A/C 1286766966</strong> (Brian Angwenyi Atika, Thika)</div>
-                </div>
-
-                <button type="button" id="paySubmitBtn" class="modal-submit" onclick="requestAccess()">
-                    Send Me Payment Instructions →
+                <button onclick="executeAcademyLogout()" class="gate-btn error-btn">
+                    TERMINATE SESSION
                 </button>
             </div>
+        </div>
+        <div id="expiryNotificationBanner" class="expiry-alert-toast" style="display: none;"></div>
+        <div class="curriculum-container">
 
-            <div id="modalStateSuccess" style="display:none;text-align:center;padding:20px 0;">
-                <div style="font-size:36px;margin-bottom:16px;">✅</div>
-                <div class="modal-label" style="text-align:center;">Request Received</div>
-                <div class="modal-title" style="font-size:22px;margin-bottom:12px;">Check Your Email</div>
-                <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:24px;">
-                    Payment instructions have been sent to <strong id="successEmail"
-                        style="color:var(--text)"></strong>.<br><br>
-                    Complete payment using any listed channel, then reply with your confirmation screenshot. Your login
-                    credentials will arrive within <strong style="color:var(--gold)">24 hours</strong>.
-                </p>
-                <div
-                    style="background:var(--bg2);border:1px solid rgba(201,151,63,0.2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:24px;letter-spacing:0.12em;">
-                    Questions? WhatsApp +254700021380
+            <div class="tier-section-wrapper">
+                <h3 class="tier-section-title">// ACCESSIBLE DIRECTORIES // OPEN PUBLIC SOURCE</h3>
+                <div id="freeTopicsContainer" class="academy-grid-layout">
                 </div>
-                <button onclick="closePaymentModal()" class="modal-submit">Close</button>
             </div>
 
-            <div id="modalStateError" style="display:none;text-align:center;padding:20px 0;">
-                <div style="font-size:32px;margin-bottom:16px;">⚠️</div>
-                <div class="modal-title" style="font-size:20px;margin-bottom:12px;">Submission Failed</div>
-                <p id="errorDetail"
-                    style="font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;background:rgba(208,80,80,0.06);border:1px solid rgba(208,80,80,0.2);padding:10px 14px;margin-bottom:16px;text-align:left;">
-                </p>
-                <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">Contact us directly:
-                </p>
-                <div
-                    style="background:var(--bg2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;margin-bottom:20px;color:var(--text2);">
-                    <div>atikabryan@gmail.com</div>
-                    <div>WhatsApp: +254700021380</div>
+            <div class="tier-section-wrapper" style="margin-top: 40px;">
+                <h3 class="tier-section-title">// SECURED ENCRYPTED CORE DIRECTORIES</h3>
+                <div id="premiumTopicsContainer" class="academy-grid-layout">
                 </div>
-                <button onclick="showModalState('form')" class="modal-submit">Try Again</button>
+            </div>
+
+        </div>
+
+        <!-- LIVE BANNER -->
+        <div class="live-banner">
+            <div class="live-inner">
+                <div>
+                    <div class="live-dot">
+                        <div class="pulse"></div>
+                        <span>Pro &amp; Elite Syndicate Pipeline — Live</span>
+                    </div>
+                    <div class="live-title">Advanced Core Cohort:<br><em>Live Online Classes</em></div>
+                    <p class="live-desc">Skip static reading. Join our immersive interactive digital classrooms —
+                        advanced
+                        financial engineering models, live macro data tape tracking, and full ICT algorithmic footprints
+                        via
+                        screen-share sessions.</p>
+                    <div class="live-perks">
+                        <div class="live-perk">
+                            <strong>Weekly Webinars</strong>
+                            <p>Every Saturday — interactive screen studies &amp; backtesting logs.</p>
+                        </div>
+                        <div class="live-perk">
+                            <strong>Live Tape Review</strong>
+                            <p>Real-time CBK interest analysis &amp; currency trend sessions.</p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
+                        target="_blank" class="live-cta">
+                        Unlock Class Schedule →
+                    </a>
+                </div>
+                <div class="live-visual">
+                    <div class="stat-box">
+                        <div class="num">47+</div>
+                        <div class="lbl">Active Members</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num">Every<br>Saturday</div>
+                        <div class="lbl">Live Sessions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num">24/7</div>
+                        <div class="lbl">Discord Access</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- TOAST CONTAINER -->
-    <div id="toast-container"></div>
+        <!-- FOOTER -->
+        <footer>
+            <p>© 2025 Savanna Capital · Intelligence Academy</p>
+            <p>All materials for educational purposes only</p>
+        </footer>
 
-    <!-- ── SCRIPTS ── Load order matters: Supabase first, then EmailJS, then app code ── -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <!-- PAYMENT MODAL -->
+        <div id="paymentModal" class="modal-overlay">
+            <div class="modal" style="max-width:520px;">
+                <button class="modal-close" onclick="closePaymentModal()">✕</button>
 
-    <script>
-        /* ══════════════════════════════════════════════════════════
-           FIX 1 — Initialize Supabase client BEFORE anything else
-           (was missing entirely in the original — caused the
-           "supabaseClient is not defined" ReferenceError)
-        ══════════════════════════════════════════════════════════ */
-        const supabaseClient = supabase.createClient(
-            "https://prxlshwbirmtajtworzc.supabase.co",
-            "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD"
-        );
+                <div id="modalStateForm">
+                    <div class="modal-label">Access Request Gateway</div>
+                    <div class="modal-title">Request Tier Clearance</div>
+                    <p class="modal-sub">Complete the form below. Payment instructions will be sent to your email
+                        immediately.</p>
 
-        /* ── EmailJS init ── */
-        emailjs.init("79XBeB0GrM6rEKRnR");
+                    <div class="field">
+                        <label>Full Legal Name</label>
+                        <input type="text" id="acName" required placeholder="e.g. David Sterling" />
+                    </div>
+                    <div class="field">
+                        <label>Email Address</label>
+                        <input type="email" id="acEmail" required placeholder="e.g. david@example.com" />
+                    </div>
+                    <div class="field">
+                        <label>Phone Number (WhatsApp preferred)</label>
+                        <input type="text" id="acPhone" required placeholder="e.g. 0712345678" />
+                    </div>
 
-        /* ── Constants ── */
-        const EMAILJS_SERVICE_ID = "service_ys967c9";
-        const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";
-        const KES_TO_USD = 130;
+                    <div class="modal-summary">
+                        <span class="sum-label">Selected Tier: <strong id="modalTierText">—</strong></span>
+                        <span class="sum-value" id="modalPriceText">—</span>
+                    </div>
 
-        /* ── Toast helper ── */
-        function showToast(type, title, body) {
-            const icons = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
-            const colors = { success: "#3DAA7A", error: "#D05050", warning: "#C9973F", info: "#C9973F" };
-            const el = document.createElement("div");
-            el.className = "toast";
-            el.innerHTML = `
+                    <div class="payment-box">
+                        <div class="pay-label">Payment Channels Available</div>
+                        <div>M-Pesa → <strong>0700021380</strong> (Brian Angwenyi)</div>
+                        <div>PayPal → <strong>atikabryan@gmail.com</strong></div>
+                        <div>KCB Bank → <strong>A/C 1286766966</strong> (Brian Angwenyi Atika, Thika)</div>
+                    </div>
+
+                    <button type="button" id="paySubmitBtn" class="modal-submit" onclick="requestAccess()">
+                        Send Me Payment Instructions →
+                    </button>
+                </div>
+
+                <div id="modalStateSuccess" style="display:none;text-align:center;padding:20px 0;">
+                    <div style="font-size:36px;margin-bottom:16px;">✅</div>
+                    <div class="modal-label" style="text-align:center;">Request Received</div>
+                    <div class="modal-title" style="font-size:22px;margin-bottom:12px;">Check Your Email</div>
+                    <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:24px;">
+                        Payment instructions have been sent to <strong id="successEmail"
+                            style="color:var(--text)"></strong>.<br><br>
+                        Complete payment using any listed channel, then reply with your confirmation screenshot. Your
+                        login
+                        credentials will arrive within <strong style="color:var(--gold)">24 hours</strong>.
+                    </p>
+                    <div
+                        style="background:var(--bg2);border:1px solid rgba(201,151,63,0.2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:24px;letter-spacing:0.12em;">
+                        Questions? WhatsApp +254700021380
+                    </div>
+                    <button onclick="closePaymentModal()" class="modal-submit">Close</button>
+                </div>
+
+                <div id="modalStateError" style="display:none;text-align:center;padding:20px 0;">
+                    <div style="font-size:32px;margin-bottom:16px;">⚠️</div>
+                    <div class="modal-title" style="font-size:20px;margin-bottom:12px;">Submission Failed</div>
+                    <p id="errorDetail"
+                        style="font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;background:rgba(208,80,80,0.06);border:1px solid rgba(208,80,80,0.2);padding:10px 14px;margin-bottom:16px;text-align:left;">
+                    </p>
+                    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">Contact us
+                        directly:
+                    </p>
+                    <div
+                        style="background:var(--bg2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;margin-bottom:20px;color:var(--text2);">
+                        <div>atikabryan@gmail.com</div>
+                        <div>WhatsApp: +254700021380</div>
+                    </div>
+                    <button onclick="showModalState('form')" class="modal-submit">Try Again</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOAST CONTAINER -->
+        <div id="toast-container"></div>
+
+        <!-- ── SCRIPTS ── Load order matters: Supabase first, then EmailJS, then app code ── -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+        <script>
+            /* ══════════════════════════════════════════════════════════
+               FIX 1 — Initialize Supabase client BEFORE anything else
+               (was missing entirely in the original — caused the
+               "supabaseClient is not defined" ReferenceError)
+            ══════════════════════════════════════════════════════════ */
+            const supabaseClient = supabase.createClient(
+                "https://prxlshwbirmtajtworzc.supabase.co",
+                "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD"
+            );
+
+            /* ── EmailJS init ── */
+            emailjs.init("79XBeB0GrM6rEKRnR");
+
+            /* ── Constants ── */
+            const EMAILJS_SERVICE_ID = "service_ys967c9";
+            const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";
+            const KES_TO_USD = 130;
+
+            /* ── Toast helper ── */
+            function showToast(type, title, body) {
+                const icons = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
+                const colors = { success: "#3DAA7A", error: "#D05050", warning: "#C9973F", info: "#C9973F" };
+                const el = document.createElement("div");
+                el.className = "toast";
+                el.innerHTML = `
                 <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
                 <div>
                     <div class="toast-title">${title}</div>
                     <div class="toast-body">${body}</div>
                 </div>`;
-            document.getElementById("toast-container").appendChild(el);
-            setTimeout(() => {
-                el.classList.add("closing");
-                setTimeout(() => el.remove(), 300);
-            }, 4000);
-        }
-
-        /* ── Modal state switcher ── */
-        function showModalState(state) {
-            document.getElementById("modalStateForm").style.display = state === "form" ? "block" : "none";
-            document.getElementById("modalStateSuccess").style.display = state === "success" ? "block" : "none";
-            document.getElementById("modalStateError").style.display = state === "error" ? "block" : "none";
-        }
-
-        /* ── Open payment modal ── */
-        function openPaymentModal(tier, costString, amount) {
-            // Reset fields
-            document.getElementById("acName").value = "";
-            document.getElementById("acEmail").value = "";
-            document.getElementById("acPhone").value = "";
-
-            // Store selected tier data
-            document.getElementById("modalTierText").innerText = tier === "pro" ? "Pro Trader Suite" : "Elite Institutional";
-            document.getElementById("modalPriceText").innerText = costString;
-
-            // Tag the button with tier data (avoids hidden inputs)
-            const btn = document.getElementById("paySubmitBtn");
-            btn.dataset.tier = tier;
-            btn.dataset.price = costString;
-            btn.dataset.amount = amount;
-
-            showModalState("form");
-            document.getElementById("paymentModal").classList.add("open");
-        }
-
-        /* ── Close payment modal ── */
-        function closePaymentModal() {
-            document.getElementById("paymentModal").classList.remove("open");
-        }
-
-        /* ── Close on overlay click ── */
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("paymentModal").addEventListener("click", function (e) {
-                if (e.target === this) closePaymentModal();
-            });
-        });
-
-        /* ══════════════════════════════════════════════════════════
-           FIX 2 — requestAccess rewritten:
-           • Validates fields before attempting DB write
-           • Inserts into access_requests with correct column names
-           • 10-second timeout so it never hangs forever
-           • Only shows success AFTER confirmed DB insert
-           • Email failure is non-fatal (record already saved)
-        ══════════════════════════════════════════════════════════ */
-        async function requestAccess() {
-            const name = document.getElementById("acName").value.trim();
-            const email = document.getElementById("acEmail").value.trim();
-            const phone = document.getElementById("acPhone").value.trim();
-
-            if (!name || !email || !phone) {
-                showToast("warning", "Missing Fields", "Please fill in all fields before submitting.");
-                return;
+                document.getElementById("toast-container").appendChild(el);
+                setTimeout(() => {
+                    el.classList.add("closing");
+                    setTimeout(() => el.remove(), 300);
+                }, 4000);
             }
 
-            const btn = document.getElementById("paySubmitBtn");
-            const tier = btn.dataset.tier;
-            const costString = btn.dataset.price;
-            const amountNum = parseInt(btn.dataset.amount, 10);
-            const amountUSD = (amountNum / KES_TO_USD).toFixed(2);
-            const tierLabel = tier === "pro"
-                ? "Pro Trader Suite ($49/mo — KES 6,300)"
-                : "Elite Institutional ($199/mo — KES 25,500)";
-            const timestamp = new Date().toLocaleString("en-KE", { timeZone: "Africa/Nairobi" });
-
-            btn.innerText = "Sending…";
-            btn.disabled = true;
-
-            /* ── Step 1: Insert into Supabase with a 10-second timeout ── */
-            try {
-                const insertPromise = supabaseClient
-                    .from("access_requests")
-                    .insert([{
-                        name: name,
-                        email: email,
-                        phone: phone,
-                        tier: tier,
-                        amount_kes: amountNum,
-                        status: "pending",
-                        requested_at: new Date().toISOString()
-                    }])
-                    .select()
-                    .single();
-
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() =>
-                        reject(new Error("Request timed out (10s). Check your Supabase RLS policies — the anon key may not have INSERT permission on access_requests.")),
-                        10000
-                    )
-                );
-
-                const result = await Promise.race([insertPromise, timeoutPromise]);
-
-                if (result.error) {
-                    throw new Error("DB Error: " + result.error.message);
-                }
-
-            } catch (dbErr) {
-                showModalState("error");
-                document.getElementById("errorDetail").textContent = dbErr.message;
-                btn.innerText = "Send Me Payment Instructions →";
-                btn.disabled = false;
-                return; // Stop here — do not send email or show success
+            /* ── Modal state switcher ── */
+            function showModalState(state) {
+                document.getElementById("modalStateForm").style.display = state === "form" ? "block" : "none";
+                document.getElementById("modalStateSuccess").style.display = state === "success" ? "block" : "none";
+                document.getElementById("modalStateError").style.display = state === "error" ? "block" : "none";
             }
 
-            /* ── Step 2: Send email — non-fatal if it fails ── */
-            try {
-                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
-                    to_email: email,
-                    to_name: name,
-                    client_name: name,
-                    client_phone: phone,
-                    tier: tierLabel,
-                    amount: costString,
-                    amount_usd: "$" + amountUSD + " USD",
-                    timestamp: timestamp
+            /* ── Open payment modal ── */
+            function openPaymentModal(tier, costString, amount) {
+                // Reset fields
+                document.getElementById("acName").value = "";
+                document.getElementById("acEmail").value = "";
+                document.getElementById("acPhone").value = "";
+
+                // Store selected tier data
+                document.getElementById("modalTierText").innerText = tier === "pro" ? "Pro Trader Suite" : "Elite Institutional";
+                document.getElementById("modalPriceText").innerText = costString;
+
+                // Tag the button with tier data (avoids hidden inputs)
+                const btn = document.getElementById("paySubmitBtn");
+                btn.dataset.tier = tier;
+                btn.dataset.price = costString;
+                btn.dataset.amount = amount;
+
+                showModalState("form");
+                document.getElementById("paymentModal").classList.add("open");
+            }
+
+            /* ── Close payment modal ── */
+            function closePaymentModal() {
+                document.getElementById("paymentModal").classList.remove("open");
+            }
+
+            /* ── Close on overlay click ── */
+            document.addEventListener("DOMContentLoaded", () => {
+                document.getElementById("paymentModal").addEventListener("click", function (e) {
+                    if (e.target === this) closePaymentModal();
                 });
-            } catch (emailErr) {
-                // Email failed but DB record is already saved — log and continue
-                console.warn("EmailJS send failed (record still saved in Supabase):", emailErr);
-                showToast("warning", "Email Notice", "Your request was saved but the confirmation email failed. We will contact you directly.");
-            }
+            });
 
-            /* ── Step 3: Show success ── */
-            document.getElementById("successEmail").innerText = email;
-            showModalState("success");
-            btn.innerText = "Send Me Payment Instructions →";
-            btn.disabled = false;
-        }
+            /* ══════════════════════════════════════════════════════════
+               FIX 2 — requestAccess rewritten:
+               • Validates fields before attempting DB write
+               • Inserts into access_requests with correct column names
+               • 10-second timeout so it never hangs forever
+               • Only shows success AFTER confirmed DB insert
+               • Email failure is non-fatal (record already saved)
+            ══════════════════════════════════════════════════════════ */
+            async function requestAccess() {
+                const name = document.getElementById("acName").value.trim();
+                const email = document.getElementById("acEmail").value.trim();
+                const phone = document.getElementById("acPhone").value.trim();
 
-        /* ══════════════════════════════════════════════════════════
-           FIX 3 — generateTopicNode: removed nested quotes inside
-           template literals that caused the SyntaxError on line ~1544.
-           onclick now calls named functions instead of inline strings.
-        ══════════════════════════════════════════════════════════ */
-        const activeProfileTier = "free";
-
-        async function initializeCurriculumSystem() {
-            const freeContainer = document.getElementById("freeTopicsContainer");
-            const premiumContainer = document.getElementById("premiumTopicsContainer");
-            const loadingMsg = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// Loading intel matrix…</div>`;
-            freeContainer.innerHTML = loadingMsg;
-            premiumContainer.innerHTML = loadingMsg;
-
-            try {
-                const { data: topics, error: topicsErr } = await supabaseClient
-                    .from("academy_topics")
-                    .select("*")
-                    .order("display_order", { ascending: true });
-
-                if (topicsErr) throw topicsErr;
-
-                const { data: materials, error: matErr } = await supabaseClient
-                    .from("academy_materials")
-                    .select("*");
-
-                if (matErr) throw matErr;
-
-                freeContainer.innerHTML = "";
-                premiumContainer.innerHTML = "";
-
-                if (!topics || topics.length === 0) {
-                    const emptyMsg = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// No topics found in database</div>`;
-                    freeContainer.innerHTML = emptyMsg;
-                    premiumContainer.innerHTML = emptyMsg;
+                if (!name || !email || !phone) {
+                    showToast("warning", "Missing Fields", "Please fill in all fields before submitting.");
                     return;
                 }
 
-                topics.forEach(topic => {
-                    const isFree = topic.tier_requirement === "free";
-                    const hasClearance = isFree || activeProfileTier === "pro" || activeProfileTier === "elite";
-                    const linked = (materials || []).filter(m => m.topic_id === topic.id);
-                    const cardHTML = generateTopicNode(topic, linked, hasClearance);
-                    if (isFree) freeContainer.insertAdjacentHTML("beforeend", cardHTML);
-                    else premiumContainer.insertAdjacentHTML("beforeend", cardHTML);
-                });
+                const btn = document.getElementById("paySubmitBtn");
+                const tier = btn.dataset.tier;
+                const costString = btn.dataset.price;
+                const amountNum = parseInt(btn.dataset.amount, 10);
+                const amountUSD = (amountNum / KES_TO_USD).toFixed(2);
+                const tierLabel = tier === "pro"
+                    ? "Pro Trader Suite ($49/mo — KES 6,300)"
+                    : "Elite Institutional ($199/mo — KES 25,500)";
+                const timestamp = new Date().toLocaleString("en-KE", { timeZone: "Africa/Nairobi" });
 
-            } catch (err) {
-                freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--red);font-family:'JetBrains Mono',monospace;font-size:10px;">// Error: ${escHtml(err.message)}</div>`;
+                btn.innerText = "Sending…";
+                btn.disabled = true;
+
+                /* ── Step 1: Insert into Supabase with a 10-second timeout ── */
+                try {
+                    const insertPromise = supabaseClient
+                        .from("access_requests")
+                        .insert([{
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            tier: tier,
+                            amount_kes: amountNum,
+                            status: "pending",
+                            requested_at: new Date().toISOString()
+                        }])
+                        .select()
+                        .single();
+
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() =>
+                            reject(new Error("Request timed out (10s). Check your Supabase RLS policies — the anon key may not have INSERT permission on access_requests.")),
+                            10000
+                        )
+                    );
+
+                    const result = await Promise.race([insertPromise, timeoutPromise]);
+
+                    if (result.error) {
+                        throw new Error("DB Error: " + result.error.message);
+                    }
+
+                } catch (dbErr) {
+                    showModalState("error");
+                    document.getElementById("errorDetail").textContent = dbErr.message;
+                    btn.innerText = "Send Me Payment Instructions →";
+                    btn.disabled = false;
+                    return; // Stop here — do not send email or show success
+                }
+
+                /* ── Step 2: Send email — non-fatal if it fails ── */
+                try {
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
+                        to_email: email,
+                        to_name: name,
+                        client_name: name,
+                        client_phone: phone,
+                        tier: tierLabel,
+                        amount: costString,
+                        amount_usd: "$" + amountUSD + " USD",
+                        timestamp: timestamp
+                    });
+                } catch (emailErr) {
+                    // Email failed but DB record is already saved — log and continue
+                    console.warn("EmailJS send failed (record still saved in Supabase):", emailErr);
+                    showToast("warning", "Email Notice", "Your request was saved but the confirmation email failed. We will contact you directly.");
+                }
+
+                /* ── Step 3: Show success ── */
+                document.getElementById("successEmail").innerText = email;
+                showModalState("success");
+                btn.innerText = "Send Me Payment Instructions →";
+                btn.disabled = false;
             }
-        }
 
-        /* FIX: onclick no longer uses nested quotes inside template literals */
-        function generateTopicNode(topic, materials, hasClearance) {
-            let materialRows = "";
+            /* ══════════════════════════════════════════════════════════
+               FIX 3 — generateTopicNode: removed nested quotes inside
+               template literals that caused the SyntaxError on line ~1544.
+               onclick now calls named functions instead of inline strings.
+            ══════════════════════════════════════════════════════════ */
+            const activeProfileTier = "free";
 
-            if (hasClearance) {
-                if (materials.length === 0) {
-                    materialRows = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// Intel data pipeline staging…</div>`;
+            // 🔑 CORE ACADEMY SESSION VARIABLE STATES
+            let activeStudentSession = null;
+
+            // ENGINE 01: CORE AUTHENTICATION HANDSHAKE
+            // 🔥 CORRECTED ENGINE: Queries your ORIGINAL 'access_requests' table directly
+            // 🌐 HELPER FUNCTION: Converts plain text into a secure SHA-256 hex string
+            async function computeSHA256(string) {
+                const utf8 = new TextEncoder().encode(string);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('');
+                return hashHex;
+            }
+
+            // 🔐 RE-ARCHITECTED ENGINE: Authenticates by comparing computed hashes
+            async function executeAcademyLogin() {
+                const userIn = document.getElementById('acadUser').value.trim();
+                const passIn = document.getElementById('acadPass').value.trim();
+
+                if (!userIn || !passIn) return alert("Please input your assigned username and password.");
+
+                try {
+                    // 1. Hash the student's typed password so it matches the database formatting
+                    const computedHash = await computeSHA256(passIn);
+
+                    // 2. Query access_requests matching the username and the computed hash string
+                    const { data: student, error } = await supabaseClient
+                        .from('access_requests')
+                        .select('*')
+                        .eq('username', userIn)
+                        .eq('password_hash', computedHash) // Direct match against your secure hash column
+                        .eq('status', 'approved')
+                        .maybeSingle();
+
+                    if (error) throw error;
+
+                    if (!student) {
+                        alert("Authentication Denied: Invalid credentials or account pending approval.");
+                        return;
+                    }
+
+                    // 3. Cache the student's session payload inside local storage
+                    localStorage.setItem('savanna_academy_session', JSON.stringify(student));
+
+                    // Clear out form fields for clean layout security
+                    document.getElementById('acadUser').value = "";
+                    document.getElementById('acadPass').value = "";
+
+                    // 4. Trigger UI re-evaluation to unlock matching tiers instantly
+                    evaluateSessionStateAndBuildUI();
+
+                } catch (err) {
+                    console.error("Auth pipeline connection fault:", err.message);
+                    alert("Connection Error during handshake execution.");
+                }
+            }
+
+            // ENGINE 02: DISCONNECT LOGOUT SESSION
+            function executeAcademyLogout() {
+                localStorage.removeItem('savanna_academy_session');
+                location.reload();
+            }
+
+            // ENGINE 03: VERIFY 30-DAY COUNTDOWNS AND PARSE MEMBERSHIP CLASSES
+            async function evaluateSessionStateAndBuildUI() {
+                const loggedOutRow = document.getElementById('academyAuthLoggedOut');
+                const loggedInRow = document.getElementById('academyAuthLoggedIn');
+                const welcomeText = document.getElementById('welcomeTerminalMessage');
+                const alertBanner = document.getElementById('expiryNotificationBanner');
+
+                const savedSession = localStorage.getItem('savanna_academy_session');
+
+                let currentTier = "free_tier"; // Default state fallback
+                if (alertBanner) alertBanner.style.display = "none";
+
+                if (savedSession) {
+                    activeStudentSession = JSON.parse(savedSession);
+
+                    // ⏱️ THE 30-DAY TIMELINE EVALUATION ENGINE (Relative to approved_at date)
+                    if (activeStudentSession.approved_at) {
+                        const approvalDate = new Date(activeStudentSession.approved_at);
+                        const expiryDate = new Date(approvalDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // Exactly +30 Days
+                        const now = new Date();
+
+                        const timeRemainingMs = expiryDate - now;
+                        const daysRemaining = Math.ceil(timeRemainingMs / (1000 * 60 * 60 * 24));
+
+                        // CASE A: Account has exceeded its 30-day lifetime limit
+                        if (timeRemainingMs <= 0) {
+                            if (alertBanner) {
+                                alertBanner.innerHTML = `⚠️ ACCESS EXPIRED: Your 30-day academic access window closed on ${expiryDate.toLocaleDateString()}. Please contact administration to renew access.`;
+                                alertBanner.style.display = "block";
+                            }
+                            localStorage.removeItem('savanna_academy_session'); // Clear cached access
+                            activeStudentSession = null;
+                        }
+                        // CASE B: Session is open and fully operational
+                        else {
+                            currentTier = activeStudentSession.tier; // Pulls 'pro_trader' or 'elite_institutional'
+                            if (loggedOutRow) loggedOutRow.style.display = "none";
+                            if (loggedInRow) loggedInRow.style.display = "flex";
+
+                            if (welcomeText) {
+                                welcomeText.innerText = `// ACCESS LEVEL: ${currentTier.toUpperCase().replace('_', ' ')} // OPERATIVE: ${activeStudentSession.username.toUpperCase()}`;
+                            }
+
+                            // Trigger warning banner if student is within 5 days of expiration
+                            if (daysRemaining <= 5 && alertBanner) {
+                                alertBanner.innerHTML = `🔔 TIMELINE NOTIFICATION: Your access tier windows are coming to a close in ${daysRemaining} days. Please subscribe again to maintain uninterrupted access.`;
+                                alertBanner.style.display = "block";
+                            }
+                        }
+                    }
                 } else {
-                    materials.forEach(mat => {
-                        materialRows += `
+                    if (loggedOutRow) loggedOutRow.style.display = "flex";
+                    if (loggedInRow) loggedInRow.style.display = "none";
+                }
+
+                // RE-BUILD SYLLABUS GRID ADJUSTED TO ACTIVE RESOLVED ROLES
+                await buildAcademyCurriculumDirectory(currentTier);
+            }
+
+            // ENGINE 04: BUILD TOPICS ACCORDIONS BASED ON RESOLVED CLEARANCE TIERS
+            // 💻 UPDATED MAPPING CONTROLLER TO ALIGN WITH COHORT DATA STRINGS
+            async function buildAcademyCurriculumDirectory(resolvedTier) {
+                const freeContainer = document.getElementById("freeTopicsContainer");
+                const premiumContainer = document.getElementById("premiumTopicsContainer");
+
+                try {
+                    const { data: topics } = await supabaseClient.from('academy_topics').select('*').order('display_order', { ascending: true });
+                    const { data: materials } = await supabaseClient.from('academy_materials').select('*');
+
+                    if (freeContainer) freeContainer.innerHTML = "";
+                    if (premiumContainer) premiumContainer.innerHTML = "";
+
+                    if (!topics) return;
+
+                    topics.forEach(topic => {
+                        let hasClearance = false;
+
+                        // 🔐 REALIGNED CONDITIONAL RESOLUTION LOGIC MATRIX
+                        if (topic.tier_requirement === 'free') {
+                            hasClearance = true; // Open public access
+                        }
+                        else if (topic.tier_requirement === 'pro') {
+                            // Unlocks if the student record has your exact 'pro_trader' or 'elite_institutional' strings
+                            hasClearance = (resolvedTier === 'pro_trader' || resolvedTier === 'elite_institutional' || resolvedTier === 'pro');
+                        }
+                        else if (topic.tier_requirement === 'elite') {
+                            // Unlocks strictly for your 'elite_institutional' or 'elite' tier users
+                            hasClearance = (resolvedTier === 'elite_institutional' || resolvedTier === 'elite');
+                        }
+
+                        const linkedMaterials = materials ? materials.filter(m => m.topic_id === topic.id) : [];
+                        const topicCardHTML = generateTopicNode(topic, linkedMaterials, hasClearance);
+
+                        if (topic.tier_requirement === 'free') {
+                            if (freeContainer) freeContainer.insertAdjacentHTML('beforeend', topicCardHTML);
+                        } else {
+                            if (premiumContainer) premiumContainer.insertAdjacentHTML('beforeend', topicCardHTML);
+                        }
+                    });
+                } catch (err) {
+                    console.error("Syllabus compiler malfunction:", err.message);
+                }
+            }
+
+            // 🚀 ENGAGE ON REFRESH WINDOW LOAD
+            document.addEventListener("DOMContentLoaded", () => {
+                evaluateSessionStateAndBuildUI();
+            });
+
+            function toggleCertificateModal(show) {
+                const modal = document.getElementById('certificateModal');
+                if (modal) modal.style.display = show ? 'flex' : 'none';
+            }
+
+            function generateStudentCertificate() {
+                if (!activeStudentSession) {
+                    alert("Handshake Aborted: You must be authenticated to compile credentials.");
+                    return;
+                }
+
+                const canvas = document.getElementById('certificatePrintCanvas');
+                const nameLabel = document.getElementById('certStudentName');
+                const tierLabel = document.getElementById('certTierTitle');
+                const ledgerLabel = document.getElementById('certLedgerId');
+
+                // 🎯 UPDATE: Pulls their registration Full Name instead of username
+                // (Falls back to username if full_name isn't found in the session data)
+                nameLabel.innerText = activeStudentSession.full_name || activeStudentSession.name || activeStudentSession.username;
+
+                canvas.className = "certificate-canvas";
+
+                const userTier = activeStudentSession.tier;
+
+                if (userTier === 'elite_institutional') {
+                    canvas.classList.add('cert-theme-elite');
+                    tierLabel.innerText = "ELITE INSTITUTIONAL QUANT MATRIX";
+                }
+                else if (userTier === 'pro_trader') {
+                    canvas.classList.add('cert-theme-pro');
+                    tierLabel.innerText = "PRO TRADER SUITE GRADUATE";
+                }
+                else {
+                    canvas.classList.add('cert-theme-free');
+                    tierLabel.innerText = "FOUNDATIONS OF LIQUIDITY TRADER";
+                }
+
+                const randomHash = "SAVANNA-BLOCK-" + Math.random().toString(16).substring(2, 10).toUpperCase() + "-" + Math.random().toString(16).substring(2, 6).toUpperCase();
+                ledgerLabel.innerText = `VERIFICATION INDEX SYNC // LEDGER: ${randomHash}`;
+
+                toggleCertificateModal(true);
+            }
+
+            /* FIX: onclick no longer uses nested quotes inside template literals */
+            function generateTopicNode(topic, materials, hasClearance) {
+                let materialRows = "";
+
+                if (hasClearance) {
+                    if (materials.length === 0) {
+                        materialRows = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// Intel data pipeline staging…</div>`;
+                    } else {
+                        materials.forEach(mat => {
+                            materialRows += `
                             <a href="${escHtml(mat.secure_download_url)}" target="_blank" class="material-row-link">
                                 <span>📄 ${escHtml(mat.file_name)}</span>
                                 <span class="download-icon-indicator">Stream Module →</span>
                             </a>`;
-                    });
+                        });
+                    }
                 }
-            }
 
-            /* Use data attributes + separate JS handler — NO nested quotes */
-            const onclickStr = hasClearance
-                ? `onclick="toggleTray(this)"`
-                : `onclick="showUpgradeAlert()"`;
+                /* Use data attributes + separate JS handler — NO nested quotes */
+                const onclickStr = hasClearance
+                    ? `onclick="toggleTray(this)"`
+                    : `onclick="showUpgradeAlert()"`;
 
-            const badgeStyle = hasClearance
-                ? `color:var(--green);border-color:rgba(61,170,122,0.3);`
-                : `color:var(--red);border-color:rgba(208,80,80,0.3);`;
+                const badgeStyle = hasClearance
+                    ? `color:var(--green);border-color:rgba(61,170,122,0.3);`
+                    : `color:var(--red);border-color:rgba(208,80,80,0.3);`;
 
-            const badgeText = hasClearance ? "Open Access" : "Locked · Upgrade";
-            const lockStyle = hasClearance ? "" : `opacity:0.4;`;
+                const badgeText = hasClearance ? "Open Access" : "Locked · Upgrade";
+                const lockStyle = hasClearance ? "" : `opacity:0.4;`;
 
-            return `
+                return `
                 <div class="topic-node-block ${hasClearance ? "unlocked" : "locked"}" style="${lockStyle}">
                     <div class="topic-header-trigger" ${onclickStr}>
                         <div>
@@ -1833,47 +2654,47 @@
                     </div>
                     <div class="asset-vault-tray">${materialRows}</div>
                 </div>`;
-        }
+            }
 
-        /* Named function — no inline alert string needed */
-        function showUpgradeAlert() {
-            showToast("info", "Clearance Required", "Upgrade your tier to unlock this course stream.");
-        }
+            /* Named function — no inline alert string needed */
+            function showUpgradeAlert() {
+                showToast("info", "Clearance Required", "Upgrade your tier to unlock this course stream.");
+            }
 
-        function toggleTray(headerElement) {
-            const tray = headerElement.parentElement.querySelector(".asset-vault-tray");
-            document.querySelectorAll(".asset-vault-tray").forEach(t => {
-                if (t !== tray) t.classList.remove("expanded");
-            });
-            tray.classList.toggle("expanded");
-        }
+            function toggleTray(headerElement) {
+                const tray = headerElement.parentElement.querySelector(".asset-vault-tray");
+                document.querySelectorAll(".asset-vault-tray").forEach(t => {
+                    if (t !== tray) t.classList.remove("expanded");
+                });
+                tray.classList.toggle("expanded");
+            }
 
-        function scrollToModules() {
-            document.querySelector(".curriculum-container").scrollIntoView({ behavior: "smooth" });
-        }
+            function scrollToModules() {
+                document.querySelector(".curriculum-container").scrollIntoView({ behavior: "smooth" });
+            }
 
-        function escHtml(str) {
-            return String(str ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
+            function escHtml(str) {
+                return String(str ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
 
-        /* ── Market Monitor ── */
-        function switchMonitorTab(targetTab, event) {
-            document.querySelectorAll(".tab-trigger").forEach(btn => btn.classList.remove("active"));
-            document.querySelectorAll(".monitor-panel").forEach(panel => panel.classList.remove("active"));
-            event.currentTarget.classList.add("active");
-            document.getElementById(
-                targetTab === "global" ? "globalMonitorPanel" : "domesticMonitorPanel"
-            ).classList.add("active");
-        }
+            /* ── Market Monitor ── */
+            function switchMonitorTab(targetTab, event) {
+                document.querySelectorAll(".tab-trigger").forEach(btn => btn.classList.remove("active"));
+                document.querySelectorAll(".monitor-panel").forEach(panel => panel.classList.remove("active"));
+                event.currentTarget.classList.add("active");
+                document.getElementById(
+                    targetTab === "global" ? "globalMonitorPanel" : "domesticMonitorPanel"
+                ).classList.add("active");
+            }
 
-        function generateTickerCard(meta, name, price, change) {
-            const dir = change >= 0 ? "up" : "down";
-            const sign = change >= 0 ? "+" : "";
-            return `
+            function generateTickerCard(meta, name, price, change) {
+                const dir = change >= 0 ? "up" : "down";
+                const sign = change >= 0 ? "+" : "";
+                return `
                 <div class="ticker-card">
                     <div class="ticker-meta">${meta}</div>
                     <div class="ticker-asset-name">${name}</div>
@@ -1882,31 +2703,216 @@
                         <span class="ticker-change ${dir}">${sign}${change.toFixed(2)}%</span>
                     </div>
                 </div>`;
-        }
-
-        async function fetchGlobalLiquidityMetrics() {
-            const container = document.getElementById("globalTickerGrid");
-            try {
-                const response = await fetch(
-                    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true"
-                );
-                if (!response.ok) throw new Error("Data pipeline error");
-                const data = await response.json();
-                container.innerHTML = "";
-                container.insertAdjacentHTML("beforeend", generateTickerCard("Macro // Digital Gold Base", "Bitcoin / USD", data.bitcoin.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.bitcoin.usd_24h_change));
-                container.insertAdjacentHTML("beforeend", generateTickerCard("DeFi Backbone Matrix", "Ethereum / USD", data.ethereum.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.ethereum.usd_24h_change));
-                container.insertAdjacentHTML("beforeend", generateTickerCard("Global Liquidity Proxy", "EUR / USD", (1.0845).toFixed(4), 0.12));
-            } catch (error) {
-                container.innerHTML = `<div class="ticker-card loading" style="color:var(--gold);">// Stream latency detected — queuing alternate nodes…</div>`;
             }
-        }
 
-        /* ── Boot ── */
-        document.addEventListener("DOMContentLoaded", () => {
-            initializeCurriculumSystem();
-            fetchGlobalLiquidityMetrics();
-        });
-    </script>
+            async function fetchGlobalLiquidityMetrics() {
+                const container = document.getElementById("globalTickerGrid");
+                try {
+                    const response = await fetch(
+                        "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true"
+                    );
+                    if (!response.ok) throw new Error("Data pipeline error");
+                    const data = await response.json();
+                    container.innerHTML = "";
+                    container.insertAdjacentHTML("beforeend", generateTickerCard("Macro // Digital Gold Base", "Bitcoin / USD", data.bitcoin.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.bitcoin.usd_24h_change));
+                    container.insertAdjacentHTML("beforeend", generateTickerCard("DeFi Backbone Matrix", "Ethereum / USD", data.ethereum.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.ethereum.usd_24h_change));
+                    container.insertAdjacentHTML("beforeend", generateTickerCard("Global Liquidity Proxy", "EUR / USD", (1.0845).toFixed(4), 0.12));
+                } catch (error) {
+                    container.innerHTML = `<div class="ticker-card loading" style="color:var(--gold);">// Stream latency detected — queuing alternate nodes…</div>`;
+                }
+            }
+
+            /* ── Boot ── */
+            document.addEventListener("DOMContentLoaded", () => {
+                initializeCurriculumSystem();
+                fetchGlobalLiquidityMetrics();
+            });
+            // 📦 STRUCTURAL CARD RENDERING ENGINE
+            function generateTopicNode(topic, materials, hasClearance) {
+                // Build the individual download resource rows if the user has full clearance
+                let materialsHTML = '';
+
+                if (hasClearance) {
+                    if (materials && materials.length > 0) {
+                        materialsHTML = materials.map(mat => `
+        <div class="material-download-row">
+          <span class="file-icon-badge">${mat.file_type}</span>
+          <span class="material-title">${mat.title}</span>
+          <a href="${mat.resource_url}" target="_blank" class="download-action-link">ACCESS NODE ➔</a>
+        </div>
+      `).join('');
+                    } else {
+                        materialsHTML = `<div class="no-materials-notice">// NO EXTRA DOSSIER ATTACHED TO THIS NODE</div>`;
+                    }
+                }
+
+                // Determine styling based on access layer parameters
+                const operationalClass = hasClearance ? 'unlocked-clearance' : 'locked-gate';
+                const lockBadge = hasClearance
+                    ? `<span class="clearance-badge status-open">ACTIVE</span>`
+                    : `<span class="clearance-badge status-gated">SECURE LOCK [${topic.tier_requirement.toUpperCase()}]</span>`;
+
+                // Return the complete UI card component block
+                return `
+    <div class="module-card ${operationalClass}">
+      <div class="module-card-header" onclick="${hasClearance ? 'toggleAccordionTray(this)' : 'alertSecureTierGate(\'' + topic.tier_requirement + '\')'}">
+        <div>
+          <div class="module-meta-header">TOPIC CATEGORY // REQUIREMENT: ${topic.tier_requirement.toUpperCase()}</div>
+          <h4 class="module-card-title">${topic.title}</h4>
+          <p class="module-card-desc">${topic.description || ''}</p>
+        </div>
+        <div>
+          ${lockBadge}
+        </div>
+      </div>
+      
+      <div class="module-materials-tray" style="display: none;">
+        <div class="materials-tray-padding">
+          <div class="tray-divider-label">// SECURE SOURCE MATERIALS DIRECTORY</div>
+          ${materialsHTML}
+        </div>
+      </div>
+    </div>
+  `;
+            }
+
+            // ↕️ INTERACTION ENGINE: Toggles the accordion tray smoothly
+            function toggleAccordionTray(headerElement) {
+                const card = headerElement.parentElement;
+                const tray = card.querySelector('.module-materials-tray');
+
+                if (tray.style.display === "none" || tray.style.display === "") {
+                    tray.style.display = "block";
+                    headerElement.classList.add('tray-active');
+                } else {
+                    tray.style.display = "none";
+                    headerElement.classList.remove('tray-active');
+                }
+            }
+
+            // 🛑 PROTECTION WARNING: Triggers if a student clicks a locked section
+            function alertSecureTierGate(requiredTier) {
+                alert(`❌ SECURITY CLEARANCE EXCEPTION:\n\nThis directory requires an active [${requiredTier.toUpperCase()}] subscription account tier.\n\nPlease complete checkout or request an administrative override update.`);
+            }
+            // 🔐 SHOW / HIDE THE CERTIFICATE SCREEN LAYER
+            function toggleCertificateModal(show) {
+                const modal = document.getElementById('certificateModal');
+                if (modal) modal.style.display = show ? 'flex' : 'none';
+            }
+
+            // 🖨️ THE DYNAMIC CERTIFICATE GENERATION PIPELINE ENGINE
+            async function generateStudentCertificate() {
+                if (!activeStudentSession) {
+                    alert("Handshake Aborted: You must be authenticated to compile credentials.");
+                    return;
+                }
+
+                const canvas = document.getElementById('certificatePrintCanvas');
+                const nameLabel = document.getElementById('certStudentName');
+                const tierLabel = document.getElementById('certTierTitle');
+                const ledgerLabel = document.getElementById('certLedgerId');
+
+                nameLabel.innerText = "COMPILING CREDENTIAL NAME...";
+
+                // 🎯 MAP THE EXACT REGISTRATION DATA STRINGS FROM YOUR PAYLOAD
+                // Checks for 'full_name' or 'name' fields returned by your database .select('*')
+                let printName = activeStudentSession.full_name || activeStudentSession.name;
+
+                // 🔄 CACHE EVACUATION FALLBACK: If your current browser session is old, fetch fresh data live
+                if (!printName) {
+                    try {
+                        const { data: profile } = await supabaseClient
+                            .from('access_requests')
+                            .select('full_name')
+                            .eq('username', activeStudentSession.username)
+                            .maybeSingle();
+
+                        if (profile && profile.full_name) {
+                            printName = profile.full_name;
+                            // Speculatively patch the local session so it remembers next time
+                            activeStudentSession.full_name = profile.full_name;
+                            localStorage.setItem('savanna_academy_session', JSON.stringify(activeStudentSession));
+                        } else {
+                            printName = activeStudentSession.username; // Absolute fallback if database field is empty
+                        }
+                    } catch (err) {
+                        printName = activeStudentSession.username;
+                    }
+                }
+
+                // Inject the final beautifully resolved full name into the certificate canvas UI
+                nameLabel.innerText = printName;
+
+                // Set up the responsive premium design states matching the student access tier
+                canvas.className = "certificate-canvas";
+                const userTier = activeStudentSession.tier;
+
+                if (userTier === 'elite_institutional') {
+                    canvas.classList.add('cert-theme-elite');
+                    tierLabel.innerText = "ELITE INSTITUTIONAL QUANT MATRIX";
+                }
+                else if (userTier === 'pro_trader') {
+                    canvas.classList.add('cert-theme-pro');
+                    tierLabel.innerText = "PRO TRADER SUITE GRADUATE";
+                }
+                else {
+                    canvas.classList.add('cert-theme-free');
+                    tierLabel.innerText = "FOUNDATIONS OF LIQUIDITY TRADER";
+                }
+
+                const randomHash = "SAVANNA-BLOCK-" + Math.random().toString(16).substring(2, 10).toUpperCase() + "-" + Math.random().toString(16).substring(2, 6).toUpperCase();
+                ledgerLabel.innerText = `VERIFICATION INDEX SYNC // LEDGER: ${randomHash}`;
+
+                toggleCertificateModal(true);
+            }
+        </script>
+        <div id="certificateModal" class="cert-modal-overlay" style="display: none;">
+            <div class="cert-modal-content">
+                <button onclick="toggleCertificateModal(false)" class="cert-close-btn">✕ CLOSE TERMINAL</button>
+
+                <div id="certificatePrintCanvas" class="certificate-canvas">
+                    <div class="cert-border-outer">
+                        <div class="cert-border-inner">
+
+                            <div class="cert-logo-container">
+                                <img src="assets/savanna-logo.png" alt="SAVANNA CAPITAL LOGO" class="cert-logo-img">
+                                <div class="cert-logo-text">SAVANNA CAPITAL</div>
+                            </div>
+
+                            <div class="cert-header">// ACADEMY OPERATIONS TERMINAL MATRIX //</div>
+                            <div class="cert-title">VERIFIED COMPLETION CREDENTIAL</div>
+
+                            <div class="cert-subtext">This cryptographic ledger entry confirms that operative</div>
+                            <div id="certStudentName" class="cert-student-name">MEMBER_USERNAME</div>
+                            <div id="certSyllabusText" class="cert-scope">HAS SUCCESSFULLY DEMONSTRATED COMPLETE
+                                COMPETENCY
+                                IN THE</div>
+                            <div id="certTierTitle" class="cert-tier-badge">PRO TRADER SUITE</div>
+
+                            <div class="cert-footer-row">
+
+                                <div class="cert-signature-block">
+                                    <div class="cert-signature-font">B. Angwenyi</div>
+
+                                    <div class="cert-sig-line"></div>
+                                    <div class="cert-sig-title">FOUNDER & CHIEF ANALYST</div>
+                                </div>
+
+                                <div class="cert-seal-block">
+                                    <div class="cert-seal-matrix">🗲</div>
+                                    <div class="cert-seal-label">SECURE HANDSHAKE: VERIFIED</div>
+                                </div>
+                            </div>
+
+                            <div id="certLedgerId" class="cert-ledger-id">HASH // BLOCK: 0x00000000000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="window.print()" class="cert-print-action-btn">EXECUTE SYSTEM PRINT / SAVE AS
+                    PDF</button>
+            </div>
+        </div>
 </body>
 
 </html>
