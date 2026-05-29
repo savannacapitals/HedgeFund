@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
         rel="stylesheet" />
     <style>
         *,
@@ -20,17 +20,25 @@
         }
 
         :root {
-            --cream: #F7F3ED;
-            --parchment: #EFE8DC;
-            --ink: #1C1710;
-            --ink-mid: #3D3525;
-            --ink-soft: #7A6E5E;
-            --gold: #B8893A;
-            --gold-lt: #D4A85A;
-            --gold-bg: #F5EDD8;
-            --sage: #4A6350;
-            --sage-lt: #EBF0EC;
-            --border: rgba(28, 23, 16, .10);
+            --bg: #0C0B09;
+            --bg2: #131210;
+            --bg3: #1A1916;
+            --surface: #211F1B;
+            --surface2: #2A2822;
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.12);
+            --gold: #C9973F;
+            --gold-lt: #E3B86A;
+            --gold-dim: rgba(201, 151, 63, 0.15);
+            --gold-glow: rgba(201, 151, 63, 0.08);
+            --cream: #F0EAE0;
+            --text: #EDE8E0;
+            --text2: #9A9186;
+            --text3: #5C574F;
+            --sage: #4D7A5A;
+            --sage-lt: #6FAD80;
+            --red: #D05050;
+            --green: #3DAA7A;
         }
 
         html {
@@ -38,15 +46,26 @@
         }
 
         body {
-            background: var(--cream);
-            color: var(--ink);
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 300;
-            line-height: 1.7;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* ── NAV ─────────────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        /* ── NAV ── */
         nav {
             position: fixed;
             top: 0;
@@ -56,31 +75,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 48px;
-            background: rgba(247, 243, 237, .92);
-            backdrop-filter: blur(12px);
+            padding: 20px 52px;
+            background: rgba(12, 11, 9, 0.85);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             text-decoration: none;
         }
 
         .nav-logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--ink);
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--gold);
             display: grid;
             place-items: center;
             flex-shrink: 0;
         }
 
         .nav-logo svg {
-            color: var(--gold-lt);
+            color: var(--gold);
             width: 18px;
             height: 18px;
         }
@@ -92,80 +110,107 @@
         }
 
         .nav-name strong {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: .04em;
-            color: var(--ink);
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--text);
         }
 
         .nav-name span {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .14em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.18em;
             color: var(--gold);
             text-transform: uppercase;
         }
 
         .nav-link {
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .14em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            color: var(--ink-soft);
+            color: var(--text2);
             text-decoration: none;
-            transition: color .2s;
+            padding: 8px 16px;
             border: 1px solid var(--border);
-            padding: 6px 14px;
+            transition: all 0.2s;
         }
 
         .nav-link:hover {
-            color: var(--ink);
+            color: var(--gold);
             border-color: var(--gold);
+            background: var(--gold-dim);
         }
 
-        /* ── HERO ─────────────────────────────────────────── */
+        /* ── HERO ── */
         .hero {
-            padding: 140px 48px 64px;
-            text-align: center;
-            max-width: 780px;
+            padding: 152px 52px 72px;
+            max-width: 860px;
             margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 151, 63, 0.06) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--gold-bg);
-            border: 1px solid rgba(184, 137, 58, .25);
-            padding: 6px 16px;
-            border-radius: 100px;
-            margin-bottom: 28px;
+            border: 1px solid rgba(201, 151, 63, 0.3);
+            background: var(--gold-dim);
+            padding: 6px 18px;
+            margin-bottom: 32px;
         }
 
         .hero-badge span {
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .16em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--gold);
         }
 
         .hero-badge .dot {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
             background: var(--gold);
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.2
+            }
         }
 
         h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(38px, 6vw, 64px);
-            font-weight: 300;
-            line-height: 1.12;
-            letter-spacing: -.01em;
-            color: var(--ink);
-            margin-bottom: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(44px, 7vw, 76px);
+            font-weight: 400;
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 20px;
         }
 
         h1 em {
@@ -175,133 +220,293 @@
 
         .hero-sub {
             font-size: 15px;
-            color: var(--ink-soft);
-            max-width: 440px;
-            margin: 0 auto 0;
+            color: var(--text2);
+            max-width: 460px;
+            margin: 0 auto 56px;
             font-weight: 400;
+            line-height: 1.8;
         }
 
-        /* ── DIVIDER ──────────────────────────────────────── */
+        /* ── MARKET MONITOR ── */
+        .market-monitor-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .monitor-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .monitor-heading {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.16em;
+            color: var(--text3);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .pulse-indicator {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--green);
+            animation: terminalPulse 2.4s infinite;
+        }
+
+        @keyframes terminalPulse {
+
+            0%,
+            100% {
+                opacity: 0.3
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        .feed-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tab-trigger {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.14em;
+            padding: 6px 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .tab-trigger.active,
+        .tab-trigger:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        .monitor-panel {
+            display: none;
+            padding: 16px 20px;
+        }
+
+        .monitor-panel.active {
+            display: block;
+        }
+
+        .ticker-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .ticker-card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+        }
+
+        .ticker-card.loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 24px 0;
+        }
+
+        .ticker-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.12em;
+            color: var(--text3);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .ticker-asset-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: 0.04em;
+        }
+
+        .ticker-value-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .ticker-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .ticker-change {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 3px 7px;
+        }
+
+        .ticker-change.up {
+            color: var(--green);
+            background: rgba(61, 170, 122, 0.1);
+            border: 1px solid rgba(61, 170, 122, 0.2);
+        }
+
+        .ticker-change.down {
+            color: var(--red);
+            background: rgba(208, 80, 80, 0.1);
+            border: 1px solid rgba(208, 80, 80, 0.2);
+        }
+
+        .ticker-change.neutral {
+            color: var(--text3);
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        /* ── DIVIDER ── */
         .divider {
             height: 1px;
             background: var(--border);
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
+            position: relative;
+            z-index: 1;
         }
 
-        /* ── TIER CARDS ───────────────────────────────────── */
+        /* ── TIERS ── */
         .tiers {
-            max-width: 1200px;
-            margin: 56px auto;
-            padding: 0 48px;
+            max-width: 1160px;
+            margin: 72px auto;
+            padding: 0 52px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
         }
 
         .tier-card {
-            background: #fff;
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 32px;
+            padding: 36px 32px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: box-shadow .25s, border-color .25s;
+            transition: border-color 0.3s, transform 0.2s;
             position: relative;
         }
 
         .tier-card:hover {
-            box-shadow: 0 8px 40px rgba(28, 23, 16, .07);
-            border-color: rgba(184, 137, 58, .3);
+            border-color: var(--border2);
+            transform: translateY(-2px);
         }
 
         .tier-card.featured {
-            background: var(--ink);
-            border-color: transparent;
+            background: var(--surface2);
+            border-color: var(--gold);
+            border-width: 1px;
         }
 
         .tier-badge {
             display: inline-block;
-            margin-bottom: 24px;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .15em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
+            margin-bottom: 20px;
+            padding: 5px 10px;
+            border: 1px solid;
         }
 
         .tier-badge.free {
-            color: var(--sage);
+            color: var(--sage-lt);
+            border-color: rgba(111, 173, 128, 0.3);
+            background: rgba(111, 173, 128, 0.07);
         }
 
         .tier-badge.pro {
-            color: var(--gold-lt);
+            color: var(--gold);
+            border-color: rgba(201, 151, 63, 0.3);
+            background: var(--gold-dim);
         }
 
         .tier-badge.elite {
-            color: var(--ink-soft);
-        }
-
-        .featured .tier-badge.pro {
-            color: var(--gold-lt);
+            color: var(--text2);
+            border-color: var(--border);
+            background: transparent;
         }
 
         .tier-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 24px;
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
             font-weight: 400;
-            color: var(--ink);
+            color: var(--text);
             margin-bottom: 4px;
         }
 
-        .featured .tier-name {
-            color: #fff;
-        }
-
         .tier-price {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 42px;
-            font-weight: 300;
-            color: var(--ink);
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: var(--text);
             line-height: 1;
-            margin: 20px 0 4px;
-        }
-
-        .tier-price sup {
-            font-size: 18px;
-            vertical-align: super;
+            margin: 24px 0 4px;
         }
 
         .featured .tier-price {
             color: var(--gold-lt);
         }
 
-        .tier-freq {
-            font-size: 11px;
-            color: var(--ink-soft);
-            margin-bottom: 24px;
-            font-family: 'DM Mono', monospace;
-            letter-spacing: .06em;
+        .tier-price sup {
+            font-size: 20px;
+            vertical-align: super;
         }
 
-        .featured .tier-freq {
-            color: rgba(255, 255, 255, .45);
+        .tier-freq {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.08em;
+            color: var(--text3);
+            margin-bottom: 28px;
         }
 
         .tier-divider {
             height: 1px;
             background: var(--border);
-            margin-bottom: 20px;
-        }
-
-        .featured .tier-divider {
-            background: rgba(255, 255, 255, .08);
+            margin-bottom: 24px;
         }
 
         .tier-features {
             list-style: none;
-            space-y: 10px;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .tier-features li {
@@ -309,31 +514,33 @@
             align-items: flex-start;
             gap: 10px;
             font-size: 13px;
-            color: var(--ink-soft);
-            padding: 5px 0;
+            font-weight: 400;
+            color: var(--text3);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .featured .tier-features li {
-            color: rgba(255, 255, 255, .65);
+        .tier-features li:last-child {
+            border-bottom: none;
         }
 
         .tier-features li.active {
-            color: var(--ink);
+            color: var(--text2);
         }
 
         .featured .tier-features li.active {
-            color: #fff;
+            color: var(--text);
         }
 
         .feat-icon {
             flex-shrink: 0;
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
             margin-top: 2px;
         }
 
         .feat-icon.check {
-            color: var(--sage);
+            color: var(--sage-lt);
         }
 
         .feat-icon.check.gold {
@@ -341,127 +548,126 @@
         }
 
         .feat-icon.cross {
-            color: #C8BAA8;
+            color: var(--text3);
+            opacity: 0.4;
         }
 
-        .featured .feat-icon.cross {
-            color: rgba(255, 255, 255, .2);
+        .recommended-tag {
+            position: absolute;
+            top: -1px;
+            right: 20px;
+            background: var(--gold);
+            color: var(--bg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            font-weight: 500;
         }
 
         .tier-cta {
             display: block;
             text-align: center;
             padding: 14px 24px;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            letter-spacing: .14em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             cursor: pointer;
             border: none;
-            transition: all .2s;
+            transition: all 0.2s;
             text-decoration: none;
         }
 
         .tier-cta.outline {
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--ink-soft);
+            border: 1px solid var(--border2);
+            color: var(--text2);
         }
 
         .tier-cta.outline:hover {
             border-color: var(--gold);
             color: var(--gold);
-            background: var(--gold-bg);
+            background: var(--gold-dim);
         }
 
         .tier-cta.primary {
             background: var(--gold);
-            color: #fff;
+            color: var(--bg);
+            font-weight: 500;
         }
 
         .tier-cta.primary:hover {
             background: var(--gold-lt);
         }
 
-        .tier-cta.dark {
-            background: rgba(255, 255, 255, .07);
-            color: rgba(255, 255, 255, .7);
-            border: 1px solid rgba(255, 255, 255, .08);
+        /* ── CURRICULUM ── */
+        .curriculum-container {
+            max-width: 1060px;
+            margin: 60px auto;
+            padding: 0 52px;
+            position: relative;
+            z-index: 1;
         }
 
-        .tier-cta.dark:hover {
-            background: rgba(255, 255, 255, .14);
-            color: #fff;
-        }
-
-        .recommended-tag {
-            position: absolute;
-            top: -11px;
-            right: 20px;
-            background: var(--gold);
-            color: #fff;
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            padding: 4px 12px;
-        }
-
-        /* ── MODULES ──────────────────────────────────────── */
-        .section-label {
-            font-family: 'DM Mono', monospace;
+        .section-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .18em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
             color: var(--gold);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .section-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 32px;
-            font-weight: 300;
-            color: var(--ink);
-            line-height: 1.2;
-        }
-
-        /* ── NEW DYNAMIC CURRICULUM VAULT STYLES ──────────────── */
-        .curriculum-container {
-            max-width: 1100px;
-            margin: 60px auto;
-            padding: 0 20px;
-            font-family: 'DM Mono', monospace;
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 32px;
         }
 
         .tier-bracket-heading {
-            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
             color: var(--gold);
-            letter-spacing: 2px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tier-bracket-heading::before {
+            content: '';
+            display: block;
+            width: 3px;
+            height: 14px;
+            background: var(--gold);
         }
 
         .topics-directory-stack {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 1px;
         }
 
         .topic-node-block {
-            background-color: rgba(255, 255, 255, 0.02);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s;
         }
 
         .topic-node-block.unlocked:hover {
-            border-color: var(--gold);
+            border-color: var(--border2);
         }
 
         .topic-header-trigger {
-            padding: 24px;
+            padding: 22px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -470,31 +676,35 @@
         }
 
         .topic-title-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 20px;
-            color: var(--ink);
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
         }
 
         .topic-summary {
+            font-family: 'Syne', sans-serif;
             font-size: 12px;
-            color: var(--ink-soft);
-            margin-top: 6px;
-            max-width: 80%;
+            color: var(--text3);
+            max-width: 70%;
         }
 
         .status-badge {
-            font-size: 9px;
-            letter-spacing: 1px;
-            padding: 4px 10px;
-            border: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.12em;
+            padding: 5px 10px;
+            border: 1px solid;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .asset-vault-tray {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.35s ease-out;
-            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .asset-vault-tray.expanded {
@@ -506,85 +716,108 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 12px;
-            color: var(--ink-soft);
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text2);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+            letter-spacing: 0.04em;
+        }
+
+        .material-row-link:last-child {
+            border-bottom: none;
         }
 
         .material-row-link:hover {
-            background-color: var(--gold-bg);
-            color: var(--ink);
+            background: var(--gold-glow);
+            color: var(--gold-lt);
+            padding-left: 32px;
         }
 
         .download-icon-indicator {
             color: var(--gold);
-            font-size: 11px;
+            font-size: 9.5px;
+            letter-spacing: 0.12em;
         }
 
-        /* ── LIVE BANNER ──────────────────────────────────── */
+        /* ── LIVE BANNER ── */
         .live-banner {
-            max-width: 1200px;
-            margin: 0 auto 80px;
-            padding: 0 48px;
+            margin: 0 0 88px;
+            padding: 0 52px;
+            position: relative;
+            z-index: 1;
         }
 
         .live-inner {
-            background: var(--ink);
-            border-radius: 4px;
-            padding: 56px 56px 56px 56px;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            padding: 60px 60px;
             display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 48px;
+            grid-template-columns: 1fr 240px;
+            gap: 56px;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-inner::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 151, 63, 0.05) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .live-dot {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .live-dot .pulse {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background: #E84F4F;
-            animation: pulse 1.6s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(232, 79, 79, 0.6);
+            animation: pulseDot 1.8s ease-in-out infinite;
         }
 
-        @keyframes pulse {
+        @keyframes pulseDot {
 
             0%,
             100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: scale(1)
             }
 
             50% {
-                opacity: .5;
-                transform: scale(1.3);
+                opacity: .4;
+                transform: scale(1.4)
             }
         }
 
         .live-dot span {
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .18em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--gold-lt);
         }
 
         .live-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 34px;
-            font-weight: 300;
-            color: #fff;
-            line-height: 1.2;
-            margin-bottom: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 400;
+            color: var(--text);
+            line-height: 1.15;
+            margin-bottom: 18px;
         }
 
         .live-title em {
@@ -594,54 +827,55 @@
 
         .live-desc {
             font-size: 14px;
-            color: rgba(255, 255, 255, .5);
-            line-height: 1.7;
-            margin-bottom: 28px;
+            color: var(--text2);
+            line-height: 1.8;
+            margin-bottom: 32px;
+            max-width: 480px;
         }
 
         .live-perks {
             display: flex;
-            gap: 16px;
-            margin-bottom: 32px;
+            gap: 12px;
+            margin-bottom: 36px;
         }
 
         .live-perk {
             flex: 1;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(255, 255, 255, .06);
-            padding: 14px 16px;
-            border-radius: 2px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 16px 18px;
         }
 
         .live-perk strong {
             display: block;
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .12em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: var(--gold-lt);
-            margin-bottom: 4px;
+            color: var(--gold);
+            margin-bottom: 6px;
         }
 
         .live-perk p {
-            font-size: 11px;
-            color: rgba(255, 255, 255, .4);
-            line-height: 1.5;
+            font-size: 12px;
+            color: var(--text3);
+            line-height: 1.6;
         }
 
         .live-cta {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: var(--gold);
-            color: #fff;
-            padding: 14px 28px;
-            font-family: 'DM Mono', monospace;
+            color: var(--bg);
+            padding: 15px 32px;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 10px;
-            letter-spacing: .14em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             text-decoration: none;
-            transition: background .2s;
+            font-weight: 500;
+            transition: background 0.2s;
         }
 
         .live-cta:hover {
@@ -649,62 +883,59 @@
         }
 
         .live-visual {
-            width: 220px;
-            flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .stat-box {
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(255, 255, 255, .06);
-            padding: 16px 20px;
-            border-radius: 2px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 18px 22px;
         }
 
         .stat-box .num {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 28px;
-            font-weight: 300;
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 400;
             color: var(--gold-lt);
             line-height: 1;
         }
 
         .stat-box .lbl {
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .1em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, .3);
-            margin-top: 4px;
+            color: var(--text3);
+            margin-top: 6px;
         }
 
-        /* ── FOOTER ───────────────────────────────────────── */
+        /* ── FOOTER ── */
         footer {
             border-top: 1px solid var(--border);
-            padding: 28px 48px;
+            padding: 28px 52px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         footer p {
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .1em;
-            color: var(--ink-soft);
+            letter-spacing: 0.12em;
+            color: var(--text3);
             text-transform: uppercase;
         }
 
-        /* ── MODAL ────────────────────────────────────────── */
+        /* ── MODAL ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(28, 23, 16, .6);
-            backdrop-filter: blur(6px);
+            background: rgba(8, 7, 6, 0.8);
+            backdrop-filter: blur(10px);
             z-index: 200;
             display: none;
             align-items: center;
@@ -717,66 +948,68 @@
         }
 
         .modal {
-            background: var(--cream);
-            border: 1px solid var(--border);
+            background: var(--surface);
+            border: 1px solid var(--border2);
             width: 100%;
-            max-width: 460px;
-            padding: 40px;
+            max-width: 480px;
+            padding: 44px;
             position: relative;
-            animation: slideUp .3s ease;
+            animation: slideUp 0.3s ease;
         }
 
         @keyframes slideUp {
             from {
-                transform: translateY(16px);
-                opacity: 0;
+                transform: translateY(20px);
+                opacity: 0
             }
 
             to {
                 transform: translateY(0);
-                opacity: 1;
+                opacity: 1
             }
         }
 
         .modal-close {
             position: absolute;
-            top: 16px;
-            right: 20px;
+            top: 18px;
+            right: 22px;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 18px;
-            color: var(--ink-soft);
+            font-size: 16px;
+            color: var(--text3);
             line-height: 1;
+            transition: color 0.2s;
         }
 
         .modal-close:hover {
-            color: var(--ink);
+            color: var(--text);
         }
 
         .modal-label {
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
-            letter-spacing: .16em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--gold);
             margin-bottom: 8px;
         }
 
         .modal-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 24px;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
             font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 4px;
+            color: var(--text);
+            margin-bottom: 6px;
         }
 
         .modal-sub {
             font-size: 12px;
-            color: var(--ink-soft);
+            color: var(--text3);
             margin-bottom: 28px;
-            padding-bottom: 20px;
+            padding-bottom: 22px;
             border-bottom: 1px solid var(--border);
+            line-height: 1.7;
         }
 
         .field {
@@ -785,76 +1018,181 @@
 
         .field label {
             display: block;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: .14em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            color: var(--ink-soft);
-            margin-bottom: 6px;
+            color: var(--text3);
+            margin-bottom: 8px;
         }
 
         .field input {
             width: 100%;
-            background: #fff;
+            background: var(--bg2);
             border: 1px solid var(--border);
             padding: 12px 14px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Syne', sans-serif;
             font-size: 14px;
-            color: var(--ink);
+            color: var(--text);
             outline: none;
-            transition: border-color .2s;
+            transition: border-color 0.2s;
         }
 
         .field input:focus {
             border-color: var(--gold);
         }
 
+        .field input::placeholder {
+            color: var(--text3);
+        }
+
         .modal-summary {
-            background: var(--parchment);
+            background: var(--bg2);
             border: 1px solid var(--border);
             padding: 14px 16px;
             margin: 20px 0;
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
         }
 
         .modal-summary .sum-label {
-            color: var(--ink-soft);
+            color: var(--text3);
         }
 
         .modal-summary .sum-value {
             color: var(--gold);
-            font-weight: 500;
+        }
+
+        .payment-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text3);
+            line-height: 2.1;
+        }
+
+        .payment-box .pay-label {
+            font-size: 8.5px;
+            letter-spacing: 0.16em;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .payment-box strong {
+            color: var(--text);
         }
 
         .modal-submit {
             width: 100%;
-            background: var(--ink);
-            color: #fff;
+            background: var(--gold);
+            color: var(--bg);
             border: none;
             padding: 15px;
             cursor: pointer;
-            font-family: 'DM Mono', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 10px;
-            letter-spacing: .14em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            transition: background .2s;
+            font-weight: 500;
+            transition: background 0.2s;
         }
 
         .modal-submit:hover:not(:disabled) {
-            background: var(--ink-mid);
+            background: var(--gold-lt);
         }
 
         .modal-submit:disabled {
-            opacity: .6;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* ── RESPONSIVE ────────────────────────────────────── */
+        /* ── TOAST ── */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            min-width: 280px;
+            animation: toastIn 0.3s ease;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .toast.closing {
+            animation: toastOut 0.25s ease both;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+        }
+
+        .toast-icon {
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .toast-title {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .toast-body {
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        /* ── FADE IN ── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .fade-in:nth-child(2) {
+            animation-delay: 0.12s;
+        }
+
+        .fade-in:nth-child(3) {
+            animation-delay: 0.24s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
             nav {
                 padding: 16px 24px;
@@ -869,8 +1207,7 @@
                 padding: 0 24px;
             }
 
-            .modules-grid {
-                grid-template-columns: 1fr;
+            .curriculum-container {
                 padding: 0 24px;
             }
 
@@ -887,33 +1224,15 @@
                 display: none;
             }
 
+            .ticker-grid {
+                grid-template-columns: 1fr;
+            }
+
             footer {
                 padding: 24px;
                 flex-direction: column;
                 gap: 8px;
                 text-align: center;
-            }
-        }
-
-        /* ── FADE IN ────────────────────────────────────────── */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(18px);
-            animation: fadeUp .5s ease forwards;
-        }
-
-        .fade-in:nth-child(2) {
-            animation-delay: .1s;
-        }
-
-        .fade-in:nth-child(3) {
-            animation-delay: .2s;
-        }
-
-        @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
             }
         }
     </style>
@@ -947,6 +1266,54 @@
         <h1>The Allocation &amp;<br><em>Execution</em> Academy</h1>
         <p class="hero-sub">Unlock institutional-grade financial mechanics. Choose your clearance level and begin your
             learning journey.</p>
+
+        <div class="market-monitor-wrapper">
+            <div class="monitor-header">
+                <div class="monitor-title-group">
+                    <span class="pulse-indicator"></span>
+                    <h2 class="monitor-heading">// Intelligence Stream // Live Market Matrices</h2>
+                </div>
+                <div class="feed-tabs">
+                    <button class="tab-trigger active" onclick="switchMonitorTab('global', event)">Global
+                        Liquidity</button>
+                    <button class="tab-trigger" onclick="switchMonitorTab('domestic', event)">Domestic Assets
+                        (NSE)</button>
+                </div>
+            </div>
+            <div id="globalMonitorPanel" class="monitor-panel active">
+                <div class="ticker-grid" id="globalTickerGrid">
+                    <div class="ticker-card loading">// Initializing secure API handshake…</div>
+                </div>
+            </div>
+            <div id="domesticMonitorPanel" class="monitor-panel">
+                <div class="ticker-grid">
+                    <div class="ticker-card">
+                        <div class="ticker-meta">Equity // NSE: SCOM</div>
+                        <div class="ticker-asset-name">Safaricom PLC</div>
+                        <div class="ticker-value-row">
+                            <span class="ticker-price">KES 16.45</span>
+                            <span class="ticker-change up">+1.23%</span>
+                        </div>
+                    </div>
+                    <div class="ticker-card">
+                        <div class="ticker-meta">Macro // Central Bank Key Rate</div>
+                        <div class="ticker-asset-name">CBK CBR Rate</div>
+                        <div class="ticker-value-row">
+                            <span class="ticker-price">13.00%</span>
+                            <span class="ticker-change neutral">Hold</span>
+                        </div>
+                    </div>
+                    <div class="ticker-card">
+                        <div class="ticker-meta">Debt // T-Bill 91D Running</div>
+                        <div class="ticker-asset-name">Kenya 91-Day Yield</div>
+                        <div class="ticker-value-row">
+                            <span class="ticker-price">15.82%</span>
+                            <span class="ticker-change down">-0.14%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <div class="divider"></div>
@@ -957,7 +1324,7 @@
             <div>
                 <div class="tier-badge free">Free Access · Tier 01</div>
                 <div class="tier-name">Public Stream</div>
-                <div class="tier-price"><sup></sup>Free</div>
+                <div class="tier-price">Free</div>
                 <div class="tier-freq">Open access · forever</div>
                 <div class="tier-divider"></div>
                 <ul class="tier-features">
@@ -998,39 +1365,27 @@
             <div class="recommended-tag">Recommended</div>
             <div>
                 <div class="tier-badge pro">Pro Suite · Tier 02</div>
-                <div class="tier-name" style="color:#fff">Pro Trader Suite</div>
+                <div class="tier-name">Pro Trader Suite</div>
                 <div class="tier-price"><sup>$</sup>49</div>
                 <div class="tier-freq">per month · billed monthly</div>
                 <div class="tier-divider"></div>
                 <ul class="tier-features">
-                    <li class="active">
-                        <svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                    <li class="active"><svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        Complete Google Drive Vault
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>Complete Google Drive Vault</li>
+                    <li class="active"><svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        Proprietary Valuation Models (.xlsx)
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>Proprietary Valuation Models (.xlsx)</li>
+                    <li class="active"><svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        <strong style="color:#fff">Weekly Live Stream Classes</strong>
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>Weekly Live Stream Classes</li>
+                    <li class="active"><svg class="feat-icon check gold" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        Private Trader Discord Channel
-                    </li>
+                        </svg>Private Trader Discord Channel</li>
                 </ul>
             </div>
             <button onclick="openPaymentModal('pro','KES 6,300 / Month',6300)" class="tier-cta primary">Upgrade to Pro
@@ -1045,34 +1400,22 @@
                 <div class="tier-freq">per month · billed monthly</div>
                 <div class="tier-divider"></div>
                 <ul class="tier-features">
-                    <li class="active">
-                        <svg class="feat-icon check" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                    <li class="active"><svg class="feat-icon check" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        All Pro Assets + Algo Toolkits
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>All Pro Assets + Algo Toolkits</li>
+                    <li class="active"><svg class="feat-icon check" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        <strong>1-on-1 Private Video Coaching</strong>
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>1-on-1 Private Video Coaching</li>
+                    <li class="active"><svg class="feat-icon check" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        Direct WhatsApp Hotline to CEO
-                    </li>
-                    <li class="active">
-                        <svg class="feat-icon check" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                            stroke-width="2">
+                        </svg>Direct WhatsApp Hotline to CEO</li>
+                    <li class="active"><svg class="feat-icon check" viewBox="0 0 16 16" fill="none"
+                            stroke="currentColor" stroke-width="2">
                             <path d="M3 8l3.5 3.5L13 5" />
-                        </svg>
-                        Fund Management Incubation
-                    </li>
+                        </svg>Fund Management Incubation</li>
                 </ul>
             </div>
             <button onclick="openPaymentModal('elite','KES 25,500 / Month',25500)" class="tier-cta outline">Request
@@ -1080,19 +1423,17 @@
         </div>
     </section>
 
-    <!-- FREE MODULES -->
+    <!-- CURRICULUM VAULT -->
     <div class="curriculum-container">
-
-        <div class="tier-bracket">
-            <h3 class="tier-bracket-heading">// CORE MATRIX LEVEL 01: FREE DEPLOYMENTS</h3>
+        <div class="tier-bracket" style="margin-bottom:48px;">
+            <h3 class="tier-bracket-heading">Core Matrix Level 01: Free Deployments</h3>
             <div id="freeTopicsContainer" class="topics-directory-stack"></div>
         </div>
-
-        <div class="tier-bracket" style="margin-top: 60px;">
-            <h3 class="tier-bracket-heading" style="color: #C5A880;">// CORE MATRIX LEVEL 02: PRO TRADER PIPELINES</h3>
+        <div class="tier-bracket">
+            <h3 class="tier-bracket-heading" style="color:var(--gold-lt);">Core Matrix Level 02: Pro Trader Pipelines
+            </h3>
             <div id="premiumTopicsContainer" class="topics-directory-stack"></div>
         </div>
-
     </div>
 
     <!-- LIVE BANNER -->
@@ -1105,15 +1446,15 @@
                 </div>
                 <div class="live-title">Advanced Core Cohort:<br><em>Live Online Classes</em></div>
                 <p class="live-desc">Skip static reading. Join our immersive interactive digital classrooms — advanced
-                    financial engineering models, live macro data tape tracking, and full Inner Circle Trader (ICT)
-                    algorithmic footprints via screen-share sessions.</p>
+                    financial engineering models, live macro data tape tracking, and full ICT algorithmic footprints via
+                    screen-share sessions.</p>
                 <div class="live-perks">
                     <div class="live-perk">
-                        <strong>🎥 Weekly Webinars</strong>
+                        <strong>Weekly Webinars</strong>
                         <p>Every Saturday — interactive screen studies &amp; backtesting logs.</p>
                     </div>
                     <div class="live-perk">
-                        <strong>💻 Live Tape Review</strong>
+                        <strong>Live Tape Review</strong>
                         <p>Real-time CBK interest analysis &amp; currency trend sessions.</p>
                     </div>
                 </div>
@@ -1147,15 +1488,14 @@
 
     <!-- PAYMENT MODAL -->
     <div id="paymentModal" class="modal-overlay">
-        <div class="modal">
+        <div class="modal" style="max-width:520px;">
             <button class="modal-close" onclick="closePaymentModal()">✕</button>
-            <div class="modal-label">Lipa na M-Pesa Gateway</div>
-            <div class="modal-title">Activate Your Clearance</div>
-            <p class="modal-sub">Complete the form below — an STK Push will be sent to your M-Pesa handset.</p>
 
-            <form id="academyRegistrationForm" onsubmit="triggerSTKPush(event)">
-                <input type="hidden" id="selectedTierPrice" />
-                <input type="hidden" id="selectedTierName" />
+            <div id="modalStateForm">
+                <div class="modal-label">Access Request Gateway</div>
+                <div class="modal-title">Request Tier Clearance</div>
+                <p class="modal-sub">Complete the form below. Payment instructions will be sent to your email
+                    immediately.</p>
 
                 <div class="field">
                     <label>Full Legal Name</label>
@@ -1163,11 +1503,11 @@
                 </div>
                 <div class="field">
                     <label>Email Address</label>
-                    <input type="email" id="acEmail" required placeholder="e.g. david@sterling.com" />
+                    <input type="email" id="acEmail" required placeholder="e.g. david@example.com" />
                 </div>
                 <div class="field">
-                    <label>M-Pesa Number (254...)</label>
-                    <input type="text" id="acPhone" required placeholder="e.g. 254700021380" />
+                    <label>Phone Number (WhatsApp preferred)</label>
+                    <input type="text" id="acPhone" required placeholder="e.g. 0712345678" />
                 </div>
 
                 <div class="modal-summary">
@@ -1175,190 +1515,397 @@
                     <span class="sum-value" id="modalPriceText">—</span>
                 </div>
 
-                <button type="submit" id="paySubmitBtn" class="modal-submit">
-                    Initialize STK Push →
+                <div class="payment-box">
+                    <div class="pay-label">Payment Channels Available</div>
+                    <div>M-Pesa → <strong>0700021380</strong> (Brian Angwenyi)</div>
+                    <div>PayPal → <strong>atikabryan@gmail.com</strong></div>
+                    <div>KCB Bank → <strong>A/C 1286766966</strong> (Brian Angwenyi Atika, Thika)</div>
+                </div>
+
+                <button type="button" id="paySubmitBtn" class="modal-submit" onclick="requestAccess()">
+                    Send Me Payment Instructions →
                 </button>
-            </form>
+            </div>
+
+            <div id="modalStateSuccess" style="display:none;text-align:center;padding:20px 0;">
+                <div style="font-size:36px;margin-bottom:16px;">✅</div>
+                <div class="modal-label" style="text-align:center;">Request Received</div>
+                <div class="modal-title" style="font-size:22px;margin-bottom:12px;">Check Your Email</div>
+                <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:24px;">
+                    Payment instructions have been sent to <strong id="successEmail"
+                        style="color:var(--text)"></strong>.<br><br>
+                    Complete payment using any listed channel, then reply with your confirmation screenshot. Your login
+                    credentials will arrive within <strong style="color:var(--gold)">24 hours</strong>.
+                </p>
+                <div
+                    style="background:var(--bg2);border:1px solid rgba(201,151,63,0.2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:24px;letter-spacing:0.12em;">
+                    Questions? WhatsApp +254700021380
+                </div>
+                <button onclick="closePaymentModal()" class="modal-submit">Close</button>
+            </div>
+
+            <div id="modalStateError" style="display:none;text-align:center;padding:20px 0;">
+                <div style="font-size:32px;margin-bottom:16px;">⚠️</div>
+                <div class="modal-title" style="font-size:20px;margin-bottom:12px;">Submission Failed</div>
+                <p id="errorDetail"
+                    style="font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;background:rgba(208,80,80,0.06);border:1px solid rgba(208,80,80,0.2);padding:10px 14px;margin-bottom:16px;text-align:left;">
+                </p>
+                <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">Contact us directly:
+                </p>
+                <div
+                    style="background:var(--bg2);padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;margin-bottom:20px;color:var(--text2);">
+                    <div>atikabryan@gmail.com</div>
+                    <div>WhatsApp: +254700021380</div>
+                </div>
+                <button onclick="showModalState('form')" class="modal-submit">Try Again</button>
+            </div>
         </div>
     </div>
 
-    <!-- Supabase client library -->
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- ── SCRIPTS ── Load order matters: Supabase first, then EmailJS, then app code ── -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
-        // ── CONFIG ──────────────────────────────────────────────────────────
-        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
+        /* ══════════════════════════════════════════════════════════
+           FIX 1 — Initialize Supabase client BEFORE anything else
+           (was missing entirely in the original — caused the
+           "supabaseClient is not defined" ReferenceError)
+        ══════════════════════════════════════════════════════════ */
+        const supabaseClient = supabase.createClient(
+            "https://prxlshwbirmtajtworzc.supabase.co",
+            "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD"
+        );
 
-        // ✅ FIX 1: Actually initialize the Supabase client
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        /* ── EmailJS init ── */
+        emailjs.init("79XBeB0GrM6rEKRnR");
 
-        // ── MODAL HELPERS ────────────────────────────────────────────────────
-        function scrollToModules() {
-            // ✅ FIX 2: Target an ID that actually exists
-            document.getElementById('freeTopicsContainer').scrollIntoView({ behavior: 'smooth' });
+        /* ── Constants ── */
+        const EMAILJS_SERVICE_ID = "service_ys967c9";
+        const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";
+        const KES_TO_USD = 130;
+
+        /* ── Toast helper ── */
+        function showToast(type, title, body) {
+            const icons = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
+            const colors = { success: "#3DAA7A", error: "#D05050", warning: "#C9973F", info: "#C9973F" };
+            const el = document.createElement("div");
+            el.className = "toast";
+            el.innerHTML = `
+                <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
+                <div>
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-body">${body}</div>
+                </div>`;
+            document.getElementById("toast-container").appendChild(el);
+            setTimeout(() => {
+                el.classList.add("closing");
+                setTimeout(() => el.remove(), 300);
+            }, 4000);
         }
 
+        /* ── Modal state switcher ── */
+        function showModalState(state) {
+            document.getElementById("modalStateForm").style.display = state === "form" ? "block" : "none";
+            document.getElementById("modalStateSuccess").style.display = state === "success" ? "block" : "none";
+            document.getElementById("modalStateError").style.display = state === "error" ? "block" : "none";
+        }
+
+        /* ── Open payment modal ── */
         function openPaymentModal(tier, costString, amount) {
-            document.getElementById('selectedTierName').value = tier;
-            document.getElementById('selectedTierPrice').value = amount;
-            document.getElementById('modalTierText').innerText = tier.toUpperCase();
-            document.getElementById('modalPriceText').innerText = costString;
-            document.getElementById('paymentModal').classList.add('open');
+            // Reset fields
+            document.getElementById("acName").value = "";
+            document.getElementById("acEmail").value = "";
+            document.getElementById("acPhone").value = "";
+
+            // Store selected tier data
+            document.getElementById("modalTierText").innerText = tier === "pro" ? "Pro Trader Suite" : "Elite Institutional";
+            document.getElementById("modalPriceText").innerText = costString;
+
+            // Tag the button with tier data (avoids hidden inputs)
+            const btn = document.getElementById("paySubmitBtn");
+            btn.dataset.tier = tier;
+            btn.dataset.price = costString;
+            btn.dataset.amount = amount;
+
+            showModalState("form");
+            document.getElementById("paymentModal").classList.add("open");
         }
 
+        /* ── Close payment modal ── */
         function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('open');
-            document.getElementById('academyRegistrationForm').reset();
+            document.getElementById("paymentModal").classList.remove("open");
         }
 
+        /* ── Close on overlay click ── */
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('paymentModal').addEventListener('click', function (e) {
+            document.getElementById("paymentModal").addEventListener("click", function (e) {
                 if (e.target === this) closePaymentModal();
             });
         });
 
-        async function triggerSTKPush(e) {
-            e.preventDefault();
-            const btn = document.getElementById('paySubmitBtn');
-            btn.innerText = 'Transmitting securely…';
+        /* ══════════════════════════════════════════════════════════
+           FIX 2 — requestAccess rewritten:
+           • Validates fields before attempting DB write
+           • Inserts into access_requests with correct column names
+           • 10-second timeout so it never hangs forever
+           • Only shows success AFTER confirmed DB insert
+           • Email failure is non-fatal (record already saved)
+        ══════════════════════════════════════════════════════════ */
+        async function requestAccess() {
+            const name = document.getElementById("acName").value.trim();
+            const email = document.getElementById("acEmail").value.trim();
+            const phone = document.getElementById("acPhone").value.trim();
+
+            if (!name || !email || !phone) {
+                showToast("warning", "Missing Fields", "Please fill in all fields before submitting.");
+                return;
+            }
+
+            const btn = document.getElementById("paySubmitBtn");
+            const tier = btn.dataset.tier;
+            const costString = btn.dataset.price;
+            const amountNum = parseInt(btn.dataset.amount, 10);
+            const amountUSD = (amountNum / KES_TO_USD).toFixed(2);
+            const tierLabel = tier === "pro"
+                ? "Pro Trader Suite ($49/mo — KES 6,300)"
+                : "Elite Institutional ($199/mo — KES 25,500)";
+            const timestamp = new Date().toLocaleString("en-KE", { timeZone: "Africa/Nairobi" });
+
+            btn.innerText = "Sending…";
             btn.disabled = true;
 
-            const payload = {
-                name: document.getElementById('acName').value,
-                email: document.getElementById('acEmail').value,
-                phone: document.getElementById('acPhone').value,
-                amount: document.getElementById('selectedTierPrice').value,
-                tier: document.getElementById('selectedTierName').value
-            };
-
+            /* ── Step 1: Insert into Supabase with a 10-second timeout ── */
             try {
-                // ✅ FIX 3: Use the correct edge-function endpoint pattern
-                const res = await fetch(`${SUPABASE_URL}/functions/v1/mpesa-stkpush`, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
-                if (res.ok && result.success) {
-                    alert('M-Pesa prompt sent — enter your PIN on your handset to complete payment.');
-                    closePaymentModal();
-                } else {
-                    throw new Error(result.error || 'Gateway verification failed');
+                const insertPromise = supabaseClient
+                    .from("access_requests")
+                    .insert([{
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        tier: tier,
+                        amount_kes: amountNum,
+                        status: "pending",
+                        requested_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() =>
+                        reject(new Error("Request timed out (10s). Check your Supabase RLS policies — the anon key may not have INSERT permission on access_requests.")),
+                        10000
+                    )
+                );
+
+                const result = await Promise.race([insertPromise, timeoutPromise]);
+
+                if (result.error) {
+                    throw new Error("DB Error: " + result.error.message);
                 }
-            } catch (err) {
-                alert('Error: ' + err.message);
-                btn.innerText = 'Initialize STK Push →';
+
+            } catch (dbErr) {
+                showModalState("error");
+                document.getElementById("errorDetail").textContent = dbErr.message;
+                btn.innerText = "Send Me Payment Instructions →";
                 btn.disabled = false;
+                return; // Stop here — do not send email or show success
             }
+
+            /* ── Step 2: Send email — non-fatal if it fails ── */
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
+                    to_email: email,
+                    to_name: name,
+                    client_name: name,
+                    client_phone: phone,
+                    tier: tierLabel,
+                    amount: costString,
+                    amount_usd: "$" + amountUSD + " USD",
+                    timestamp: timestamp
+                });
+            } catch (emailErr) {
+                // Email failed but DB record is already saved — log and continue
+                console.warn("EmailJS send failed (record still saved in Supabase):", emailErr);
+                showToast("warning", "Email Notice", "Your request was saved but the confirmation email failed. We will contact you directly.");
+            }
+
+            /* ── Step 3: Show success ── */
+            document.getElementById("successEmail").innerText = email;
+            showModalState("success");
+            btn.innerText = "Send Me Payment Instructions →";
+            btn.disabled = false;
         }
 
-        // ── CURRICULUM ENGINE ────────────────────────────────────────────────
-        const activeProfileTier = "free"; // switch to 'pro' or 'elite' to test gating
+        /* ══════════════════════════════════════════════════════════
+           FIX 3 — generateTopicNode: removed nested quotes inside
+           template literals that caused the SyntaxError on line ~1544.
+           onclick now calls named functions instead of inline strings.
+        ══════════════════════════════════════════════════════════ */
+        const activeProfileTier = "free";
 
         async function initializeCurriculumSystem() {
             const freeContainer = document.getElementById("freeTopicsContainer");
             const premiumContainer = document.getElementById("premiumTopicsContainer");
-
-            // Show loading state while fetching
-            freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// LOADING INTEL MATRIX…</div>`;
-            premiumContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// LOADING INTEL MATRIX…</div>`;
+            const loadingMsg = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// Loading intel matrix…</div>`;
+            freeContainer.innerHTML = loadingMsg;
+            premiumContainer.innerHTML = loadingMsg;
 
             try {
                 const { data: topics, error: topicsErr } = await supabaseClient
-                    .from('academy_topics')
-                    .select('*')
-                    .order('display_order', { ascending: true });
+                    .from("academy_topics")
+                    .select("*")
+                    .order("display_order", { ascending: true });
+
                 if (topicsErr) throw topicsErr;
 
                 const { data: materials, error: matErr } = await supabaseClient
-                    .from('academy_materials')
-                    .select('*');
+                    .from("academy_materials")
+                    .select("*");
+
                 if (matErr) throw matErr;
 
                 freeContainer.innerHTML = "";
                 premiumContainer.innerHTML = "";
 
                 if (!topics || topics.length === 0) {
-                    freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// NO TOPICS FOUND IN DATABASE</div>`;
-                    premiumContainer.innerHTML = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// NO TOPICS FOUND IN DATABASE</div>`;
+                    const emptyMsg = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// No topics found in database</div>`;
+                    freeContainer.innerHTML = emptyMsg;
+                    premiumContainer.innerHTML = emptyMsg;
                     return;
                 }
 
                 topics.forEach(topic => {
-                    const isFree = topic.tier_requirement === 'free';
-                    const hasClearance = isFree || activeProfileTier === 'pro' || activeProfileTier === 'elite';
+                    const isFree = topic.tier_requirement === "free";
+                    const hasClearance = isFree || activeProfileTier === "pro" || activeProfileTier === "elite";
                     const linked = (materials || []).filter(m => m.topic_id === topic.id);
                     const cardHTML = generateTopicNode(topic, linked, hasClearance);
-
-                    if (isFree) {
-                        freeContainer.insertAdjacentHTML('beforeend', cardHTML);
-                    } else {
-                        premiumContainer.insertAdjacentHTML('beforeend', cardHTML);
-                    }
+                    if (isFree) freeContainer.insertAdjacentHTML("beforeend", cardHTML);
+                    else premiumContainer.insertAdjacentHTML("beforeend", cardHTML);
                 });
 
             } catch (err) {
-                console.error("Curriculum engine failure:", err.message);
-                freeContainer.innerHTML = `<div style="padding:16px 24px;color:#EF4444;font-size:11px;">// ERROR: ${err.message}</div>`;
+                freeContainer.innerHTML = `<div style="padding:16px 24px;color:var(--red);font-family:'JetBrains Mono',monospace;font-size:10px;">// Error: ${escHtml(err.message)}</div>`;
             }
         }
 
+        /* FIX: onclick no longer uses nested quotes inside template literals */
         function generateTopicNode(topic, materials, hasClearance) {
             let materialRows = "";
 
             if (hasClearance) {
                 if (materials.length === 0) {
-                    materialRows = `<div style="padding:16px 24px;color:var(--ink-soft);font-size:11px;">// INTEL DATA PIPELINE STAGING…</div>`;
+                    materialRows = `<div style="padding:16px 24px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;">// Intel data pipeline staging…</div>`;
                 } else {
                     materials.forEach(mat => {
                         materialRows += `
-            <a href="${mat.secure_download_url}" target="_blank" class="material-row-link">
-              <span>📄 ${mat.file_name}</span>
-              <span class="download-icon-indicator">STREAM MODULE ➔</span>
-            </a>`;
+                            <a href="${escHtml(mat.secure_download_url)}" target="_blank" class="material-row-link">
+                                <span>📄 ${escHtml(mat.file_name)}</span>
+                                <span class="download-icon-indicator">Stream Module →</span>
+                            </a>`;
                     });
                 }
             }
 
-            const lockAction = `alert('Upgrade your clearance tier to unlock this course stream.')`;
-            const openAction = `toggleTray(this)`;
+            /* Use data attributes + separate JS handler — NO nested quotes */
+            const onclickStr = hasClearance
+                ? `onclick="toggleTray(this)"`
+                : `onclick="showUpgradeAlert()"`;
+
+            const badgeStyle = hasClearance
+                ? `color:var(--green);border-color:rgba(61,170,122,0.3);`
+                : `color:var(--red);border-color:rgba(208,80,80,0.3);`;
+
+            const badgeText = hasClearance ? "Open Access" : "Locked · Upgrade";
+            const lockStyle = hasClearance ? "" : `opacity:0.4;`;
 
             return `
-      <div class="topic-node-block ${hasClearance ? 'unlocked' : 'locked'}"
-           style="${!hasClearance ? 'opacity:0.45;' : ''}">
-        <div class="topic-header-trigger"
-             onclick="${hasClearance ? openAction : lockAction}">
-          <div>
-            <div class="topic-title-text">${topic.title.toUpperCase()}</div>
-            <div class="topic-summary">${topic.summary}</div>
-          </div>
-          <span class="status-badge"
-                style="${hasClearance
-                    ? 'color:#00A388;border-color:rgba(0,163,136,0.2);'
-                    : 'color:#EF4444;border-color:rgba(239,68,68,0.2);'}">
-            ${hasClearance ? 'OPEN ACCESS' : 'LOCKED // UPGRADE'}
-          </span>
-        </div>
-        <div class="asset-vault-tray">
-          ${materialRows}
-        </div>
-      </div>`;
+                <div class="topic-node-block ${hasClearance ? "unlocked" : "locked"}" style="${lockStyle}">
+                    <div class="topic-header-trigger" ${onclickStr}>
+                        <div>
+                            <div class="topic-title-text">${escHtml(topic.title)}</div>
+                            <div class="topic-summary">${escHtml(topic.summary)}</div>
+                        </div>
+                        <span class="status-badge" style="${badgeStyle}">${badgeText}</span>
+                    </div>
+                    <div class="asset-vault-tray">${materialRows}</div>
+                </div>`;
+        }
+
+        /* Named function — no inline alert string needed */
+        function showUpgradeAlert() {
+            showToast("info", "Clearance Required", "Upgrade your tier to unlock this course stream.");
         }
 
         function toggleTray(headerElement) {
-            const tray = headerElement.parentElement.querySelector('.asset-vault-tray');
-            document.querySelectorAll('.asset-vault-tray').forEach(t => {
-                if (t !== tray) t.classList.remove('expanded');
+            const tray = headerElement.parentElement.querySelector(".asset-vault-tray");
+            document.querySelectorAll(".asset-vault-tray").forEach(t => {
+                if (t !== tray) t.classList.remove("expanded");
             });
-            tray.classList.toggle('expanded');
+            tray.classList.toggle("expanded");
         }
 
-        document.addEventListener("DOMContentLoaded", initializeCurriculumSystem);
+        function scrollToModules() {
+            document.querySelector(".curriculum-container").scrollIntoView({ behavior: "smooth" });
+        }
+
+        function escHtml(str) {
+            return String(str ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        /* ── Market Monitor ── */
+        function switchMonitorTab(targetTab, event) {
+            document.querySelectorAll(".tab-trigger").forEach(btn => btn.classList.remove("active"));
+            document.querySelectorAll(".monitor-panel").forEach(panel => panel.classList.remove("active"));
+            event.currentTarget.classList.add("active");
+            document.getElementById(
+                targetTab === "global" ? "globalMonitorPanel" : "domesticMonitorPanel"
+            ).classList.add("active");
+        }
+
+        function generateTickerCard(meta, name, price, change) {
+            const dir = change >= 0 ? "up" : "down";
+            const sign = change >= 0 ? "+" : "";
+            return `
+                <div class="ticker-card">
+                    <div class="ticker-meta">${meta}</div>
+                    <div class="ticker-asset-name">${name}</div>
+                    <div class="ticker-value-row">
+                        <span class="ticker-price">${price}</span>
+                        <span class="ticker-change ${dir}">${sign}${change.toFixed(2)}%</span>
+                    </div>
+                </div>`;
+        }
+
+        async function fetchGlobalLiquidityMetrics() {
+            const container = document.getElementById("globalTickerGrid");
+            try {
+                const response = await fetch(
+                    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true"
+                );
+                if (!response.ok) throw new Error("Data pipeline error");
+                const data = await response.json();
+                container.innerHTML = "";
+                container.insertAdjacentHTML("beforeend", generateTickerCard("Macro // Digital Gold Base", "Bitcoin / USD", data.bitcoin.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.bitcoin.usd_24h_change));
+                container.insertAdjacentHTML("beforeend", generateTickerCard("DeFi Backbone Matrix", "Ethereum / USD", data.ethereum.usd.toLocaleString("en-US", { minimumFractionDigits: 2 }), data.ethereum.usd_24h_change));
+                container.insertAdjacentHTML("beforeend", generateTickerCard("Global Liquidity Proxy", "EUR / USD", (1.0845).toFixed(4), 0.12));
+            } catch (error) {
+                container.innerHTML = `<div class="ticker-card loading" style="color:var(--gold);">// Stream latency detected — queuing alternate nodes…</div>`;
+            }
+        }
+
+        /* ── Boot ── */
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeCurriculumSystem();
+            fetchGlobalLiquidityMetrics();
+        });
     </script>
 </body>
 

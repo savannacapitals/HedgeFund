@@ -11,6 +11,7 @@
         rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <style>
         /* ─── CSS Variables ─────────────────────────────── */
@@ -28,12 +29,15 @@
             --emerald-dim: rgba(52, 211, 153, 0.12);
             --amber: #F59E0B;
             --red: #F87171;
+            --violet: #A78BFA;
             --text: #D4CECC;
             --muted: #5A6070;
             --muted2: #3A3F4C;
         }
 
-        * {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -48,7 +52,6 @@
             overflow-x: hidden;
         }
 
-        /* ─── Scrollbar ─────────────────────────────────── */
         ::-webkit-scrollbar {
             width: 3px;
             height: 3px;
@@ -63,7 +66,6 @@
             border-radius: 2px;
         }
 
-        /* ─── Noise Texture Overlay ─────────────────────── */
         body::before {
             content: '';
             position: fixed;
@@ -74,7 +76,6 @@
             opacity: 0.4;
         }
 
-        /* ─── Ambient Glow ──────────────────────────────── */
         .glow-bg {
             position: fixed;
             width: 600px;
@@ -97,7 +98,7 @@
             background: rgba(52, 211, 153, 0.03);
         }
 
-        /* ─── NAV ───────────────────────────────────────── */
+        /* ─── NAV ─────────────────────────────────────────── */
         nav {
             position: fixed;
             top: 0;
@@ -187,15 +188,15 @@
 
         @keyframes pulse-ring {
             0% {
-                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5)
             }
 
             70% {
-                box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+                box-shadow: 0 0 0 8px rgba(52, 211, 153, 0)
             }
 
             100% {
-                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0)
             }
         }
 
@@ -213,16 +214,15 @@
             color: var(--red);
         }
 
-        /* ─── MAIN LAYOUT ───────────────────────────────── */
+        /* ─── MAIN ──────────────────────────────────────── */
         main {
-            padding: 80px 28px 40px;
+            padding: 80px 28px 60px;
             max-width: 1600px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
-        /* ─── PAGE HEADER ───────────────────────────────── */
         .page-header {
             margin-bottom: 32px;
             animation: fadeUp 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -270,16 +270,16 @@
             }
         }
 
-        /* ─── STAT CARDS ────────────────────────────────── */
+        /* ─── STATS ─────────────────────────────────────── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 12px;
             margin-bottom: 24px;
             animation: fadeUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -322,6 +322,14 @@
             opacity: 1;
         }
 
+        .stat-card.academy-card::before {
+            background: linear-gradient(90deg, transparent, var(--violet), transparent);
+        }
+
+        .stat-card.academy-card:hover {
+            border-color: rgba(167, 139, 250, 0.25);
+        }
+
         .stat-label {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
@@ -351,6 +359,10 @@
             color: var(--amber);
         }
 
+        .stat-value.violet {
+            color: var(--violet);
+        }
+
         .stat-delta {
             font-family: 'DM Mono', monospace;
             font-size: 9px;
@@ -362,7 +374,7 @@
             color: var(--emerald);
         }
 
-        /* ─── SECTION WRAPPER ───────────────────────────── */
+        /* ─── PANEL ─────────────────────────────────────── */
         .panel {
             background: var(--card);
             border: 1px solid var(--border);
@@ -400,7 +412,7 @@
             padding: 22px;
         }
 
-        /* ─── ALLOCATION FORM ───────────────────────────── */
+        /* ─── ALLOC FORM ────────────────────────────────── */
         .alloc-panel {
             animation: fadeUp 0.6s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
             margin-bottom: 24px;
@@ -469,27 +481,13 @@
             padding: 9px 20px;
             border: none;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
             white-space: nowrap;
-        }
-
-        .btn-execute::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0);
-            transition: background 0.2s;
         }
 
         .btn-execute:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 24px rgba(200, 169, 110, 0.25);
-        }
-
-        .btn-execute:active {
-            transform: translateY(0);
         }
 
         /* ─── BOTTOM GRID ───────────────────────────────── */
@@ -512,7 +510,18 @@
             }
         }
 
-        /* ─── INVESTOR SEARCH ───────────────────────────── */
+        /* ─── ACADEMY SECTION ───────────────────────────── */
+        .academy-section {
+            margin-top: 24px;
+            animation: fadeUp 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .academy-panel-head {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.05), transparent);
+            border-bottom-color: rgba(167, 139, 250, 0.12) !important;
+        }
+
+        /* ─── SEARCH / TABLE ────────────────────────────── */
         .search-bar {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
@@ -533,7 +542,6 @@
             border-color: var(--gold-dim);
         }
 
-        /* ─── TABLE ─────────────────────────────────────── */
         .inv-table {
             width: 100%;
             border-collapse: collapse;
@@ -653,6 +661,104 @@
             border-color: var(--gold);
         }
 
+        /* Academy-specific action buttons */
+        .btn-approve {
+            color: var(--emerald);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-approve:hover {
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .btn-approve:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-reject {
+            color: var(--muted2);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 6px;
+            transition: color 0.2s;
+        }
+
+        .btn-reject:hover {
+            color: var(--red);
+        }
+
+        .btn-resend {
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid rgba(200, 169, 110, 0.2);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-resend:hover {
+            background: rgba(200, 169, 110, 0.08);
+        }
+
+        /* ─── BADGES ────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        .badge-pending {
+            color: var(--amber);
+            border-color: rgba(245, 158, 11, 0.25);
+            background: rgba(245, 158, 11, 0.06);
+        }
+
+        .badge-approved {
+            color: var(--emerald);
+            border-color: rgba(52, 211, 153, 0.25);
+            background: rgba(52, 211, 153, 0.06);
+        }
+
+        .badge-revoked {
+            color: var(--red);
+            border-color: rgba(248, 113, 113, 0.25);
+            background: rgba(248, 113, 113, 0.06);
+        }
+
+        .badge-pro {
+            color: var(--gold);
+            border-color: rgba(200, 169, 110, 0.3);
+            background: rgba(200, 169, 110, 0.07);
+        }
+
+        .badge-elite {
+            color: var(--violet);
+            border-color: rgba(167, 139, 250, 0.25);
+            background: rgba(167, 139, 250, 0.07);
+        }
+
         /* ─── REVENUE TABLE ─────────────────────────────── */
         .rev-table {
             width: 100%;
@@ -736,6 +842,10 @@
             background: var(--red);
         }
 
+        .feed-dot.violet {
+            background: var(--violet);
+        }
+
         .feed-text {
             font-family: 'DM Mono', monospace;
             font-size: 10px;
@@ -748,7 +858,165 @@
             color: var(--muted);
         }
 
-        /* ─── HOTKEYS BAR ───────────────────────────────── */
+        /* ─── TABS ──────────────────────────────────────── */
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid var(--border2);
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn.active {
+            color: var(--violet);
+            border-bottom-color: var(--violet);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text);
+        }
+
+        /* ─── CREDENTIAL MODAL ──────────────────────────── */
+        #credModal {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(3, 5, 10, 0.92);
+            backdrop-filter: blur(16px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        #credModal.open {
+            display: flex;
+        }
+
+        .cred-box {
+            background: var(--card2);
+            border: 1px solid rgba(167, 139, 250, 0.25);
+            width: 100%;
+            max-width: 480px;
+            animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(12px);
+            }
+        }
+
+        .cred-head {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.06), transparent);
+        }
+
+        .cred-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .cred-close {
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .cred-close:hover {
+            color: var(--red);
+        }
+
+        .cred-body {
+            padding: 24px;
+        }
+
+        .cred-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .cred-block .cb-lbl {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .cred-block .cb-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+        }
+
+        .cred-warning {
+            background: rgba(248, 113, 113, 0.06);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            padding: 12px 14px;
+            margin: 14px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--red);
+            line-height: 1.7;
+        }
+
+        .btn-send-creds {
+            width: 100%;
+            background: linear-gradient(135deg, #A78BFA, #7C5FD4);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border: none;
+            padding: 13px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-send-creds:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(167, 139, 250, 0.25);
+        }
+
+        .btn-send-creds:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ─── HOTKEY BAR ────────────────────────────────── */
         .hotkey-bar {
             position: fixed;
             bottom: 0;
@@ -867,7 +1135,7 @@
             }
         }
 
-        /* ─── MODAL ─────────────────────────────────────── */
+        /* ─── INVESTOR MODAL ────────────────────────────── */
         #investorModal {
             position: fixed;
             inset: 0;
@@ -890,13 +1158,6 @@
             width: 100%;
             max-width: 480px;
             animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.96) translateY(12px);
-            }
         }
 
         .modal-head {
@@ -964,7 +1225,7 @@
             box-shadow: 0 8px 24px rgba(200, 169, 110, 0.25);
         }
 
-        /* ─── SKELETON LOADER ───────────────────────────── */
+        /* ─── SKELETON ──────────────────────────────────── */
         .skeleton {
             background: linear-gradient(90deg, var(--card) 25%, var(--card2) 50%, var(--card) 75%);
             background-size: 200% 100%;
@@ -979,12 +1240,6 @@
             }
         }
 
-        /* ─── NUMBER COUNTER ANIMATION ──────────────────── */
-        .count-up {
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* ─── SECTION ANIMATIONS ────────────────────────── */
         .fade-in-section {
             opacity: 0;
             transform: translateY(12px);
@@ -994,13 +1249,11 @@
             animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* ─── SCROLLABLE INNER ──────────────────────────── */
         .inner-scroll {
             overflow-y: auto;
             max-height: 340px;
         }
 
-        /* ─── PANEL GLOW ACCENT ─────────────────────────── */
         .panel-glow::after {
             content: '';
             position: absolute;
@@ -1012,7 +1265,6 @@
             pointer-events: none;
         }
 
-        /* ─── SECTION TAG PILL ──────────────────────────── */
         .pill {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
@@ -1040,7 +1292,12 @@
             background: rgba(200, 169, 110, 0.05);
         }
 
-        /* ─── DIVIDER LINE ──────────────────────────────── */
+        .pill-violet {
+            color: var(--violet);
+            border-color: rgba(167, 139, 250, 0.2);
+            background: rgba(167, 139, 250, 0.05);
+        }
+
         .divider {
             height: 1px;
             background: var(--border);
@@ -1050,8 +1307,6 @@
 </head>
 
 <body>
-
-    <!-- Ambient glows -->
     <div class="glow-bg glow-1"></div>
     <div class="glow-bg glow-2"></div>
 
@@ -1069,7 +1324,6 @@
                 <div class="nav-sub">CEO Central Command Terminal</div>
             </div>
         </div>
-
         <div class="nav-right">
             <div class="pulse-dot"></div>
             <div class="live-clock" id="liveClock">—</div>
@@ -1081,14 +1335,13 @@
     <!-- ─── MAIN ──────────────────────────────────────── -->
     <main>
 
-        <!-- Page Header -->
         <div class="page-header">
             <h1>Central <em>Command</em></h1>
-            <p>Consolidated fund operations · Real-time allocation engine · Live investor matrix</p>
+            <p>Consolidated fund operations · Allocation engine · Investor matrix · Academy clearance desk</p>
             <div class="header-line"></div>
         </div>
 
-        <!-- ─── STATS GRID ─────────────────────────────── -->
+        <!-- ─── STATS (6 cards: 5 original + 1 academy) ── -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Consolidated Fund AUM</div>
@@ -1115,13 +1368,19 @@
                 <div class="stat-value amber" id="pendingIntakesCount">0</div>
                 <div class="stat-delta">Awaiting review</div>
             </div>
+            <!-- NEW: Academy stat -->
+            <div class="stat-card academy-card">
+                <div class="stat-label">Academy Pending</div>
+                <div class="stat-value violet" id="academyPendingCount">0</div>
+                <div class="stat-delta">Awaiting approval</div>
+            </div>
         </div>
 
-        <!-- ─── ALLOCATION PANEL ───────────────────────── -->
+        <!-- ─── ALLOCATION PANEL ──────────────────────── -->
         <div class="panel alloc-panel panel-glow">
             <div class="panel-head">
                 <div>
-                    <div class="panel-title" style="color: var(--gold);">Execute Master Profit Allocation</div>
+                    <div class="panel-title" style="color:var(--gold);">Execute Master Profit Allocation</div>
                     <div class="panel-sub">Distributes gains pro-rata &amp; computes performance retention</div>
                 </div>
                 <div class="pill pill-green">Target Pacing: 18.00% p.a.</div>
@@ -1151,7 +1410,7 @@
             </div>
         </div>
 
-        <!-- ─── BOTTOM GRID ────────────────────────────── -->
+        <!-- ─── BOTTOM GRID ───────────────────────────── -->
         <div class="bottom-grid">
 
             <!-- Investor Matrix -->
@@ -1161,7 +1420,7 @@
                         <div class="panel-title">Live Investor Management Matrix</div>
                         <div class="panel-sub">Real-time write / update control to Supabase</div>
                     </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
+                    <div style="display:flex;gap:10px;align-items:center;">
                         <input type="text" class="search-bar" id="investorSearch" placeholder="Search investor…"
                             oninput="filterInvestors(this.value)" />
                         <button class="btn-new" onclick="openInvestorModal(null)">+ Issue Account</button>
@@ -1181,7 +1440,7 @@
                             </thead>
                             <tbody id="investorTableBody">
                                 <tr>
-                                    <td colspan="5" style="padding:24px 0; text-align:center;">
+                                    <td colspan="5" style="padding:24px 0;text-align:center;">
                                         <div class="skeleton" style="width:60%;margin:auto;"></div>
                                     </td>
                                 </tr>
@@ -1213,7 +1472,7 @@
                             <tbody id="corporateTableBody">
                                 <tr>
                                     <td colspan="3"
-                                        style="padding:20px 0; text-align:center; color:var(--muted); font-family:'DM Mono',monospace; font-size:10px;">
+                                        style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">
                                         Loading ledger…</td>
                                 </tr>
                             </tbody>
@@ -1242,15 +1501,51 @@
 
         </div><!-- /bottom-grid -->
 
+        <!-- ══════════════════════════════════════════════ -->
+        <!--  ACADEMY CLEARANCE DESK                        -->
+        <!-- ══════════════════════════════════════════════ -->
+        <div class="academy-section">
+            <div class="panel fade-in-section">
+                <div class="panel-head academy-panel-head">
+                    <div>
+                        <div class="panel-title" style="color:var(--violet);">Academy Clearance Desk</div>
+                        <div class="panel-sub">Access requests · Credential issuance · Subscription management</div>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <input type="text" class="search-bar" id="academySearch" placeholder="Search requests…"
+                            oninput="filterAcademyRequests(this.value)" style="border-color:rgba(167,139,250,0.2);" />
+                        <button class="btn-new" onclick="loadAcademyRequests()"
+                            style="border-color:rgba(167,139,250,0.3);color:var(--violet);">↻ Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Tab bar -->
+                <div class="tab-bar" style="padding:0 22px;">
+                    <button class="tab-btn active" onclick="switchAcademyTab('pending',this)">Pending</button>
+                    <button class="tab-btn" onclick="switchAcademyTab('approved',this)">Approved</button>
+                    <button class="tab-btn" onclick="switchAcademyTab('revoked',this)">Revoked</button>
+                    <button class="tab-btn" onclick="switchAcademyTab('all',this)">All</button>
+                </div>
+
+                <div class="panel-body" style="padding-top:14px;">
+                    <div class="inner-scroll" style="max-height:400px;" id="academyTableWrapper">
+                        <p
+                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center;">
+                            Loading academy requests…</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- ─── HOTKEY BAR ────────────────────────────────── -->
+    <!-- ─── HOTKEY BAR ─────────────────────────────── -->
     <div class="hotkey-bar">
         <div class="hk"><span class="hk-key">N</span><span class="hk-label">New Investor</span></div>
         <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh Data</span></div>
         <div class="hk"><span class="hk-key">Esc</span><span class="hk-label">Close Modal</span></div>
         <div class="hk"><span class="hk-key">Ctrl+E</span><span class="hk-label">Execute Allocation</span></div>
-        <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
             <div class="pulse-dot" style="width:5px;height:5px;"></div>
             <span
                 style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;">System
@@ -1258,10 +1553,10 @@
         </div>
     </div>
 
-    <!-- ─── TOAST CONTAINER ───────────────────────────── -->
+    <!-- ─── TOAST CONTAINER ───────────────────────── -->
     <div id="toast-container"></div>
 
-    <!-- ─── INVESTOR MODAL ────────────────────────────── -->
+    <!-- ─── INVESTOR MODAL ────────────────────────── -->
     <div id="investorModal">
         <div class="modal-box">
             <div class="modal-head">
@@ -1271,147 +1566,159 @@
             <div class="modal-body">
                 <form id="investorForm" onsubmit="saveInvestorData(event)">
                     <input type="hidden" id="investorId" />
-
-                    <div class="field" style="margin-bottom:14px;">
-                        <label>Legal Name</label>
-                        <input type="text" id="invName" required placeholder="Full legal name" />
-                    </div>
-                    <div class="field" style="margin-bottom:14px;">
-                        <label>Institutional Email</label>
-                        <input type="email" id="invEmail" required placeholder="investor@domain.com" />
-                    </div>
-                    <div class="field" style="margin-bottom:14px;">
-                        <label>Access Passcode</label>
-                        <input type="text" id="invPasscode" required placeholder="Secure passcode" />
-                    </div>
-
+                    <div class="field" style="margin-bottom:14px;"><label>Legal Name</label><input type="text"
+                            id="invName" required placeholder="Full legal name" /></div>
+                    <div class="field" style="margin-bottom:14px;"><label>Institutional Email</label><input type="email"
+                            id="invEmail" required placeholder="investor@domain.com" /></div>
+                    <div class="field" style="margin-bottom:14px;"><label>Access Passcode</label><input type="text"
+                            id="invPasscode" required placeholder="Secure passcode" /></div>
                     <div class="modal-grid" style="margin-bottom:14px;">
-                        <div class="field">
-                            <label>NAV Valuation (USD/KES)</label>
-                            <input type="text" id="invNAV" placeholder="$250,000" required />
-                        </div>
-                        <div class="field">
-                            <label>Monthly Return Curve</label>
-                            <input type="text" id="invReturn" placeholder="+3.24%" required />
-                        </div>
+                        <div class="field"><label>NAV Valuation (USD/KES)</label><input type="text" id="invNAV"
+                                placeholder="$250,000" required /></div>
+                        <div class="field"><label>Monthly Return Curve</label><input type="text" id="invReturn"
+                                placeholder="+3.24%" required /></div>
                     </div>
                     <div class="modal-grid">
-                        <div class="field">
-                            <label>Sharpe Variance Index</label>
-                            <input type="text" id="invSharpe" placeholder="2.45" required />
-                        </div>
-                        <div class="field">
-                            <label>Capital Exposure %</label>
-                            <input type="text" id="invExposure" placeholder="68.4%" required />
-                        </div>
+                        <div class="field"><label>Sharpe Variance Index</label><input type="text" id="invSharpe"
+                                placeholder="2.45" required /></div>
+                        <div class="field"><label>Capital Exposure %</label><input type="text" id="invExposure"
+                                placeholder="68.4%" required /></div>
                     </div>
-
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-save">Commit Data Node</button>
-                    </div>
+                    <div class="modal-actions"><button type="submit" class="btn-save">Commit Data Node</button></div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ─── SCRIPTS ───────────────────────────────────── -->
+    <!-- ─── CREDENTIAL ISSUANCE MODAL ────────────── -->
+    <div id="credModal">
+        <div class="cred-box">
+            <div class="cred-head">
+                <div class="cred-title">Issue Academy Credentials</div>
+                <button class="cred-close" onclick="closeCredModal()">✕ Close</button>
+            </div>
+            <div class="cred-body">
+                <p
+                    style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:18px;line-height:1.7;">
+                    Auto-generated credentials for <strong id="credClientName" style="color:var(--text);">—</strong>.
+                    Sent by email immediately. Stored as a hash — never retrievable after issuance.
+                </p>
+                <div class="cred-block">
+                    <div class="cb-lbl">Username</div>
+                    <div class="cb-val" id="credUsername">—</div>
+                </div>
+                <div class="cred-block">
+                    <div class="cb-lbl">Password (one-time display)</div>
+                    <div class="cb-val" id="credPassword">—</div>
+                </div>
+                <div class="cred-block">
+                    <div class="cb-lbl">Tier Granted</div>
+                    <div class="cb-val" id="credTier">—</div>
+                </div>
+                <div class="cred-warning">
+                    ⚠ Password shown once only. After sending it is stored as a SHA-256 hash.<br>
+                    One active session permitted per account. Sharing = instant revocation.
+                </div>
+                <button class="btn-send-creds" id="credSendBtn" onclick="sendAcademyCredentials()">
+                    Send Credentials by Email →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── SCRIPTS ───────────────────────────────── -->
     <script>
-        /* ─── Config ─────────────────────────────────────── */
+        /* ── Config ──────────────────────────────────────── */
         const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD";
         const GOOGLE_READ_URL = "https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec";
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ── EmailJS — replace with your real IDs ──────────
+        const EMAILJS_PUBLIC_KEY = "79XBeB0GrM6rEKRnR";
+        const EMAILJS_SERVICE_ID = "service_ys967c9";
+        const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";  // client instructions (CC'd to you)
+        const EMAILJS_CRED_TEMPLATE_ID = "template_elfr3xi";  // credentials after approval
+
+        const db = supabase.createClient("https://prxlshwbirmtajtworzc.supabase.co", "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD");
+        emailjs.init("79XBeB0GrM6rEKRnR");
 
         let localInvestorsCache = [];
+        let allAcademyRequests = [];
+        let currentAcademyTab = "pending";
+        let pendingCredRow = null;
 
-        /* ─── DOM Ready ──────────────────────────────────── */
+        /* ── DOM Ready ───────────────────────────────────── */
         document.addEventListener("DOMContentLoaded", () => {
             startClock();
             fetchLiveInvestors();
             fetchCorporateRevenue();
             fetchInboundGoogleLeads();
+            loadAcademyRequests();
             initScrollObserver();
             bindKeyboard();
             pushActivity("green", "System booted", "Central Command terminal initialised.");
         });
 
-        /* ─── Live Clock ─────────────────────────────────── */
+        /* ── Live Clock ──────────────────────────────────── */
         function startClock() {
             const el = document.getElementById("liveClock");
-            const update = () => {
-                const now = new Date();
-                el.textContent = now.toUTCString().replace("GMT", "UTC");
-            };
-            update();
-            setInterval(update, 1000);
+            const update = () => { el.textContent = new Date().toUTCString().replace("GMT", "UTC"); };
+            update(); setInterval(update, 1000);
         }
 
-        /* ─── Scroll Observer (fade-in sections) ─────────── */
+        /* ── Scroll Observer ─────────────────────────────── */
         function initScrollObserver() {
-            const observer = new IntersectionObserver(entries => {
+            const obs = new IntersectionObserver(entries => {
                 entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
             }, { threshold: 0.1 });
-            document.querySelectorAll(".fade-in-section").forEach(el => observer.observe(el));
+            document.querySelectorAll(".fade-in-section").forEach(el => obs.observe(el));
         }
 
-        /* ─── Keyboard shortcuts ─────────────────────────── */
+        /* ── Keyboard shortcuts ──────────────────────────── */
         function bindKeyboard() {
             document.addEventListener("keydown", e => {
-                if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
+                if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
                 if (e.key === "n" || e.key === "N") { e.preventDefault(); openInvestorModal(null); }
-                if (e.key === "r" || e.key === "R") { e.preventDefault(); fetchLiveInvestors(); fetchCorporateRevenue(); toast("info", "Data Refresh", "Live matrices reloaded."); }
-                if (e.key === "Escape") closeInvestorModal();
+                if (e.key === "r" || e.key === "R") { e.preventDefault(); fetchLiveInvestors(); fetchCorporateRevenue(); loadAcademyRequests(); toast("info", "Data Refresh", "All matrices reloaded."); }
+                if (e.key === "Escape") { closeInvestorModal(); closeCredModal(); }
                 if ((e.ctrlKey || e.metaKey) && e.key === "e") { e.preventDefault(); document.getElementById("profitForm").requestSubmit(); }
             });
         }
 
-        /* ─── Toast Notifications ────────────────────────── */
+        /* ── Toast ───────────────────────────────────────── */
         function toast(type, title, body) {
             const icons = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
             const colors = { success: "var(--emerald)", error: "var(--red)", warning: "var(--amber)", info: "var(--gold)" };
-
             const el = document.createElement("div");
             el.className = "toast";
             el.innerHTML = `
-      <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
-      <div>
-        <div class="toast-title">${title}</div>
-        <div class="toast-body">${body}</div>
-      </div>
-      <div class="toast-bar" style="background:${colors[type]}"></div>
-    `;
+                <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
+                <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
+                <div class="toast-bar" style="background:${colors[type]}"></div>`;
             document.getElementById("toast-container").appendChild(el);
-            setTimeout(() => {
-                el.classList.add("closing");
-                setTimeout(() => el.remove(), 300);
-            }, 3500);
+            setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300); }, 3500);
         }
 
-        /* ─── Activity Feed ──────────────────────────────── */
+        /* ── Activity Feed ───────────────────────────────── */
         function pushActivity(color, title, detail) {
             const feed = document.getElementById("activityFeed");
             const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
             const item = document.createElement("div");
             item.className = "feed-item";
             item.innerHTML = `
-      <div class="feed-dot ${color}"></div>
-      <div>
-        <div class="feed-text">${title}</div>
-        <div class="feed-time">${now} · ${detail}</div>
-      </div>`;
-            // Remove placeholder
+                <div class="feed-dot ${color}"></div>
+                <div><div class="feed-text">${title}</div><div class="feed-time">${now} · ${detail}</div></div>`;
             const placeholder = feed.querySelector("p");
             if (placeholder) placeholder.remove();
             feed.insertBefore(item, feed.firstChild);
-            // Keep max 20 items
             while (feed.children.length > 20) feed.removeChild(feed.lastChild);
         }
 
-        /* ─── Fetch Investors ────────────────────────────── */
+        /* ══ INVESTOR FUNCTIONS ══════════════════════════════ */
+
         async function fetchLiveInvestors() {
             try {
-                const { data, error } = await supabaseClient.from('investors').select('*').order('id', { ascending: true });
+                const { data, error } = await db.from('investors').select('*').order('id', { ascending: true });
                 if (error) throw error;
                 localInvestorsCache = data;
                 renderInvestorMatrix(data);
@@ -1423,7 +1730,6 @@
             }
         }
 
-        /* ─── Render Table ───────────────────────────────── */
         function renderInvestorMatrix(investors) {
             const tbody = document.getElementById("investorTableBody");
             tbody.innerHTML = "";
@@ -1434,43 +1740,37 @@
                     const tr = document.createElement("tr");
                     tr.style.animationDelay = `${i * 0.04}s`;
                     tr.innerHTML = `
-          <td class="td-name">${inv.client_name}</td>
-          <td class="td-email">${inv.email}</td>
-          <td class="td-pass">${inv.passcode}</td>
-          <td class="td-nav">${inv.nav}</td>
-          <td class="td-actions">
-            <button class="btn-modify" onclick="openInvestorModal(${inv.id})">Edit</button>
-            <button class="btn-purge" onclick="purgeInvestorNode(${inv.id})">✕ Purge</button>
-          </td>`;
+                        <td class="td-name">${inv.client_name}</td>
+                        <td class="td-email">${inv.email}</td>
+                        <td class="td-pass">${inv.passcode}</td>
+                        <td class="td-nav">${inv.nav}</td>
+                        <td class="td-actions">
+                            <button class="btn-modify" onclick="openInvestorModal(${inv.id})">Edit</button>
+                            <button class="btn-purge"  onclick="purgeInvestorNode(${inv.id})">✕ Purge</button>
+                        </td>`;
                     tbody.appendChild(tr);
                 });
             }
             document.getElementById("totalInvestors").textContent = investors.length;
         }
 
-        /* ─── Search / Filter ────────────────────────────── */
-        function filterInvestors(query) {
-            const q = query.toLowerCase();
-            const filtered = localInvestorsCache.filter(inv =>
-                inv.client_name?.toLowerCase().includes(q) ||
-                inv.email?.toLowerCase().includes(q)
-            );
-            renderInvestorMatrix(filtered);
+        function filterInvestors(q) {
+            q = q.toLowerCase();
+            renderInvestorMatrix(localInvestorsCache.filter(inv =>
+                inv.client_name?.toLowerCase().includes(q) || inv.email?.toLowerCase().includes(q)
+            ));
         }
 
-        /* ─── AUM Aggregates ─────────────────────────────── */
         function calculateFundAggregates(investors) {
             let aum = 0;
             investors.forEach(inv => {
                 const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, ""));
                 if (!isNaN(n)) aum += n;
             });
-            document.getElementById("totalAUM").textContent =
-                "$" + aum.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById("totalAUM").textContent = "$" + aum.toLocaleString('en-US', { minimumFractionDigits: 2 });
             document.getElementById("aumDelta").textContent = `↑ ${investors.length} active allocators`;
         }
 
-        /* ─── Google Leads ───────────────────────────────── */
         async function fetchInboundGoogleLeads() {
             if (!GOOGLE_READ_URL || GOOGLE_READ_URL.includes("YOUR_")) return;
             try {
@@ -1480,17 +1780,12 @@
                     pushActivity("amber", "Pipeline stream active", "Google Macro Matrix sync confirmed.");
                     toast("success", "Pipeline Online", "Google leads sync is active.");
                 }
-            } catch (err) {
-                console.error("Google sync error:", err);
-            }
+            } catch (err) { console.error("Google sync error:", err); }
         }
 
-        /* ─── Open Modal ─────────────────────────────────── */
         function openInvestorModal(id = null) {
-            const modal = document.getElementById("investorModal");
             document.getElementById("investorForm").reset();
             document.getElementById("investorId").value = id || "";
-
             if (id !== null) {
                 document.getElementById("modalTitle").textContent = "Modify Investor Node";
                 const rec = localInvestorsCache.find(x => x.id === id);
@@ -1506,14 +1801,11 @@
             } else {
                 document.getElementById("modalTitle").textContent = "Issue New Investor Account";
             }
-            modal.classList.add("open");
+            document.getElementById("investorModal").classList.add("open");
         }
 
-        function closeInvestorModal() {
-            document.getElementById("investorModal").classList.remove("open");
-        }
+        function closeInvestorModal() { document.getElementById("investorModal").classList.remove("open"); }
 
-        /* ─── Save Investor ──────────────────────────────── */
         async function saveInvestorData(e) {
             e.preventDefault();
             const id = document.getElementById("investorId").value;
@@ -1526,67 +1818,49 @@
                 sharpe_ratio: document.getElementById("invSharpe").value,
                 exposure: document.getElementById("invExposure").value,
             };
-
             try {
                 if (id) {
-                    const { error } = await supabaseClient.from('investors').update(payload).eq('id', id);
+                    const { error } = await db.from('investors').update(payload).eq('id', id);
                     if (error) throw error;
-                    toast("success", "Node Updated", `${payload.client_name}'s record has been modified.`);
+                    toast("success", "Node Updated", `${payload.client_name}'s record modified.`);
                     pushActivity("gold", "Investor record updated", payload.client_name);
                 } else {
-                    const { error } = await supabaseClient.from('investors').insert([payload]);
+                    const { error } = await db.from('investors').insert([payload]);
                     if (error) throw error;
                     toast("success", "Account Issued", `New investor node created for ${payload.client_name}.`);
                     pushActivity("green", "New investor onboarded", payload.client_name);
-
-                    // Fire welcome email silently
                     try {
                         await fetch(GOOGLE_READ_URL, {
                             method: "POST", mode: "no-cors",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                apiKey: "savanna_private_key_2026",
-                                name: payload.client_name, email: payload.email,
-                                passcode: payload.passcode, navValuation: payload.nav,
-                                monthlyReturn: payload.monthly_return,
-                                sharpeIndex: payload.sharpe_ratio, capitalExposure: payload.exposure
-                            })
+                            body: JSON.stringify({ apiKey: "savanna_private_key_2026", name: payload.client_name, email: payload.email, passcode: payload.passcode, navValuation: payload.nav, monthlyReturn: payload.monthly_return, sharpeIndex: payload.sharpe_ratio, capitalExposure: payload.exposure })
                         });
                     } catch (e2) { }
                 }
                 closeInvestorModal();
                 fetchLiveInvestors();
-            } catch (err) {
-                toast("error", "Save Error", err.message);
-            }
+            } catch (err) { toast("error", "Save Error", err.message); }
         }
 
-        /* ─── Purge Investor ─────────────────────────────── */
         async function purgeInvestorNode(id) {
-            if (!confirm("Permanently purge this investor account? This action cannot be reversed.")) return;
+            if (!confirm("Permanently purge this investor account? This cannot be reversed.")) return;
             try {
                 const inv = localInvestorsCache.find(x => x.id === id);
-                const { error } = await supabaseClient.from('investors').delete().eq('id', id);
+                const { error } = await db.from('investors').delete().eq('id', id);
                 if (error) throw error;
-                toast("warning", "Account Purged", `${inv?.client_name || 'Investor'} removed from system.`);
+                toast("warning", "Account Purged", `${inv?.client_name || 'Investor'} removed.`);
                 pushActivity("red", "Account purged", inv?.client_name || `ID #${id}`);
                 fetchLiveInvestors();
-            } catch (err) {
-                toast("error", "Purge Error", err.message);
-            }
+            } catch (err) { toast("error", "Purge Error", err.message); }
         }
 
-        /* ─── Allocate Profits ───────────────────────────── */
         async function allocateProfits(e) {
             e.preventDefault();
             const grossProfit = parseFloat(document.getElementById("grossProfit").value);
             const feePercent = parseFloat(document.getElementById("managementFee").value) / 100;
             const interval = document.getElementById("pacingInterval").value;
 
-            if (!localInvestorsCache.length) {
-                toast("error", "Allocation Error", "No active investor records in cache.");
-                return;
-            }
+            if (!localInvestorsCache.length) { toast("error", "Allocation Error", "No active investor records in cache."); return; }
 
             const fundCut = grossProfit * feePercent;
             const netDist = grossProfit - fundCut;
@@ -1594,14 +1868,10 @@
 
             const parsed = localInvestorsCache.map(inv => {
                 const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")) || 0;
-                totalAUM += n;
-                return { ...inv, numericNAV: n };
+                totalAUM += n; return { ...inv, numericNAV: n };
             });
 
-            if (!totalAUM) {
-                toast("error", "AUM Zero", "Fund AUM is zero. Cannot allocate.");
-                return;
-            }
+            if (!totalAUM) { toast("error", "AUM Zero", "Fund AUM is zero. Cannot allocate."); return; }
 
             let returnLabel = "+1.50%";
             if (interval === "week") returnLabel = "+0.346%";
@@ -1614,47 +1884,33 @@
                 const newNAV = inv.numericNAV + netDist * share;
                 const navStr = "$" + newNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
                 try {
-                    const { error } = await supabaseClient.from('investors')
-                        .update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id);
-                    if (error) throw error;
-                    updated++;
-                } catch (err) {
-                    console.error(`Update failed for ${inv.client_name}:`, err.message);
-                }
+                    const { error } = await db.from('investors').update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id);
+                    if (error) throw error; updated++;
+                } catch (err) { console.error(`Update failed for ${inv.client_name}:`, err.message); }
             }
 
-            // Log corporate fee
             try {
-                const { error } = await supabaseClient.from('corporate_revenue').insert([{
+                const { error } = await db.from('corporate_revenue').insert([{
                     source_event: `Mgmt Fee (${(feePercent * 100).toFixed(1)}%) on $${grossProfit.toLocaleString()} gross`,
                     amount: fundCut
                 }]);
                 if (error) throw error;
                 fetchCorporateRevenue();
-            } catch (err) {
-                console.error("Corporate log error:", err.message);
-            }
+            } catch (err) { console.error("Corporate log error:", err.message); }
 
-            toast("success", "Allocation Complete",
-                `Distributed $${grossProfit.toLocaleString()} · Fee $${fundCut.toLocaleString()} · ${updated} nodes updated.`);
-            pushActivity("green", "Profit allocation executed",
-                `$${grossProfit.toLocaleString()} gross · ${updated} investors updated · interval: ${interval}`);
-
+            toast("success", "Allocation Complete", `Distributed $${grossProfit.toLocaleString()} · Fee $${fundCut.toLocaleString()} · ${updated} nodes updated.`);
+            pushActivity("green", "Profit allocation executed", `$${grossProfit.toLocaleString()} gross · ${updated} investors · interval: ${interval}`);
             document.getElementById("profitForm").reset();
             fetchLiveInvestors();
         }
 
-        /* ─── Corporate Revenue ──────────────────────────── */
         async function fetchCorporateRevenue() {
             try {
-                const { data, error } = await supabaseClient.from('corporate_revenue')
-                    .select('*').order('created_at', { ascending: false });
+                const { data, error } = await db.from('corporate_revenue').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-
                 const tbody = document.getElementById("corporateTableBody");
                 tbody.innerHTML = "";
                 let total = 0;
-
                 if (!data.length) {
                     tbody.innerHTML = `<tr><td colspan="3" style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">No fee events this cycle.</td></tr>`;
                 } else {
@@ -1663,20 +1919,257 @@
                         const dt = new Date(item.created_at).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" });
                         const tr = document.createElement("tr");
                         tr.innerHTML = `
-            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;">${dt}</td>
-            <td style="color:var(--text);font-family:'DM Mono',monospace;font-size:9px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.source_event}</td>
-            <td class="rev-amount">+$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>`;
+                            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;">${dt}</td>
+                            <td style="color:var(--text);font-family:'DM Mono',monospace;font-size:9px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.source_event}</td>
+                            <td class="rev-amount">+$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>`;
                         tbody.appendChild(tr);
                     });
                 }
-                document.getElementById("corporateRevenueVault").textContent =
-                    "$" + total.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                document.getElementById("corporateRevenueVault").textContent = "$" + total.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            } catch (err) { console.error("Corporate matrix fault:", err.message); toast("error", "Ledger Error", err.message); }
+        }
+
+        /* ══ ACADEMY CLEARANCE FUNCTIONS ════════════════════ */
+
+        async function loadAcademyRequests() {
+            document.getElementById("academyTableWrapper").innerHTML =
+                `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center;"><span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--violet);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px;"></span>Fetching academy records…</p>`;
+
+            try {
+                const { data, error } = await db
+                    .from('access_requests')
+                    .select('*')
+                    .order('requested_at', { ascending: false });
+
+                if (error) throw error;
+
+                allAcademyRequests = data || [];
+
+                // Update stats card
+                const pending = allAcademyRequests.filter(r => r.status === 'pending').length;
+                document.getElementById("academyPendingCount").textContent = pending;
+
+                renderAcademyTable(currentAcademyTab);
+                pushActivity("violet", "Academy desk synced", `${allAcademyRequests.length} request(s) loaded.`);
+
             } catch (err) {
-                console.error("Corporate matrix fault:", err.message);
-                toast("error", "Ledger Error", err.message);
+                document.getElementById("academyTableWrapper").innerHTML =
+                    `<p style="color:var(--red);font-family:'DM Mono',monospace;font-size:10px;padding:20px;text-align:center;">// DB Error: ${escHtml(err.message)}<br><br>Ensure the <strong>access_requests</strong> table exists in Supabase.</p>`;
+                console.error("Academy load error:", err.message);
             }
         }
+
+        function switchAcademyTab(tab, el) {
+            currentAcademyTab = tab;
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            el.classList.add("active");
+            renderAcademyTable(tab);
+        }
+
+        function filterAcademyRequests(q) {
+            q = q.toLowerCase();
+            const filtered = allAcademyRequests.filter(r =>
+                r.name?.toLowerCase().includes(q) || r.email?.toLowerCase().includes(q)
+            );
+            renderAcademyTableRows(filtered);
+        }
+
+        function renderAcademyTable(filter) {
+            const filtered = filter === 'all'
+                ? allAcademyRequests
+                : allAcademyRequests.filter(r => r.status === filter);
+            renderAcademyTableRows(filtered);
+        }
+
+        function renderAcademyTableRows(rows) {
+            const wrapper = document.getElementById("academyTableWrapper");
+
+            if (!rows.length) {
+                wrapper.innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:24px 0;text-align:center;">// No records found</p>`;
+                return;
+            }
+
+            const tableRows = rows.map(r => {
+                const date = new Date(r.requested_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short', year: 'numeric' });
+                const tierBadge = `<span class="badge badge-${r.tier}">${r.tier.toUpperCase()}</span>`;
+                const statusBadge = `<span class="badge badge-${r.status}">${r.status.toUpperCase()}</span>`;
+
+                let actions = '';
+                if (r.status === 'pending') {
+                    actions = `
+                        <button class="btn-approve" onclick="beginCredentialIssuance('${r.id}')">✓ Approve</button>
+                        <button class="btn-reject"  onclick="rejectAcademyRequest('${r.id}')">✕</button>`;
+                } else if (r.status === 'approved') {
+                    actions = `
+                        <button class="btn-resend" onclick="beginCredentialIssuance('${r.id}')">↺ Resend</button>
+                        <button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">Revoke</button>`;
+                } else {
+                    actions = `<span style="color:var(--muted2);font-family:'DM Mono',monospace;font-size:9px;">— revoked —</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td style="color:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">${escHtml(r.name)}</td>
+                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">${escHtml(r.email)}</td>
+                        <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">${escHtml(r.phone || '—')}</td>
+                        <td>${tierBadge}</td>
+                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">${escHtml(r.amount_kes ? 'KES ' + Number(r.amount_kes).toLocaleString() : '—')}</td>
+                        <td>${statusBadge}</td>
+                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;">${date}</td>
+                        <td style="text-align:center;">${actions}</td>
+                    </tr>`;
+            }).join('');
+
+            wrapper.innerHTML = `
+                <table class="inv-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Tier</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>`;
+        }
+
+        /* ── Credential Issuance ──────────────────────────── */
+        function beginCredentialIssuance(id) {
+            const row = allAcademyRequests.find(r => r.id === id);
+            if (!row) return;
+
+            pendingCredRow = row;
+
+            const username = row.username || generateUsername(row.name);
+            const password = generatePassword();
+
+            document.getElementById("credClientName").textContent = row.name;
+            document.getElementById("credUsername").textContent = username;
+            document.getElementById("credPassword").textContent = password;
+            document.getElementById("credTier").textContent = row.tier.toUpperCase();
+
+            // Store on modal element
+            const modal = document.getElementById("credModal");
+            modal.dataset.id = id;
+            modal.dataset.username = username;
+            modal.dataset.password = password;
+
+            modal.classList.add("open");
+        }
+
+        function closeCredModal() {
+            document.getElementById("credModal").classList.remove("open");
+            pendingCredRow = null;
+        }
+
+        async function sendAcademyCredentials() {
+            const btn = document.getElementById("credSendBtn");
+            btn.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px;"></span>Sending…';
+            btn.disabled = true;
+
+            const modal = document.getElementById("credModal");
+            const id = modal.dataset.id;
+            const username = modal.dataset.username;
+            const password = modal.dataset.password;
+            const row = allAcademyRequests.find(r => r.id === id);
+
+            if (!row) { toast("error", "Error", "Request record not found."); return; }
+
+            const passwordHash = await hashSHA256(password);
+
+            try {
+                // 1. Update Supabase — mark approved, store hash, set username
+                const { error: dbErr } = await db
+                    .from('access_requests')
+                    .update({
+                        status: 'approved',
+                        username: username,
+                        password_hash: passwordHash,
+                        approved_at: new Date().toISOString(),
+                        session_token: null
+                    })
+                    .eq('id', id);
+
+                if (dbErr) throw new Error(dbErr.message);
+
+                // 2. Send credential email via EmailJS
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CRED_TEMPLATE_ID, {
+                    to_email: row.email,
+                    to_name: row.name,
+                    client_name: row.name,
+                    username: username,
+                    password: password,
+                    tier: row.tier.toUpperCase()
+                });
+
+                toast("success", "Credentials Sent", `Login details emailed to ${row.email}`);
+                pushActivity("violet", "Academy credentials issued", `${row.name} → ${row.tier.toUpperCase()}`);
+                closeCredModal();
+                loadAcademyRequests();
+
+            } catch (err) {
+                toast("error", "Issue Error", err.message);
+                btn.innerHTML = "Send Credentials by Email →";
+                btn.disabled = false;
+            }
+        }
+
+        async function rejectAcademyRequest(id) {
+            const row = allAcademyRequests.find(r => r.id === id);
+            const action = row?.status === 'approved' ? 'revoke' : 'reject';
+            if (!confirm(`${action === 'revoke' ? 'Revoke access for' : 'Reject request from'} ${row?.name}?`)) return;
+
+            const { error } = await db
+                .from('access_requests')
+                .update({ status: 'revoked', session_token: null })
+                .eq('id', id);
+
+            if (error) { toast("error", "Error", error.message); return; }
+
+            toast("warning", action === 'revoke' ? "Access Revoked" : "Request Rejected", row?.name || id);
+            pushActivity("red", `Academy request ${action}d`, row?.name || id);
+            loadAcademyRequests();
+        }
+
+        /* ── Generators ──────────────────────────────────── */
+        function generateUsername(fullName) {
+            const parts = fullName.trim().toLowerCase().split(/\s+/);
+            const base = (parts[0] + (parts[1] ? parts[1][0] : '')).replace(/[^a-z0-9]/g, '');
+            const suffix = Math.floor(Math.random() * 900 + 100);
+            return `${base}${suffix}`;
+        }
+
+        function generatePassword() {
+            const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghjkmnpqrstuvwxyz';
+            const D = '23456789', S = '@#$!%*', A = U + L + D + S;
+            let pw = U[~~(Math.random() * U.length)] + L[~~(Math.random() * L.length)]
+                + D[~~(Math.random() * D.length)] + S[~~(Math.random() * S.length)];
+            for (let i = 0; i < 8; i++) pw += A[~~(Math.random() * A.length)];
+            return pw.split('').sort(() => Math.random() - .5).join('');
+        }
+
+        async function hashSHA256(str) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function escHtml(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
     </script>
+
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 
 </body>
 
