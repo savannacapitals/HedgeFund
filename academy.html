@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Savanna Academy | Knowledge Matrix</title>
 
-    <!-- FIX: @import MUST be before any other rules — moved here to <head> as a <link> instead -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -58,7 +57,6 @@
             overflow-x: hidden;
         }
 
-        /* Subtle noise texture overlay */
         body::before {
             content: '';
             position: fixed;
@@ -69,7 +67,6 @@
             opacity: 0.4;
         }
 
-        /* ── SCROLLBAR ── */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -87,9 +84,7 @@
             background: var(--gold-dim);
         }
 
-        /* ══════════════════════════════════════════════
-       NAV
-    ══════════════════════════════════════════════ */
+        /* NAV */
         nav {
             position: fixed;
             top: 0;
@@ -177,7 +172,6 @@
             background: var(--gold-dim);
         }
 
-        /* ── Hamburger (mobile) ── */
         .nav-hamburger {
             display: none;
             flex-direction: column;
@@ -208,9 +202,7 @@
             transform: translateY(-6.5px) rotate(-45deg);
         }
 
-        /* ══════════════════════════════════════════════
-       HERO
-    ══════════════════════════════════════════════ */
+        /* HERO */
         .hero {
             padding: 152px 52px 72px;
             max-width: 900px;
@@ -294,9 +286,7 @@
             line-height: 1.8;
         }
 
-        /* ══════════════════════════════════════════════
-       MARKET MONITOR
-    ══════════════════════════════════════════════ */
+        /* MARKET MONITOR */
         .market-monitor-wrapper {
             max-width: 900px;
             margin: 0 auto;
@@ -470,9 +460,7 @@
             border: 1px solid var(--border);
         }
 
-        /* ══════════════════════════════════════════════
-       DIVIDER
-    ══════════════════════════════════════════════ */
+        /* DIVIDER */
         .divider {
             height: 1px;
             background: var(--border);
@@ -482,9 +470,7 @@
             z-index: 1;
         }
 
-        /* ══════════════════════════════════════════════
-       PRICING TIERS
-    ══════════════════════════════════════════════ */
+        /* PRICING TIERS */
         .tiers {
             max-width: 1160px;
             margin: 72px auto;
@@ -690,9 +676,7 @@
             background: var(--gold-lt);
         }
 
-        /* ══════════════════════════════════════════════
-       ACADEMY GATE BANNER
-    ══════════════════════════════════════════════ */
+        /* ACADEMY GATE BANNER */
         .academy-gate-banner {
             max-width: 1100px;
             margin: 0 auto 0;
@@ -809,7 +793,6 @@
             color: var(--bg);
         }
 
-        /* Expiry alert */
         .expiry-alert-toast {
             max-width: 100%;
             margin: 10px 0 0;
@@ -823,9 +806,7 @@
             letter-spacing: 0.06em;
         }
 
-        /* ══════════════════════════════════════════════
-       CURRICULUM CONTAINER
-    ══════════════════════════════════════════════ */
+        /* CURRICULUM */
         .curriculum-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -868,7 +849,6 @@
             margin-top: 0;
         }
 
-        /* Module cards */
         .module-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -945,7 +925,6 @@
             border: 1px solid rgba(208, 80, 80, 0.25);
         }
 
-        /* Materials tray */
         .module-materials-tray {
             display: none;
             background: var(--bg3);
@@ -1028,9 +1007,7 @@
             letter-spacing: 0.1em;
         }
 
-        /* ══════════════════════════════════════════════
-       LIVE BANNER
-    ══════════════════════════════════════════════ */
+        /* LIVE BANNER */
         .live-banner {
             max-width: 1100px;
             margin: 60px auto 0;
@@ -1201,9 +1178,7 @@
             margin-top: 6px;
         }
 
-        /* ══════════════════════════════════════════════
-       FOOTER
-    ══════════════════════════════════════════════ */
+        /* FOOTER */
         footer {
             border-top: 1px solid var(--border);
             padding: 28px 52px;
@@ -1222,9 +1197,7 @@
             text-transform: uppercase;
         }
 
-        /* ══════════════════════════════════════════════
-       PAYMENT MODAL
-    ══════════════════════════════════════════════ */
+        /* PAYMENT MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1409,9 +1382,7 @@
             cursor: not-allowed;
         }
 
-        /* ══════════════════════════════════════════════
-       TOAST
-    ══════════════════════════════════════════════ */
+        /* TOAST */
         #toast-container {
             position: fixed;
             bottom: 24px;
@@ -1468,9 +1439,7 @@
             margin-top: 2px;
         }
 
-        /* ══════════════════════════════════════════════
-       FADE IN
-    ══════════════════════════════════════════════ */
+        /* FADE IN */
         .fade-in {
             opacity: 0;
             transform: translateY(20px);
@@ -1492,9 +1461,7 @@
             }
         }
 
-        /* ══════════════════════════════════════════════
-       CERTIFICATE MODAL
-    ══════════════════════════════════════════════ */
+        /* CERTIFICATE MODAL */
         .cert-modal-overlay {
             position: fixed;
             top: 0;
@@ -1546,7 +1513,6 @@
             background: var(--surface);
         }
 
-        /* Certificate canvas */
         .certificate-canvas {
             background: #06090A;
             width: 100%;
@@ -1694,7 +1660,6 @@
             display: inline-block;
         }
 
-        /* Certificate themes */
         .cert-theme-elite .cert-border-outer {
             border-color: #C5A880;
             box-shadow: inset 0 0 20px rgba(197, 168, 128, 0.1);
@@ -1770,9 +1735,7 @@
             color: #94A3B8;
         }
 
-        /* ══════════════════════════════════════════════
-       PRINT
-    ══════════════════════════════════════════════ */
+        /* PRINT */
         @media print {
 
             html,
@@ -1825,9 +1788,7 @@
             }
         }
 
-        /* ══════════════════════════════════════════════
-       RESPONSIVE — TABLET (≤ 1024px)
-    ══════════════════════════════════════════════ */
+        /* RESPONSIVE — TABLET */
         @media (max-width: 1024px) {
             .tiers {
                 grid-template-columns: repeat(2, 1fr);
@@ -1850,9 +1811,7 @@
             }
         }
 
-        /* ══════════════════════════════════════════════
-       RESPONSIVE — MOBILE (≤ 768px)
-    ══════════════════════════════════════════════ */
+        /* RESPONSIVE — MOBILE */
         @media (max-width: 768px) {
             nav {
                 padding: 14px 20px;
@@ -1881,14 +1840,6 @@
             .hero-sub {
                 font-size: 14px;
                 margin-bottom: 36px;
-            }
-
-            .market-monitor-wrapper {
-                margin: 0 -0px;
-            }
-
-            .monitor-heading {
-                font-size: 8px;
             }
 
             .ticker-grid {
@@ -2009,9 +1960,6 @@
             }
         }
 
-        /* ══════════════════════════════════════════════
-       RESPONSIVE — SMALL MOBILE (≤ 480px)
-    ══════════════════════════════════════════════ */
         @media (max-width: 480px) {
             .hero-badge span {
                 font-size: 8px;
@@ -2085,13 +2033,11 @@
                     <button class="tab-trigger" onclick="switchMonitorTab('domestic',event)">Domestic (NSE)</button>
                 </div>
             </div>
-
             <div id="globalMonitorPanel" class="monitor-panel active">
                 <div class="ticker-grid" id="globalTickerGrid">
                     <div class="ticker-card loading">// Initializing secure API handshake…</div>
                 </div>
             </div>
-
             <div id="domesticMonitorPanel" class="monitor-panel">
                 <div class="ticker-grid">
                     <div class="ticker-card">
@@ -2218,12 +2164,8 @@
         </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════
-     ACADEMY GATE BANNER  (fixed nesting — was incorrectly wrapping footer/live-banner)
-═══════════════════════════════════════════ -->
+    <!-- ACADEMY GATE BANNER -->
     <div class="academy-gate-banner">
-
-        <!-- Logged-out row -->
         <div id="academyAuthLoggedOut" class="gate-interface-row">
             <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
                 <span class="gate-status-dot offline"></span>
@@ -2237,8 +2179,6 @@
                 <button onclick="executeAcademyLogin()" class="gate-btn">Authenticate →</button>
             </div>
         </div>
-
-        <!-- Logged-in row -->
         <div id="academyAuthLoggedIn" class="gate-interface-row" style="display:none;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                 <span class="gate-status-dot online"></span>
@@ -2249,11 +2189,8 @@
                 <button onclick="executeAcademyLogout()" class="gate-btn error-btn">Terminate Session</button>
             </div>
         </div>
-
-        <!-- Expiry alert -->
         <div id="expiryNotificationBanner" class="expiry-alert-toast" style="display:none;"></div>
-
-    </div><!-- /.academy-gate-banner -->
+    </div>
 
     <!-- CURRICULUM -->
     <div class="curriculum-container" id="curriculumAnchor">
@@ -2261,7 +2198,6 @@
             <h3 class="tier-section-title">// Accessible Directories // Open Public Source</h3>
             <div id="freeTopicsContainer" class="academy-grid-layout"></div>
         </div>
-
         <div class="tier-section-wrapper" style="margin-top:40px;">
             <h3 class="tier-section-title">// Secured Encrypted Core Directories</h3>
             <div id="premiumTopicsContainer" class="academy-grid-layout"></div>
@@ -2320,7 +2256,6 @@
     <div id="paymentModal" class="modal-overlay">
         <div class="modal" style="max-width:520px;">
             <button class="modal-close" onclick="closePaymentModal()">✕</button>
-
             <div id="modalStateForm">
                 <div class="modal-label">Access Request Gateway</div>
                 <div class="modal-title">Request Tier Clearance</div>
@@ -2345,7 +2280,6 @@
                 <button type="button" id="paySubmitBtn" class="modal-submit" onclick="requestAccess()">Send Me Payment
                     Instructions →</button>
             </div>
-
             <div id="modalStateSuccess" style="display:none;text-align:center;padding:20px 0;">
                 <div style="font-size:36px;margin-bottom:16px;">✅</div>
                 <div class="modal-label" style="text-align:center;">Request Received</div>
@@ -2361,7 +2295,6 @@
                 </div>
                 <button onclick="closePaymentModal()" class="modal-submit">Close</button>
             </div>
-
             <div id="modalStateError" style="display:none;text-align:center;padding:20px 0;">
                 <div style="font-size:32px;margin-bottom:16px;">⚠️</div>
                 <div class="modal-title" style="font-size:20px;margin-bottom:12px;">Submission Failed</div>
@@ -2418,14 +2351,11 @@
         </div>
     </div>
 
-    <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
-        /* ────────────────────────────────────────────────
-           INIT
-        ──────────────────────────────────────────────── */
+        /* ── INIT ── */
         const supabaseClient = supabase.createClient(
             "https://prxlshwbirmtajtworzc.supabase.co",
             "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD"
@@ -2436,32 +2366,26 @@
         const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";
         const KES_TO_USD = 130;
 
-        /* ────────────────────────────────────────────────
-           NAV SCROLL SHRINK + MOBILE HAMBURGER
-        ──────────────────────────────────────────────── */
+        /* ── NAV ── */
         window.addEventListener('scroll', () => {
             document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
         });
-
         function toggleMobileNav() {
-            const btn = document.getElementById('navHamburger');
-            btn.classList.toggle('open');
+            document.getElementById('navHamburger').classList.toggle('open');
         }
 
-        /* ────────────────────────────────────────────────
-           TOAST
-        ──────────────────────────────────────────────── */
+        /* ── TOAST ── */
         function showToast(type, title, body) {
             const icons = { success: '✦', error: '✕', warning: '⚠', info: '◈' };
             const colors = { success: '#3DAA7A', error: '#D05050', warning: '#C9973F', info: '#C9973F' };
             const el = document.createElement('div');
             el.className = 'toast';
             el.innerHTML = `
-    <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
-    <div>
-      <div class="toast-title">${title}</div>
-      <div class="toast-body">${body}</div>
-    </div>`;
+                <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
+                <div>
+                  <div class="toast-title">${title}</div>
+                  <div class="toast-body">${body}</div>
+                </div>`;
             document.getElementById('toast-container').appendChild(el);
             setTimeout(() => {
                 el.classList.add('closing');
@@ -2469,15 +2393,12 @@
             }, 4000);
         }
 
-        /* ────────────────────────────────────────────────
-           PAYMENT MODAL
-        ──────────────────────────────────────────────── */
+        /* ── PAYMENT MODAL ── */
         function showModalState(state) {
             document.getElementById('modalStateForm').style.display = state === 'form' ? 'block' : 'none';
             document.getElementById('modalStateSuccess').style.display = state === 'success' ? 'block' : 'none';
             document.getElementById('modalStateError').style.display = state === 'error' ? 'block' : 'none';
         }
-
         function openPaymentModal(tier, costString, amount) {
             ['acName', 'acEmail', 'acPhone'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('modalTierText').innerText = tier === 'pro' ? 'Pro Trader Suite' : 'Elite Institutional';
@@ -2489,16 +2410,9 @@
             showModalState('form');
             document.getElementById('paymentModal').classList.add('open');
         }
-
         function closePaymentModal() {
             document.getElementById('paymentModal').classList.remove('open');
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('paymentModal').addEventListener('click', function (e) {
-                if (e.target === this) closePaymentModal();
-            });
-        });
 
         async function requestAccess() {
             const name = document.getElementById('acName').value.trim();
@@ -2508,7 +2422,6 @@
                 showToast('warning', 'Missing Fields', 'Please fill in all fields before submitting.');
                 return;
             }
-
             const btn = document.getElementById('paySubmitBtn');
             const tier = btn.dataset.tier;
             const costString = btn.dataset.price;
@@ -2526,11 +2439,9 @@
                     .from('access_requests')
                     .insert([{ name, email, phone, tier, amount_kes: amountNum, status: 'pending', requested_at: new Date().toISOString() }])
                     .select().single();
-
                 const timeoutPromise = new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Request timed out (10s). Check Supabase RLS policies.')), 10000)
                 );
-
                 const result = await Promise.race([insertPromise, timeoutPromise]);
                 if (result.error) throw new Error('DB Error: ' + result.error.message);
             } catch (dbErr) {
@@ -2557,9 +2468,7 @@
             btn.innerText = 'Send Me Payment Instructions →'; btn.disabled = false;
         }
 
-        /* ────────────────────────────────────────────────
-           AUTH ENGINE
-        ──────────────────────────────────────────────── */
+        /* ── AUTH ENGINE ── */
         let activeStudentSession = null;
 
         async function computeSHA256(string) {
@@ -2605,7 +2514,7 @@
             const alertBanner = document.getElementById('expiryNotificationBanner');
 
             const savedSession = localStorage.getItem('savanna_academy_session');
-            let currentTier = 'free_tier';
+            let currentTier = 'free';
             if (alertBanner) alertBanner.style.display = 'none';
 
             if (savedSession) {
@@ -2626,10 +2535,10 @@
                         localStorage.removeItem('savanna_academy_session');
                         activeStudentSession = null;
                     } else {
-                        currentTier = activeStudentSession.tier;
+                        currentTier = activeStudentSession.tier; /* e.g. "pro" or "elite" */
                         if (loggedOutRow) loggedOutRow.style.display = 'none';
                         if (loggedInRow) loggedInRow.style.display = 'flex';
-                        if (welcomeText) welcomeText.innerText = `// ACCESS: ${currentTier.toUpperCase().replace('_', ' ')} // OPERATIVE: ${activeStudentSession.username.toUpperCase()}`;
+                        if (welcomeText) welcomeText.innerText = `// ACCESS: ${currentTier.toUpperCase()} // OPERATIVE: ${activeStudentSession.username.toUpperCase()}`;
                         if (daysRemaining <= 5 && alertBanner) {
                             alertBanner.innerHTML = `🔔 TIMELINE: Access closes in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}. Renew to maintain access.`;
                             alertBanner.style.display = 'block';
@@ -2644,9 +2553,14 @@
             await buildAcademyCurriculumDirectory(currentTier);
         }
 
-        /* ────────────────────────────────────────────────
-           CURRICULUM BUILD ENGINE (single definition — FIX)
-        ──────────────────────────────────────────────── */
+        /* ── CURRICULUM BUILD ENGINE ──
+         *
+         *  FIX: tier values now match exactly what Supabase stores:
+         *    Student tier  → 'free' | 'pro' | 'elite'
+         *    Material tier → 'free' | 'pro' | 'elite'
+         *
+         *  Hierarchy:  elite  ⊇  pro  ⊇  free
+         */
         async function buildAcademyCurriculumDirectory(resolvedTier) {
             const freeContainer = document.getElementById('freeTopicsContainer');
             const premiumContainer = document.getElementById('premiumTopicsContainer');
@@ -2660,19 +2574,22 @@
                 if (!topics) return;
 
                 topics.forEach(topic => {
+                    const req = (topic.tier_requirement || 'free').toLowerCase().trim();
                     let hasClearance = false;
-                    if (topic.tier_requirement === 'free') {
-                        hasClearance = true;
-                    } else if (topic.tier_requirement === 'pro') {
-                        hasClearance = ['pro_trader', 'elite_institutional', 'pro'].includes(resolvedTier);
-                    } else if (topic.tier_requirement === 'elite') {
-                        hasClearance = ['elite_institutional', 'elite'].includes(resolvedTier);
+
+                    /* ✅ FIX: compare against 'pro' and 'elite' (not 'pro_trader' / 'elite_institutional') */
+                    if (req === 'free') {
+                        hasClearance = true; /* everyone can see free topics */
+                    } else if (req === 'pro') {
+                        hasClearance = (resolvedTier === 'pro' || resolvedTier === 'elite');
+                    } else if (req === 'elite') {
+                        hasClearance = (resolvedTier === 'elite');
                     }
 
                     const linkedMaterials = materials ? materials.filter(m => m.topic_id === topic.id) : [];
-                    const cardHTML = generateTopicNode(topic, linkedMaterials, hasClearance);
+                    const cardHTML = generateTopicNode(topic, linkedMaterials, hasClearance, resolvedTier);
 
-                    if (topic.tier_requirement === 'free') {
+                    if (req === 'free') {
                         if (freeContainer) freeContainer.insertAdjacentHTML('beforeend', cardHTML);
                     } else {
                         if (premiumContainer) premiumContainer.insertAdjacentHTML('beforeend', cardHTML);
@@ -2683,57 +2600,88 @@
             }
         }
 
-        /* ────────────────────────────────────────────────
-           TOPIC NODE RENDERER (single definition — FIX for duplication)
-        ──────────────────────────────────────────────── */
-        function generateTopicNode(topic, materials, hasClearance) {
+        /* ── TOPIC NODE RENDERER ──
+         *
+         *  Receives resolvedTier directly (no re-reading from activeStudentSession)
+         *  so the value is always consistent with what buildAcademyCurriculumDirectory used.
+         *
+         *  Material access hierarchy:
+         *    elite  → sees free + pro + elite materials
+         *    pro    → sees free + pro materials
+         *    free   → sees free materials only
+         */
+        function generateTopicNode(topic, materials, hasClearance, resolvedTier) {
+            /* resolvedTier is passed in — 'free' | 'pro' | 'elite' */
+            const studentTier = (resolvedTier || 'free').toLowerCase().trim();
+
             let materialsHTML = '';
-            if (hasClearance) {
-                if (materials && materials.length > 0) {
-                    materialsHTML = materials.map(mat => `
-        <div class="material-download-row">
-          <span class="file-icon-badge">${escHtml(mat.file_type || 'FILE')}</span>
-          <span class="material-title">${escHtml(mat.title || mat.file_name || 'Resource')}</span>
-          <a href="${escHtml(mat.resource_url || mat.secure_download_url || '#')}" target="_blank" rel="noopener" class="download-action-link">ACCESS NODE ➔</a>
-        </div>`).join('');
-                } else {
-                    materialsHTML = `<div class="no-materials-notice">// No extra dossier attached to this node</div>`;
-                }
+            if (materials && materials.length > 0) {
+                materialsHTML = materials.map(mat => {
+                    const requiredTier = (mat.required_tier || 'free').toLowerCase().trim();
+
+                    /* ✅ FIX: hierarchy check uses correct tier names */
+                    let itemClearance = false;
+                    if (studentTier === 'elite') {
+                        itemClearance = true; /* elite sees everything */
+                    } else if (studentTier === 'pro') {
+                        itemClearance = (requiredTier === 'free' || requiredTier === 'pro');
+                    } else {
+                        /* free / guest */
+                        itemClearance = (requiredTier === 'free');
+                    }
+
+                    if (itemClearance) {
+                        return `
+                        <div class="material-download-row">
+                            <span class="file-icon-badge">${escHtml(mat.file_type || 'FILE')}</span>
+                            <span class="material-title">${escHtml(mat.title || mat.file_name || 'Resource')}</span>
+                            <a href="${escHtml(mat.resource_url || mat.secure_download_url || '#')}" target="_blank" rel="noopener" class="download-action-link">ACCESS NODE →</a>
+                        </div>`;
+                    } else {
+                        return `
+                        <div class="material-download-row" style="opacity:0.5;background:rgba(255,255,255,0.02);border-color:#1e293b;">
+                            <span class="file-icon-badge" style="background:#334155;color:#94a3b8;">🔒 LOCK</span>
+                            <span class="material-title" style="color:#64748b;font-style:italic;">${escHtml(mat.title || mat.file_name || 'Resource')}</span>
+                            <span class="download-action-link" style="color:#ef4444;background:transparent;border:none;cursor:not-allowed;letter-spacing:1px;">
+                                [RESTRICTED: ${requiredTier.toUpperCase()}]
+                            </span>
+                        </div>`;
+                    }
+                }).join('');
+            } else {
+                materialsHTML = `<div class="no-materials-notice">// No extra dossier attached to this node</div>`;
             }
 
             const operationalClass = hasClearance ? 'unlocked-clearance' : 'locked-gate';
             const lockBadge = hasClearance
                 ? `<span class="clearance-badge status-open">Active</span>`
-                : `<span class="clearance-badge status-gated">Locked · ${escHtml(topic.tier_requirement?.toUpperCase() || 'PRO')}</span>`;
-
-            /* No nested quotes in onclick — use data-tier attribute */
-            const headerOnclick = hasClearance
+                : `<span class="clearance-badge status-gated">Locked · ${escHtml((topic.tier_requirement || 'PRO').toUpperCase())}</span>`;
+            const headerOnClick = hasClearance
                 ? `onclick="toggleAccordionTray(this)"`
                 : `onclick="alertSecureTierGate('${escHtml(topic.tier_requirement || '')}')"`;
 
             return `
-    <div class="module-card ${operationalClass}">
-      <div class="module-card-header" ${headerOnclick}>
-        <div>
-          <div class="module-meta-header">Topic // Requirement: ${escHtml(topic.tier_requirement?.toUpperCase() || 'FREE')}</div>
-          <h4 class="module-card-title">${escHtml(topic.title)}</h4>
-          <p class="module-card-desc">${escHtml(topic.description || topic.summary || '')}</p>
-        </div>
-        <div>${lockBadge}</div>
-      </div>
-      <div class="module-materials-tray">
-        <div class="materials-tray-padding">
-          <div class="tray-divider-label">// Secure Source Materials Directory</div>
-          ${materialsHTML}
-        </div>
-      </div>
-    </div>`;
+            <div class="module-card ${operationalClass}">
+                <div class="module-card-header" ${headerOnClick}>
+                    <div>
+                        <div class="module-meta-header">Topic // Requirement: ${escHtml((topic.tier_requirement || 'FREE').toUpperCase())}</div>
+                        <h4 class="module-card-title">${escHtml(topic.title)}</h4>
+                        <p class="module-card-desc">${escHtml(topic.description || topic.summary || '')}</p>
+                    </div>
+                    <div>${lockBadge}</div>
+                </div>
+                <div class="module-materials-tray">
+                    <div class="materials-tray-padding">
+                        <div class="tray-divider-label">// Secure Source Materials Directory</div>
+                        ${materialsHTML}
+                    </div>
+                </div>
+            </div>`;
         }
 
         function toggleAccordionTray(headerEl) {
             const tray = headerEl.parentElement.querySelector('.module-materials-tray');
             const isOpen = tray.classList.contains('open');
-            /* Close all others first */
             document.querySelectorAll('.module-materials-tray.open').forEach(t => t.classList.remove('open'));
             if (!isOpen) tray.classList.add('open');
         }
@@ -2748,15 +2696,11 @@
 
         function escHtml(str) {
             return String(str ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        /* ────────────────────────────────────────────────
-           CERTIFICATE
-        ──────────────────────────────────────────────── */
+        /* ── CERTIFICATE ── */
         function toggleCertificateModal(show) {
             const modal = document.getElementById('certificateModal');
             if (modal) modal.style.display = show ? 'flex' : 'none';
@@ -2788,12 +2732,13 @@
 
             nameLabel.innerText = printName;
             canvas.className = 'certificate-canvas';
-            const userTier = activeStudentSession.tier;
 
-            if (userTier === 'elite_institutional') {
+            /* ✅ FIX: certificate themes now check 'elite' and 'pro' (not 'elite_institutional' / 'pro_trader') */
+            const userTier = (activeStudentSession.tier || 'free').toLowerCase().trim();
+            if (userTier === 'elite') {
                 canvas.classList.add('cert-theme-elite');
                 tierLabel.innerText = 'ELITE INSTITUTIONAL QUANT MATRIX';
-            } else if (userTier === 'pro_trader') {
+            } else if (userTier === 'pro') {
                 canvas.classList.add('cert-theme-pro');
                 tierLabel.innerText = 'PRO TRADER SUITE GRADUATE';
             } else {
@@ -2808,9 +2753,7 @@
             toggleCertificateModal(true);
         }
 
-        /* ────────────────────────────────────────────────
-           MARKET MONITOR — with CORS-safe fallback
-        ──────────────────────────────────────────────── */
+        /* ── MARKET MONITOR ── */
         function switchMonitorTab(targetTab, event) {
             document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.monitor-panel').forEach(p => p.classList.remove('active'));
@@ -2822,31 +2765,26 @@
             const dir = change >= 0 ? 'up' : 'down';
             const sign = change >= 0 ? '+' : '';
             return `
-    <div class="ticker-card">
-      <div class="ticker-meta">${meta}</div>
-      <div class="ticker-asset-name">${name}</div>
-      <div class="ticker-value-row">
-        <span class="ticker-price">${price}</span>
-        <span class="ticker-change ${dir}">${sign}${change.toFixed(2)}%</span>
-      </div>
-    </div>`;
+            <div class="ticker-card">
+                <div class="ticker-meta">${meta}</div>
+                <div class="ticker-asset-name">${name}</div>
+                <div class="ticker-value-row">
+                    <span class="ticker-price">${price}</span>
+                    <span class="ticker-change ${dir}">${sign}${change.toFixed(2)}%</span>
+                </div>
+            </div>`;
         }
 
         async function fetchGlobalLiquidityMetrics() {
             const container = document.getElementById('globalTickerGrid');
             container.innerHTML = '<div class="ticker-card loading">// Fetching live data…</div>';
-
-            /* FIX: CoinGecko v3 public endpoint — add required headers and cache-bust */
             try {
                 const res = await fetch(
                     'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true',
                     { headers: { 'Accept': 'application/json' }, cache: 'no-store' }
                 );
-
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-
-                /* Validate the response shape before rendering */
                 if (!data?.bitcoin?.usd || !data?.ethereum?.usd) throw new Error('Unexpected API shape');
 
                 container.innerHTML = '';
@@ -2863,41 +2801,33 @@
                 container.insertAdjacentHTML('beforeend', generateTickerCard(
                     'Global Liquidity Proxy', 'EUR / USD', '1.0845', 0.12
                 ));
-
             } catch (err) {
-                /* Graceful fallback with indicative static data + retry hint */
                 console.warn('CoinGecko API unavailable:', err.message);
                 container.innerHTML = '';
                 container.insertAdjacentHTML('beforeend', generateTickerCard('Macro // Digital Gold Base', 'Bitcoin / USD', '$—', 0));
                 container.insertAdjacentHTML('beforeend', generateTickerCard('DeFi Backbone Matrix', 'Ethereum / USD', '$—', 0));
                 container.insertAdjacentHTML('beforeend', `
-      <div class="ticker-card">
-        <div class="ticker-meta">System</div>
-        <div class="ticker-asset-name">Stream Status</div>
-        <div class="ticker-value-row">
-          <span class="ticker-price" style="font-size:13px;color:var(--text3)">API rate-limited</span>
-          <span class="ticker-change neutral">Retry</span>
-        </div>
-      </div>`);
-                /* Auto-retry after 30s */
+                <div class="ticker-card">
+                    <div class="ticker-meta">System</div>
+                    <div class="ticker-asset-name">Stream Status</div>
+                    <div class="ticker-value-row">
+                        <span class="ticker-price" style="font-size:13px;color:var(--text3)">API rate-limited</span>
+                        <span class="ticker-change neutral">Retry</span>
+                    </div>
+                </div>`);
                 setTimeout(fetchGlobalLiquidityMetrics, 30000);
             }
         }
 
-        /* ────────────────────────────────────────────────
-           BOOT (single DOMContentLoaded — FIX for duplicate listeners)
-        ──────────────────────────────────────────────── */
+        /* ── BOOT ── */
         document.addEventListener('DOMContentLoaded', () => {
             evaluateSessionStateAndBuildUI();
             fetchGlobalLiquidityMetrics();
-
-            /* Close payment modal on overlay click */
             document.getElementById('paymentModal').addEventListener('click', function (e) {
                 if (e.target === this) closePaymentModal();
             });
         });
     </script>
-
 </body>
 
 </html>

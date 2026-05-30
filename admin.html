@@ -3,18 +3,23 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Central Command | Savanna Capital Advisors</title>
-
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600&display=swap"
         rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
     <style>
-        /* ─── CSS Variables ─────────────────────────────── */
+        /* ─── Reset & Root ─── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
         :root {
             --bg: #03050A;
             --bg2: #080C14;
@@ -33,14 +38,13 @@
             --text: #D4CECC;
             --muted: #5A6070;
             --muted2: #3A3F4C;
+            --nav-h: 56px;
+            --hk-h: 40px;
+            --page-px: clamp(14px, 4vw, 28px);
         }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        html {
+            scroll-behavior: smooth
         }
 
         body {
@@ -50,22 +54,25 @@
             font-size: 13px;
             font-weight: 300;
             overflow-x: hidden;
+            min-height: 100dvh;
+            -webkit-font-smoothing: antialiased
         }
 
         ::-webkit-scrollbar {
             width: 3px;
-            height: 3px;
+            height: 3px
         }
 
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: transparent
         }
 
         ::-webkit-scrollbar-thumb {
             background: var(--muted2);
-            border-radius: 2px;
+            border-radius: 2px
         }
 
+        /* ─── Noise overlay ─── */
         body::before {
             content: '';
             position: fixed;
@@ -73,108 +80,136 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 9999;
-            opacity: 0.4;
+            opacity: .4
         }
 
+        /* ─── Ambient glows ─── */
         .glow-bg {
             position: fixed;
-            width: 600px;
-            height: 600px;
             border-radius: 50%;
             filter: blur(120px);
             pointer-events: none;
-            z-index: 0;
+            z-index: 0
         }
 
         .glow-1 {
             top: -200px;
             left: -100px;
-            background: rgba(200, 169, 110, 0.04);
+            width: 600px;
+            height: 600px;
+            background: rgba(200, 169, 110, .04)
         }
 
         .glow-2 {
             bottom: -200px;
             right: -100px;
-            background: rgba(52, 211, 153, 0.03);
+            width: 600px;
+            height: 600px;
+            background: rgba(52, 211, 153, .03)
         }
 
-        /* ─── NAV ─────────────────────────────────────────── */
+        /* ─── NAV ─── */
         nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 100;
-            height: 56px;
-            background: rgba(3, 5, 10, 0.92);
+            height: var(--nav-h);
+            background: rgba(3, 5, 10, .92);
             backdrop-filter: blur(24px) saturate(1.5);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
-            animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+            padding: 0 var(--page-px);
+            animation: slideDown .5s cubic-bezier(.16, 1, .3, 1) both;
         }
 
         @keyframes slideDown {
             from {
                 transform: translateY(-56px);
-                opacity: 0;
+                opacity: 0
             }
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            min-width: 0
         }
 
         .nav-logo svg {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             color: var(--gold);
+            flex-shrink: 0
+        }
+
+        .nav-text {
+            min-width: 0
         }
 
         .nav-title {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 15px;
+            font-size: clamp(12px, 2.5vw, 15px);
             font-weight: 400;
-            letter-spacing: 0.12em;
+            letter-spacing: .12em;
             color: #fff;
             text-transform: uppercase;
+            white-space: nowrap
         }
 
         .nav-sub {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
-            letter-spacing: 0.22em;
+            letter-spacing: .18em;
             color: var(--gold);
             text-transform: uppercase;
-            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: clamp(8px, 2vw, 20px);
+            flex-shrink: 0
         }
 
         .live-clock {
             font-family: 'DM Mono', monospace;
             font-size: 10px;
             color: var(--muted);
-            letter-spacing: 0.1em;
+            letter-spacing: .1em;
+            display: none
+        }
+
+        @media(min-width:640px) {
+            .live-clock {
+                display: block
+            }
         }
 
         .session-badge {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
             color: var(--amber);
-            background: rgba(245, 158, 11, 0.06);
-            border: 1px solid rgba(245, 158, 11, 0.15);
-            padding: 3px 10px;
-            letter-spacing: 0.15em;
+            background: rgba(245, 158, 11, .06);
+            border: 1px solid rgba(245, 158, 11, .15);
+            padding: 3px 8px;
+            letter-spacing: .12em;
             text-transform: uppercase;
+            white-space: nowrap;
+            display: none
+        }
+
+        @media(min-width:480px) {
+            .session-badge {
+                display: block
+            }
         }
 
         .pulse-dot {
@@ -182,13 +217,14 @@
             height: 6px;
             border-radius: 50%;
             background: var(--emerald);
-            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, .5);
             animation: pulse-ring 2s infinite;
+            flex-shrink: 0
         }
 
         @keyframes pulse-ring {
             0% {
-                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5)
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, .5)
             }
 
             70% {
@@ -204,100 +240,103 @@
             font-family: 'DM Mono', monospace;
             font-size: 9px;
             color: var(--muted);
-            letter-spacing: 0.12em;
+            letter-spacing: .12em;
             text-transform: uppercase;
             text-decoration: none;
-            transition: color 0.2s;
+            transition: color .2s;
+            white-space: nowrap
         }
 
         .nav-logout:hover {
-            color: var(--red);
+            color: var(--red)
         }
 
-        /* ─── MAIN ──────────────────────────────────────── */
+        /* ─── MAIN ─── */
         main {
-            padding: 80px 28px 60px;
+            padding: calc(var(--nav-h) + 20px) var(--page-px) calc(var(--hk-h) + 20px);
             max-width: 1600px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
 
+        /* ─── Page Header ─── */
         .page-header {
-            margin-bottom: 32px;
-            animation: fadeUp 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+            margin-bottom: clamp(20px, 4vw, 32px);
+            animation: fadeUp .6s .2s cubic-bezier(.16, 1, .3, 1) both
         }
 
         .page-header h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 38px;
+            font-size: clamp(26px, 5vw, 38px);
             font-weight: 300;
-            letter-spacing: 0.04em;
+            letter-spacing: .04em;
             color: #fff;
-            line-height: 1;
+            line-height: 1
         }
 
         .page-header h1 em {
             font-style: italic;
-            color: var(--gold);
+            color: var(--gold)
         }
 
         .page-header p {
             font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 0.2em;
+            font-size: clamp(7px, 1.5vw, 9px);
+            letter-spacing: .2em;
             color: var(--muted);
             margin-top: 6px;
             text-transform: uppercase;
+            line-height: 1.6
         }
 
         .header-line {
             width: 48px;
             height: 1px;
             background: linear-gradient(90deg, var(--gold), transparent);
-            margin-top: 12px;
+            margin-top: 12px
         }
 
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(16px);
+                transform: translateY(16px)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
-        /* ─── STATS ─────────────────────────────────────── */
+        /* ─── STATS GRID ─── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-            animation: fadeUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(8px, 2vw, 12px);
+            margin-bottom: clamp(16px, 3vw, 24px);
+            animation: fadeUp .6s .3s cubic-bezier(.16, 1, .3, 1) both;
         }
 
-        @media (max-width: 1200px) {
+        @media(min-width:640px) {
             .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(3, 1fr)
             }
         }
 
-        @media (max-width: 700px) {
+        @media(min-width:1100px) {
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(6, 1fr)
             }
         }
 
         .stat-card {
             background: var(--card);
             border: 1px solid var(--border);
-            padding: 18px 20px;
+            padding: clamp(12px, 2.5vw, 18px) clamp(14px, 3vw, 20px);
             position: relative;
             overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
+            transition: border-color .3s, transform .3s;
             cursor: default;
         }
 
@@ -310,129 +349,145 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity .3s
         }
 
         .stat-card:hover {
-            border-color: rgba(200, 169, 110, 0.2);
-            transform: translateY(-2px);
+            border-color: rgba(200, 169, 110, .2);
+            transform: translateY(-2px)
         }
 
         .stat-card:hover::before {
-            opacity: 1;
+            opacity: 1
         }
 
         .stat-card.academy-card::before {
-            background: linear-gradient(90deg, transparent, var(--violet), transparent);
+            background: linear-gradient(90deg, transparent, var(--violet), transparent)
         }
 
         .stat-card.academy-card:hover {
-            border-color: rgba(167, 139, 250, 0.25);
+            border-color: rgba(167, 139, 250, .25)
         }
 
         .stat-label {
             font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.2em;
+            font-size: clamp(7px, 1.2vw, 8px);
+            letter-spacing: .18em;
             color: var(--muted);
             text-transform: uppercase;
             margin-bottom: 8px;
+            line-height: 1.4
         }
 
         .stat-value {
             font-family: 'DM Mono', monospace;
-            font-size: 22px;
+            font-size: clamp(16px, 3vw, 22px);
             font-weight: 400;
             line-height: 1;
-            color: #fff;
+            color: #fff
         }
 
         .stat-value.gold {
-            color: var(--gold);
+            color: var(--gold)
         }
 
         .stat-value.green {
-            color: var(--emerald);
+            color: var(--emerald)
         }
 
         .stat-value.amber {
-            color: var(--amber);
+            color: var(--amber)
         }
 
         .stat-value.violet {
-            color: var(--violet);
+            color: var(--violet)
         }
 
         .stat-delta {
             font-family: 'DM Mono', monospace;
             font-size: 9px;
             margin-top: 6px;
-            color: var(--muted);
+            color: var(--muted)
         }
 
         .stat-delta.up {
-            color: var(--emerald);
+            color: var(--emerald)
         }
 
-        /* ─── PANEL ─────────────────────────────────────── */
+        /* ─── PANEL ─── */
         .panel {
             background: var(--card);
             border: 1px solid var(--border);
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .panel-head {
-            padding: 18px 22px;
+            padding: clamp(14px, 2.5vw, 18px) clamp(16px, 3vw, 22px);
             border-bottom: 1px solid var(--border2);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px
         }
 
         .panel-title {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 16px;
+            font-size: clamp(14px, 2.5vw, 16px);
             font-weight: 400;
-            letter-spacing: 0.06em;
+            letter-spacing: .06em;
             color: #fff;
-            text-transform: uppercase;
+            text-transform: uppercase
         }
 
         .panel-sub {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
-            letter-spacing: 0.18em;
+            letter-spacing: .15em;
             color: var(--muted);
             text-transform: uppercase;
-            margin-top: 2px;
+            margin-top: 2px
         }
 
         .panel-body {
-            padding: 22px;
+            padding: clamp(14px, 3vw, 22px)
         }
 
-        /* ─── ALLOC FORM ────────────────────────────────── */
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        /* ─── ALLOC PANEL ─── */
         .alloc-panel {
-            animation: fadeUp 0.6s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-            margin-bottom: 24px;
+            animation: fadeUp .6s .4s cubic-bezier(.16, 1, .3, 1) both;
+            margin-bottom: clamp(16px, 3vw, 24px)
         }
 
         .alloc-panel .panel-head {
-            background: linear-gradient(135deg, rgba(200, 169, 110, 0.04), transparent);
-            border-bottom-color: rgba(200, 169, 110, 0.1);
+            background: linear-gradient(135deg, rgba(200, 169, 110, .04), transparent);
+            border-bottom-color: rgba(200, 169, 110, .1)
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 14px;
-            align-items: end;
+            grid-template-columns: 1fr;
+            gap: clamp(10px, 2vw, 14px);
+            align-items: end
         }
 
-        @media (max-width: 900px) {
+        @media(min-width:560px) {
             .form-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(min-width:900px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr 1fr auto
             }
         }
 
@@ -440,769 +495,84 @@
             display: block;
             font-family: 'DM Mono', monospace;
             font-size: 8px;
-            letter-spacing: 0.18em;
+            letter-spacing: .18em;
             color: var(--muted);
             text-transform: uppercase;
-            margin-bottom: 7px;
+            margin-bottom: 7px
         }
 
         .field input,
         .field select {
             width: 100%;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, .02);
             border: 1px solid var(--border);
             color: #fff;
             font-family: 'DM Mono', monospace;
             font-size: 12px;
-            padding: 9px 12px;
+            padding: clamp(8px, 1.5vw, 9px) 12px;
             outline: none;
-            transition: border-color 0.2s, background 0.2s;
+            transition: border-color .2s, background .2s;
             appearance: none;
+            -webkit-appearance: none;
+            border-radius: 0
         }
 
         .field input:focus,
         .field select:focus {
             border-color: var(--gold-dim);
-            background: rgba(200, 169, 110, 0.03);
+            background: rgba(200, 169, 110, .03)
         }
 
         .field select option {
-            background: #0F1420;
+            background: #0F1420
         }
 
+        /* ─── BUTTONS ─── */
         .btn-execute {
             background: linear-gradient(135deg, #C8A96E, #A8893E);
             color: #050708;
             font-family: 'DM Mono', monospace;
             font-size: 9px;
             font-weight: 500;
-            letter-spacing: 0.2em;
+            letter-spacing: .2em;
             text-transform: uppercase;
-            padding: 9px 20px;
+            padding: clamp(9px, 1.5vw, 10px) 20px;
             border: none;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform .2s, box-shadow .2s;
             white-space: nowrap;
+            width: 100%
+        }
+
+        @media(min-width:900px) {
+            .btn-execute {
+                width: auto
+            }
         }
 
         .btn-execute:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(200, 169, 110, 0.25);
-        }
-
-        /* ─── BOTTOM GRID ───────────────────────────────── */
-        .bottom-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px 340px;
-            gap: 16px;
-            animation: fadeUp 0.6s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @media (max-width: 1200px) {
-            .bottom-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .bottom-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ─── ACADEMY SECTION ───────────────────────────── */
-        .academy-section {
-            margin-top: 24px;
-            animation: fadeUp 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .academy-panel-head {
-            background: linear-gradient(135deg, rgba(167, 139, 250, 0.05), transparent);
-            border-bottom-color: rgba(167, 139, 250, 0.12) !important;
-        }
-
-        /* ─── SEARCH / TABLE ────────────────────────────── */
-        .search-bar {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            color: #fff;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-            padding: 7px 12px;
-            outline: none;
-            transition: border-color 0.2s;
-            width: 200px;
-        }
-
-        .search-bar::placeholder {
-            color: var(--muted);
-        }
-
-        .search-bar:focus {
-            border-color: var(--gold-dim);
-        }
-
-        .inv-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .inv-table thead tr {
-            border-bottom: 1px solid var(--border2);
-        }
-
-        .inv-table thead th {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.18em;
-            color: var(--muted);
-            text-transform: uppercase;
-            padding: 0 0 10px;
-            font-weight: 400;
-            text-align: left;
-        }
-
-        .inv-table thead th.right {
-            text-align: right;
-        }
-
-        .inv-table thead th.center {
-            text-align: center;
-        }
-
-        .inv-table tbody tr {
-            border-bottom: 1px solid var(--border2);
-            transition: background 0.15s;
-        }
-
-        .inv-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.015);
-        }
-
-        .inv-table tbody td {
-            padding: 11px 0;
-            font-family: 'DM Mono', monospace;
-            font-size: 11px;
-        }
-
-        .td-name {
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .td-email {
-            color: var(--muted);
-        }
-
-        .td-pass {
-            color: var(--muted2);
-        }
-
-        .td-nav {
-            color: var(--emerald);
-            text-align: right;
-            font-weight: 500;
-        }
-
-        .td-actions {
-            text-align: center;
-        }
-
-        .btn-modify {
-            color: var(--gold);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 3px 6px;
-            transition: color 0.2s;
-        }
-
-        .btn-modify:hover {
-            color: #fff;
-        }
-
-        .btn-purge {
-            color: var(--muted2);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 3px 6px;
-            transition: color 0.2s;
-        }
-
-        .btn-purge:hover {
-            color: var(--red);
+            box-shadow: 0 8px 24px rgba(200, 169, 110, .25)
         }
 
         .btn-new {
             background: none;
-            border: 1px solid rgba(200, 169, 110, 0.3);
+            border: 1px solid rgba(200, 169, 110, .3);
             color: var(--gold);
             font-family: 'DM Mono', monospace;
             font-size: 8px;
-            letter-spacing: 0.18em;
+            letter-spacing: .16em;
             text-transform: uppercase;
-            padding: 6px 14px;
+            padding: 6px 12px;
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            transition: background .2s, border-color .2s, color .2s;
+            white-space: nowrap
         }
 
         .btn-new:hover {
             background: var(--gold);
             color: #050708;
-            border-color: var(--gold);
-        }
-
-        /* Academy-specific action buttons */
-        .btn-approve {
-            color: var(--emerald);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            background: none;
-            border: 1px solid rgba(52, 211, 153, 0.2);
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-approve:hover {
-            background: rgba(52, 211, 153, 0.1);
-        }
-
-        .btn-approve:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .btn-reject {
-            color: var(--muted2);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px 6px;
-            transition: color 0.2s;
-        }
-
-        .btn-reject:hover {
-            color: var(--red);
-        }
-
-        .btn-resend {
-            color: var(--gold);
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            background: none;
-            border: 1px solid rgba(200, 169, 110, 0.2);
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-resend:hover {
-            background: rgba(200, 169, 110, 0.08);
-        }
-
-        /* ─── BADGES ────────────────────────────────────── */
-        .badge {
-            display: inline-block;
-            padding: 3px 9px;
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            border: 1px solid;
-        }
-
-        .badge-pending {
-            color: var(--amber);
-            border-color: rgba(245, 158, 11, 0.25);
-            background: rgba(245, 158, 11, 0.06);
-        }
-
-        .badge-approved {
-            color: var(--emerald);
-            border-color: rgba(52, 211, 153, 0.25);
-            background: rgba(52, 211, 153, 0.06);
-        }
-
-        .badge-revoked {
-            color: var(--red);
-            border-color: rgba(248, 113, 113, 0.25);
-            background: rgba(248, 113, 113, 0.06);
-        }
-
-        .badge-pro {
-            color: var(--gold);
-            border-color: rgba(200, 169, 110, 0.3);
-            background: rgba(200, 169, 110, 0.07);
-        }
-
-        .badge-elite {
-            color: var(--violet);
-            border-color: rgba(167, 139, 250, 0.25);
-            background: rgba(167, 139, 250, 0.07);
-        }
-
-        /* ─── REVENUE TABLE ─────────────────────────────── */
-        .rev-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .rev-table thead th {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.15em;
-            color: var(--muted);
-            text-transform: uppercase;
-            padding: 0 0 10px;
-            font-weight: 400;
-            text-align: left;
-        }
-
-        .rev-table tbody tr {
-            border-bottom: 1px solid var(--border2);
-            transition: background 0.15s;
-        }
-
-        .rev-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.01);
-        }
-
-        .rev-table tbody td {
-            padding: 10px 0;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-        }
-
-        .rev-amount {
-            text-align: right;
-            color: var(--emerald);
-            font-weight: 500;
-        }
-
-        /* ─── ACTIVITY FEED ─────────────────────────────── */
-        .feed-item {
-            display: flex;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border2);
-            animation: feedIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes feedIn {
-            from {
-                opacity: 0;
-                transform: translateX(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .feed-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            margin-top: 5px;
-        }
-
-        .feed-dot.green {
-            background: var(--emerald);
-        }
-
-        .feed-dot.gold {
-            background: var(--gold);
-        }
-
-        .feed-dot.amber {
-            background: var(--amber);
-        }
-
-        .feed-dot.red {
-            background: var(--red);
-        }
-
-        .feed-dot.violet {
-            background: var(--violet);
-        }
-
-        .feed-text {
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            color: var(--text);
-            line-height: 1.5;
-        }
-
-        .feed-time {
-            font-size: 9px;
-            color: var(--muted);
-        }
-
-        /* ─── TABS ──────────────────────────────────────── */
-        .tab-bar {
-            display: flex;
-            border-bottom: 1px solid var(--border2);
-            margin-bottom: 0;
-        }
-
-        .tab-btn {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            padding: 10px 16px;
-            color: var(--muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            margin-bottom: -1px;
-        }
-
-        .tab-btn.active {
-            color: var(--violet);
-            border-bottom-color: var(--violet);
-        }
-
-        .tab-btn:hover:not(.active) {
-            color: var(--text);
-        }
-
-        /* ─── CREDENTIAL MODAL ──────────────────────────── */
-        #credModal {
-            position: fixed;
-            inset: 0;
-            z-index: 300;
-            background: rgba(3, 5, 10, 0.92);
-            backdrop-filter: blur(16px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        #credModal.open {
-            display: flex;
-        }
-
-        .cred-box {
-            background: var(--card2);
-            border: 1px solid rgba(167, 139, 250, 0.25);
-            width: 100%;
-            max-width: 480px;
-            animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.96) translateY(12px);
-            }
-        }
-
-        .cred-head {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, rgba(167, 139, 250, 0.06), transparent);
-        }
-
-        .cred-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 18px;
-            font-weight: 400;
-            letter-spacing: 0.06em;
-            color: #fff;
-            text-transform: uppercase;
-        }
-
-        .cred-close {
-            color: var(--muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            transition: color 0.2s;
-        }
-
-        .cred-close:hover {
-            color: var(--red);
-        }
-
-        .cred-body {
-            padding: 24px;
-        }
-
-        .cred-block {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: 14px 16px;
-            margin-bottom: 10px;
-        }
-
-        .cred-block .cb-lbl {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-
-        .cred-block .cb-val {
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
-            color: var(--gold);
-            letter-spacing: 0.04em;
-        }
-
-        .cred-warning {
-            background: rgba(248, 113, 113, 0.06);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            padding: 12px 14px;
-            margin: 14px 0;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            color: var(--red);
-            line-height: 1.7;
-        }
-
-        .btn-send-creds {
-            width: 100%;
-            background: linear-gradient(135deg, #A78BFA, #7C5FD4);
-            color: #fff;
-            font-family: 'DM Mono', monospace;
-            font-size: 9px;
-            font-weight: 500;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            border: none;
-            padding: 13px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-send-creds:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(167, 139, 250, 0.25);
-        }
-
-        .btn-send-creds:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ─── HOTKEY BAR ────────────────────────────────── */
-        .hotkey-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 90;
-            background: rgba(3, 5, 10, 0.9);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid var(--border);
-            padding: 7px 28px;
-            display: flex;
-            gap: 24px;
-            align-items: center;
-        }
-
-        .hk {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .hk-key {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-
-        .hk-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-        }
-
-        /* ─── TOAST ─────────────────────────────────────── */
-        #toast-container {
-            position: fixed;
-            bottom: 44px;
-            right: 24px;
-            z-index: 9998;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            background: var(--card2);
-            border: 1px solid var(--border);
-            padding: 12px 18px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-family: 'DM Mono', monospace;
-            font-size: 10px;
-            min-width: 280px;
-            max-width: 360px;
-            animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-            position: relative;
-        }
-
-        .toast.closing {
-            animation: toastOut 0.25s ease both;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-        }
-
-        @keyframes toastOut {
-            to {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-        }
-
-        .toast-icon {
-            font-size: 12px;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .toast-title {
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .toast-body {
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .toast-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            background: var(--gold);
-            animation: toastBar 3.5s linear both;
-        }
-
-        @keyframes toastBar {
-            from {
-                width: 100%;
-            }
-
-            to {
-                width: 0%;
-            }
-        }
-
-        /* ─── INVESTOR MODAL ────────────────────────────── */
-        #investorModal {
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            background: rgba(3, 5, 10, 0.92);
-            backdrop-filter: blur(16px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-
-        #investorModal.open {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--card2);
-            border: 1px solid rgba(200, 169, 110, 0.2);
-            width: 100%;
-            max-width: 480px;
-            animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .modal-head {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 18px;
-            font-weight: 400;
-            letter-spacing: 0.06em;
-            color: #fff;
-            text-transform: uppercase;
-        }
-
-        .modal-close {
-            color: var(--muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: 'DM Mono', monospace;
-            font-size: 12px;
-            transition: color 0.2s;
-        }
-
-        .modal-close:hover {
-            color: var(--red);
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .modal-actions {
-            margin-top: 20px;
+            border-color: var(--gold)
         }
 
         .btn-save {
@@ -1212,46 +582,801 @@
             font-family: 'DM Mono', monospace;
             font-size: 9px;
             font-weight: 500;
-            letter-spacing: 0.2em;
+            letter-spacing: .2em;
             text-transform: uppercase;
             border: none;
-            padding: 12px;
+            padding: 13px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform .2s, box-shadow .2s
         }
 
         .btn-save:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(200, 169, 110, 0.25);
+            box-shadow: 0 8px 24px rgba(200, 169, 110, .25)
         }
 
-        /* ─── SKELETON ──────────────────────────────────── */
+        .btn-send-creds {
+            width: 100%;
+            background: linear-gradient(135deg, #A78BFA, #7C5FD4);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            border: none;
+            padding: 13px;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s
+        }
+
+        .btn-send-creds:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(167, 139, 250, .25)
+        }
+
+        .btn-send-creds:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        .btn-modify {
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 3px 6px;
+            transition: color .2s
+        }
+
+        .btn-modify:hover {
+            color: #fff
+        }
+
+        .btn-purge {
+            color: var(--muted2);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 3px 6px;
+            transition: color .2s
+        }
+
+        .btn-purge:hover {
+            color: var(--red)
+        }
+
+        .btn-approve {
+            color: var(--emerald);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid rgba(52, 211, 153, .2);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: all .2s
+        }
+
+        .btn-approve:hover {
+            background: rgba(52, 211, 153, .1)
+        }
+
+        .btn-approve:disabled {
+            opacity: .4;
+            cursor: not-allowed
+        }
+
+        .btn-reject {
+            color: var(--muted2);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 6px;
+            transition: color .2s
+        }
+
+        .btn-reject:hover {
+            color: var(--red)
+        }
+
+        .btn-resend {
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid rgba(200, 169, 110, .2);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: all .2s
+        }
+
+        .btn-resend:hover {
+            background: rgba(200, 169, 110, .08)
+        }
+
+        /* ─── BOTTOM GRID ─── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(12px, 2vw, 16px);
+            animation: fadeUp .6s .5s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        @media(min-width:900px) {
+            .bottom-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(min-width:1300px) {
+            .bottom-grid {
+                grid-template-columns: 1fr 380px 320px
+            }
+        }
+
+        /* ─── SEARCH BAR ─── */
+        .search-bar {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 7px 12px;
+            outline: none;
+            transition: border-color .2s;
+            width: clamp(140px, 25vw, 200px)
+        }
+
+        .search-bar::placeholder {
+            color: var(--muted)
+        }
+
+        .search-bar:focus {
+            border-color: var(--gold-dim)
+        }
+
+        /* ─── TABLES ─── */
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 520px
+        }
+
+        .inv-table thead tr {
+            border-bottom: 1px solid var(--border2)
+        }
+
+        .inv-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .16em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 6px 10px 0;
+            font-weight: 400;
+            text-align: left;
+            white-space: nowrap
+        }
+
+        .inv-table thead th.right {
+            text-align: right
+        }
+
+        .inv-table thead th.center {
+            text-align: center
+        }
+
+        .inv-table tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .inv-table tbody tr:hover {
+            background: rgba(255, 255, 255, .015)
+        }
+
+        .inv-table tbody td {
+            padding: 11px 6px 11px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px
+        }
+
+        .td-name {
+            color: #fff;
+            font-weight: 500
+        }
+
+        .td-email {
+            color: var(--muted)
+        }
+
+        .td-pass {
+            color: var(--muted2)
+        }
+
+        .td-nav {
+            color: var(--emerald);
+            text-align: right;
+            font-weight: 500
+        }
+
+        .td-actions {
+            text-align: center;
+            white-space: nowrap
+        }
+
+        .rev-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 300px
+        }
+
+        .rev-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 0 10px;
+            font-weight: 400;
+            text-align: left
+        }
+
+        .rev-table tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .rev-table tbody tr:hover {
+            background: rgba(255, 255, 255, .01)
+        }
+
+        .rev-table tbody td {
+            padding: 10px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px
+        }
+
+        .rev-amount {
+            text-align: right;
+            color: var(--emerald);
+            font-weight: 500
+        }
+
+        /* ─── INNER SCROLL ─── */
+        .inner-scroll {
+            overflow-y: auto;
+            max-height: clamp(240px, 40vh, 340px)
+        }
+
+        .academy-scroll {
+            overflow-y: auto;
+            max-height: clamp(280px, 45vh, 400px)
+        }
+
+        /* ─── BADGES ─── */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            border: 1px solid;
+            white-space: nowrap
+        }
+
+        .badge-pending {
+            color: var(--amber);
+            border-color: rgba(245, 158, 11, .25);
+            background: rgba(245, 158, 11, .06)
+        }
+
+        .badge-approved {
+            color: var(--emerald);
+            border-color: rgba(52, 211, 153, .25);
+            background: rgba(52, 211, 153, .06)
+        }
+
+        .badge-revoked {
+            color: var(--red);
+            border-color: rgba(248, 113, 113, .25);
+            background: rgba(248, 113, 113, .06)
+        }
+
+        .badge-pro {
+            color: var(--gold);
+            border-color: rgba(200, 169, 110, .3);
+            background: rgba(200, 169, 110, .07)
+        }
+
+        .badge-elite {
+            color: var(--violet);
+            border-color: rgba(167, 139, 250, .25);
+            background: rgba(167, 139, 250, .07)
+        }
+
+        /* ─── PILLS ─── */
+        .pill {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border: 1px solid;
+            white-space: nowrap
+        }
+
+        .pill-green {
+            color: var(--emerald);
+            border-color: rgba(52, 211, 153, .2);
+            background: rgba(52, 211, 153, .05)
+        }
+
+        .pill-amber {
+            color: var(--amber);
+            border-color: rgba(245, 158, 11, .2);
+            background: rgba(245, 158, 11, .05)
+        }
+
+        .pill-gold {
+            color: var(--gold);
+            border-color: rgba(200, 169, 110, .2);
+            background: rgba(200, 169, 110, .05)
+        }
+
+        .pill-violet {
+            color: var(--violet);
+            border-color: rgba(167, 139, 250, .2);
+            background: rgba(167, 139, 250, .05)
+        }
+
+        /* ─── ACTIVITY FEED ─── */
+        .feed-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border2);
+            animation: feedIn .4s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @keyframes feedIn {
+            from {
+                opacity: 0;
+                transform: translateX(-8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .feed-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 5px
+        }
+
+        .feed-dot.green {
+            background: var(--emerald)
+        }
+
+        .feed-dot.gold {
+            background: var(--gold)
+        }
+
+        .feed-dot.amber {
+            background: var(--amber)
+        }
+
+        .feed-dot.red {
+            background: var(--red)
+        }
+
+        .feed-dot.violet {
+            background: var(--violet)
+        }
+
+        .feed-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--text);
+            line-height: 1.5
+        }
+
+        .feed-time {
+            font-size: 9px;
+            color: var(--muted)
+        }
+
+        /* ─── ACADEMY SECTION ─── */
+        .academy-section {
+            margin-top: clamp(16px, 3vw, 24px);
+            animation: fadeUp .6s .6s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        .academy-panel-head {
+            background: linear-gradient(135deg, rgba(167, 139, 250, .05), transparent);
+            border-bottom-color: rgba(167, 139, 250, .12) !important
+        }
+
+        /* ─── TABS ─── */
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid var(--border2);
+            padding: 0 clamp(14px, 3vw, 22px);
+            overflow-x: auto;
+            scrollbar-width: none
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .2s;
+            margin-bottom: -1px;
+            white-space: nowrap;
+            flex-shrink: 0
+        }
+
+        .tab-btn.active {
+            color: var(--violet);
+            border-bottom-color: var(--violet)
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text)
+        }
+
+        /* ─── MODALS ─── */
+        #investorModal,
+        #credModal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(3, 5, 10, .92);
+            backdrop-filter: blur(16px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(12px, 4vw, 24px);
+            overflow-y: auto;
+        }
+
+        #investorModal.open,
+        #credModal.open {
+            display: flex
+        }
+
+        #credModal {
+            z-index: 300
+        }
+
+        .modal-box,
+        .cred-box {
+            background: var(--card2);
+            border: 1px solid rgba(200, 169, 110, .2);
+            width: 100%;
+            max-width: 480px;
+            animation: modalIn .35s cubic-bezier(.16, 1, .3, 1) both;
+            margin: auto;
+        }
+
+        .cred-box {
+            border-color: rgba(167, 139, 250, .25)
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.96) translateY(12px)
+            }
+        }
+
+        .modal-head,
+        .cred-head {
+            padding: clamp(16px, 3vw, 20px) clamp(18px, 4vw, 24px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px
+        }
+
+        .modal-title,
+        .cred-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(15px, 3vw, 18px);
+            font-weight: 400;
+            letter-spacing: .06em;
+            color: #fff;
+            text-transform: uppercase
+        }
+
+        .cred-head {
+            background: linear-gradient(135deg, rgba(167, 139, 250, .06), transparent)
+        }
+
+        .modal-close,
+        .cred-close {
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            transition: color .2s;
+            flex-shrink: 0
+        }
+
+        .modal-close:hover,
+        .cred-close:hover {
+            color: var(--red)
+        }
+
+        .modal-body,
+        .cred-body {
+            padding: clamp(16px, 3vw, 24px)
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        @media(max-width:400px) {
+            .modal-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .modal-field {
+            margin-bottom: 14px
+        }
+
+        .modal-actions {
+            margin-top: 20px
+        }
+
+        .cred-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            margin-bottom: 10px
+        }
+
+        .cred-block .cb-lbl {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 4px
+        }
+
+        .cred-block .cb-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: .04em;
+            word-break: break-all
+        }
+
+        .cred-warning {
+            background: rgba(248, 113, 113, .06);
+            border: 1px solid rgba(248, 113, 113, .2);
+            padding: 12px 14px;
+            margin: 14px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--red);
+            line-height: 1.7
+        }
+
+        /* ─── HOTKEY BAR ─── */
+        .hotkey-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            background: rgba(3, 5, 10, .9);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            padding: 7px var(--page-px);
+            display: flex;
+            gap: clamp(12px, 3vw, 24px);
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+            min-height: var(--hk-h);
+        }
+
+        .hotkey-bar::-webkit-scrollbar {
+            display: none
+        }
+
+        .hk {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0
+        }
+
+        .hk-key {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: var(--text);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        .hk-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .1em
+        }
+
+        /* Hide less important hotkeys on small screens */
+        .hk.desktop-only {
+            display: none
+        }
+
+        @media(min-width:700px) {
+            .hk.desktop-only {
+                display: flex
+            }
+        }
+
+        /* ─── TOAST ─── */
+        #toast-container {
+            position: fixed;
+            bottom: clamp(50px, 8vh, 60px);
+            right: clamp(12px, 3vw, 24px);
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: calc(100vw - 24px)
+        }
+
+        .toast {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            min-width: 240px;
+            max-width: 340px;
+            width: calc(100vw - 48px);
+            animation: toastIn .3s cubic-bezier(.16, 1, .3, 1) both;
+            position: relative
+        }
+
+        @media(min-width:400px) {
+            .toast {
+                width: auto
+            }
+        }
+
+        .toast.closing {
+            animation: toastOut .25s ease both
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+        }
+
+        .toast-icon {
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .toast-title {
+            color: #fff;
+            font-weight: 500
+        }
+
+        .toast-body {
+            color: var(--muted);
+            margin-top: 2px
+        }
+
+        .toast-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: var(--gold);
+            animation: toastBar 3.5s linear both
+        }
+
+        @keyframes toastBar {
+            from {
+                width: 100%
+            }
+
+            to {
+                width: 0%
+            }
+        }
+
+        /* ─── SKELETON ─── */
         .skeleton {
             background: linear-gradient(90deg, var(--card) 25%, var(--card2) 50%, var(--card) 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
             height: 16px;
-            border-radius: 2px;
+            border-radius: 2px
         }
 
         @keyframes shimmer {
             to {
-                background-position: -200% 0;
+                background-position: -200% 0
             }
         }
 
         .fade-in-section {
             opacity: 0;
-            transform: translateY(12px);
+            transform: translateY(12px)
         }
 
         .fade-in-section.visible {
-            animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .inner-scroll {
-            overflow-y: auto;
-            max-height: 340px;
+            animation: fadeUp .5s cubic-bezier(.16, 1, .3, 1) forwards
         }
 
         .panel-glow::after {
@@ -1261,47 +1386,67 @@
             left: 0;
             right: 0;
             height: 40px;
-            background: linear-gradient(180deg, rgba(200, 169, 110, 0.04), transparent);
-            pointer-events: none;
+            background: linear-gradient(180deg, rgba(200, 169, 110, .04), transparent);
+            pointer-events: none
         }
 
-        .pill {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            padding: 3px 10px;
-            border: 1px solid;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
         }
 
-        .pill-green {
-            color: var(--emerald);
-            border-color: rgba(52, 211, 153, 0.2);
-            background: rgba(52, 211, 153, 0.05);
+        /* ─── MOBILE CARD LAYOUT for Investor table ─── */
+        .mobile-investor-card {
+            display: none;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border2)
         }
 
-        .pill-amber {
-            color: var(--amber);
-            border-color: rgba(245, 158, 11, 0.2);
-            background: rgba(245, 158, 11, 0.05);
-        }
+        @media(max-width:639px) {
 
-        .pill-gold {
-            color: var(--gold);
-            border-color: rgba(200, 169, 110, 0.2);
-            background: rgba(200, 169, 110, 0.05);
-        }
+            .inv-table.mobile-cards thead,
+            .inv-table.mobile-cards .desktop-col {
+                display: none
+            }
 
-        .pill-violet {
-            color: var(--violet);
-            border-color: rgba(167, 139, 250, 0.2);
-            background: rgba(167, 139, 250, 0.05);
-        }
+            .mobile-investor-card {
+                display: block
+            }
 
-        .divider {
-            height: 1px;
-            background: var(--border);
-            margin: 0;
+            .mic-name {
+                font-family: 'DM Mono', monospace;
+                font-size: 12px;
+                color: #fff;
+                font-weight: 500;
+                margin-bottom: 4px
+            }
+
+            .mic-email {
+                font-family: 'DM Mono', monospace;
+                font-size: 10px;
+                color: var(--muted);
+                margin-bottom: 2px
+            }
+
+            .mic-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 6px
+            }
+
+            .mic-nav {
+                font-family: 'DM Mono', monospace;
+                font-size: 12px;
+                color: var(--emerald);
+                font-weight: 500
+            }
+
+            .mic-actions {
+                display: flex;
+                gap: 6px
+            }
         }
     </style>
 </head>
@@ -1310,7 +1455,7 @@
     <div class="glow-bg glow-1"></div>
     <div class="glow-bg glow-2"></div>
 
-    <!-- ─── NAV ──────────────────────────────────────── -->
+    <!-- ─── NAV ─── -->
     <nav>
         <div class="nav-brand">
             <div class="nav-logo">
@@ -1319,7 +1464,7 @@
                         d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
                 </svg>
             </div>
-            <div>
+            <div class="nav-text">
                 <div class="nav-title">Savanna Capital</div>
                 <div class="nav-sub">CEO Central Command Terminal</div>
             </div>
@@ -1327,26 +1472,25 @@
         <div class="nav-right">
             <div class="pulse-dot"></div>
             <div class="live-clock" id="liveClock">—</div>
-            <div class="session-badge">Root Admin Session</div>
-            <a href="index.html" class="nav-logout">Logout ✕</a>
+            <div class="session-badge">Root Admin</div>
+            <a href="index.html" class="nav-logout">Exit ✕</a>
         </div>
     </nav>
 
-    <!-- ─── MAIN ──────────────────────────────────────── -->
+    <!-- ─── MAIN ─── -->
     <main>
-
         <div class="page-header">
             <h1>Central <em>Command</em></h1>
-            <p>Consolidated fund operations · Allocation engine · Investor matrix · Academy clearance desk</p>
+            <p>Consolidated fund operations · Allocation engine · Investor matrix · Academy clearance</p>
             <div class="header-line"></div>
         </div>
 
-        <!-- ─── STATS (6 cards: 5 original + 1 academy) ── -->
+        <!-- STATS -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Consolidated Fund AUM</div>
+                <div class="stat-label">Consolidated AUM</div>
                 <div class="stat-value" id="totalAUM">$0.00</div>
-                <div class="stat-delta up" id="aumDelta">↑ Loading...</div>
+                <div class="stat-delta up" id="aumDelta">↑ Loading…</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Active Allocators</div>
@@ -1354,21 +1498,20 @@
                 <div class="stat-delta">Registered accounts</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">OpCo Accumulated Revenue</div>
+                <div class="stat-label">OpCo Revenue</div>
                 <div class="stat-value green" id="corporateRevenueVault">$0.00</div>
-                <div class="stat-delta up">Mgmt + performance fees</div>
+                <div class="stat-delta up">Mgmt + perf fees</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Macro Strategy Sharpe</div>
+                <div class="stat-label">Macro Sharpe</div>
                 <div class="stat-value green">2.68</div>
-                <div class="stat-delta">Risk-adjusted return ratio</div>
+                <div class="stat-delta">Risk-adjusted ratio</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Pending Intake Audits</div>
+                <div class="stat-label">Pending Intake</div>
                 <div class="stat-value amber" id="pendingIntakesCount">0</div>
                 <div class="stat-delta">Awaiting review</div>
             </div>
-            <!-- NEW: Academy stat -->
             <div class="stat-card academy-card">
                 <div class="stat-label">Academy Pending</div>
                 <div class="stat-value violet" id="academyPendingCount">0</div>
@@ -1376,14 +1519,14 @@
             </div>
         </div>
 
-        <!-- ─── ALLOCATION PANEL ──────────────────────── -->
+        <!-- ALLOCATION PANEL -->
         <div class="panel alloc-panel panel-glow">
             <div class="panel-head">
                 <div>
-                    <div class="panel-title" style="color:var(--gold);">Execute Master Profit Allocation</div>
+                    <div class="panel-title" style="color:var(--gold)">Execute Master Profit Allocation</div>
                     <div class="panel-sub">Distributes gains pro-rata &amp; computes performance retention</div>
                 </div>
-                <div class="pill pill-green">Target Pacing: 18.00% p.a.</div>
+                <div class="pill pill-green">Target: 18.00% p.a.</div>
             </div>
             <div class="panel-body">
                 <form id="profitForm" onsubmit="allocateProfits(event)">
@@ -1399,9 +1542,9 @@
                         <div class="field">
                             <label>Distribution Interval</label>
                             <select id="pacingInterval">
-                                <option value="month">Monthly Distribution (1.50%)</option>
-                                <option value="week">Weekly Distribution (0.346%)</option>
-                                <option value="spot">Direct Spot Capital Injection</option>
+                                <option value="month">Monthly (1.50%)</option>
+                                <option value="week">Weekly (0.346%)</option>
+                                <option value="spot">Spot Capital Injection</option>
                             </select>
                         </div>
                         <button type="submit" class="btn-execute">Execute Allocation ➔</button>
@@ -1410,43 +1553,46 @@
             </div>
         </div>
 
-        <!-- ─── BOTTOM GRID ───────────────────────────── -->
+        <!-- BOTTOM GRID -->
         <div class="bottom-grid">
 
             <!-- Investor Matrix -->
             <div class="panel fade-in-section">
                 <div class="panel-head">
                     <div>
-                        <div class="panel-title">Live Investor Management Matrix</div>
-                        <div class="panel-sub">Real-time write / update control to Supabase</div>
+                        <div class="panel-title">Investor Management Matrix</div>
+                        <div class="panel-sub">Real-time write / update · Supabase</div>
                     </div>
-                    <div style="display:flex;gap:10px;align-items:center;">
-                        <input type="text" class="search-bar" id="investorSearch" placeholder="Search investor…"
+                    <div class="panel-actions">
+                        <input type="text" class="search-bar" id="investorSearch" placeholder="Search…"
                             oninput="filterInvestors(this.value)" />
-                        <button class="btn-new" onclick="openInvestorModal(null)">+ Issue Account</button>
+                        <button class="btn-new" onclick="openInvestorModal(null)">+ Issue</button>
                     </div>
                 </div>
-                <div class="panel-body" style="padding-top:14px;">
-                    <div class="inner-scroll">
+                <div class="panel-body" style="padding-top:14px">
+                    <!-- Desktop table -->
+                    <div class="table-wrap inner-scroll" id="investorDesktopWrap">
                         <table class="inv-table">
                             <thead>
                                 <tr>
-                                    <th>Investor Name</th>
-                                    <th>Email Node</th>
-                                    <th>Passcode</th>
+                                    <th>Investor</th>
+                                    <th class="desktop-col">Email</th>
+                                    <th class="desktop-col">Passcode</th>
                                     <th class="right">NAV</th>
                                     <th class="center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="investorTableBody">
                                 <tr>
-                                    <td colspan="5" style="padding:24px 0;text-align:center;">
-                                        <div class="skeleton" style="width:60%;margin:auto;"></div>
+                                    <td colspan="5" style="padding:24px 0;text-align:center">
+                                        <div class="skeleton" style="width:60%;margin:auto"></div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                    <!-- Mobile cards -->
+                    <div id="investorMobileList" style="display:none"></div>
                 </div>
             </div>
 
@@ -1454,26 +1600,26 @@
             <div class="panel fade-in-section">
                 <div class="panel-head">
                     <div>
-                        <div class="panel-title" style="color:var(--emerald);">OpCo Treasury</div>
-                        <div class="panel-sub">Inflow logs — management &amp; performance fees</div>
+                        <div class="panel-title" style="color:var(--emerald)">OpCo Treasury</div>
+                        <div class="panel-sub">Inflow logs — fees</div>
                     </div>
                     <div class="pill pill-green">Live</div>
                 </div>
-                <div class="panel-body" style="padding-top:14px;">
-                    <div class="inner-scroll" style="max-height:300px;">
+                <div class="panel-body" style="padding-top:14px">
+                    <div class="table-wrap inner-scroll">
                         <table class="rev-table">
                             <thead>
                                 <tr>
-                                    <th>Timestamp</th>
-                                    <th>Event / Source</th>
-                                    <th style="text-align:right;">Revenue</th>
+                                    <th>Time</th>
+                                    <th>Event</th>
+                                    <th style="text-align:right">Revenue</th>
                                 </tr>
                             </thead>
                             <tbody id="corporateTableBody">
                                 <tr>
                                     <td colspan="3"
-                                        style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">
-                                        Loading ledger…</td>
+                                        style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">
+                                        Loading…</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1486,100 +1632,93 @@
                 <div class="panel-head">
                     <div>
                         <div class="panel-title">Activity Feed</div>
-                        <div class="panel-sub">System events &amp; inbound pipeline</div>
+                        <div class="panel-sub">System events &amp; pipeline</div>
                     </div>
                     <div class="pill pill-amber">Streaming</div>
                 </div>
-                <div class="panel-body" style="padding-top:14px;">
-                    <div class="inner-scroll" id="activityFeed" style="max-height:310px;">
+                <div class="panel-body" style="padding-top:14px">
+                    <div class="inner-scroll" id="activityFeed">
                         <p
-                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:16px 0;text-align:center;">
-                            Initialising feed…</p>
+                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:16px 0;text-align:center">
+                            Initialising…</p>
                     </div>
                 </div>
             </div>
 
         </div><!-- /bottom-grid -->
 
-        <!-- ══════════════════════════════════════════════ -->
-        <!--  ACADEMY CLEARANCE DESK                        -->
-        <!-- ══════════════════════════════════════════════ -->
+        <!-- ACADEMY SECTION -->
         <div class="academy-section">
             <div class="panel fade-in-section">
                 <div class="panel-head academy-panel-head">
                     <div>
-                        <div class="panel-title" style="color:var(--violet);">Academy Clearance Desk</div>
+                        <div class="panel-title" style="color:var(--violet)">Academy Clearance Desk</div>
                         <div class="panel-sub">Access requests · Credential issuance · Subscription management</div>
                     </div>
-                    <div style="display:flex;gap:10px;align-items:center;">
-                        <input type="text" class="search-bar" id="academySearch" placeholder="Search requests…"
-                            oninput="filterAcademyRequests(this.value)" style="border-color:rgba(167,139,250,0.2);" />
+                    <div class="panel-actions">
+                        <input type="text" class="search-bar" id="academySearch" placeholder="Search…"
+                            oninput="filterAcademyRequests(this.value)" style="border-color:rgba(167,139,250,.2)" />
                         <button class="btn-new" onclick="loadAcademyRequests()"
-                            style="border-color:rgba(167,139,250,0.3);color:var(--violet);">↻ Refresh</button>
+                            style="border-color:rgba(167,139,250,.3);color:var(--violet)">↻ Refresh</button>
                     </div>
                 </div>
-
-                <!-- Tab bar -->
-                <div class="tab-bar" style="padding:0 22px;">
+                <div class="tab-bar">
                     <button class="tab-btn active" onclick="switchAcademyTab('pending',this)">Pending</button>
                     <button class="tab-btn" onclick="switchAcademyTab('approved',this)">Approved</button>
                     <button class="tab-btn" onclick="switchAcademyTab('revoked',this)">Revoked</button>
                     <button class="tab-btn" onclick="switchAcademyTab('all',this)">All</button>
                 </div>
-
-                <div class="panel-body" style="padding-top:14px;">
-                    <div class="inner-scroll" style="max-height:400px;" id="academyTableWrapper">
+                <div class="panel-body" style="padding-top:14px">
+                    <div class="table-wrap academy-scroll" id="academyTableWrapper">
                         <p
-                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center;">
+                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center">
                             Loading academy requests…</p>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- ─── HOTKEY BAR ─────────────────────────────── -->
+    <!-- HOTKEY BAR -->
     <div class="hotkey-bar">
         <div class="hk"><span class="hk-key">N</span><span class="hk-label">New Investor</span></div>
-        <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh Data</span></div>
+        <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh</span></div>
         <div class="hk"><span class="hk-key">Esc</span><span class="hk-label">Close Modal</span></div>
-        <div class="hk"><span class="hk-key">Ctrl+E</span><span class="hk-label">Execute Allocation</span></div>
-        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
-            <div class="pulse-dot" style="width:5px;height:5px;"></div>
+        <div class="hk desktop-only"><span class="hk-key">Ctrl+E</span><span class="hk-label">Execute</span></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <div class="pulse-dot" style="width:5px;height:5px"></div>
             <span
-                style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;">System
-                Nominal</span>
+                style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase">Nominal</span>
         </div>
     </div>
 
-    <!-- ─── TOAST CONTAINER ───────────────────────── -->
+    <!-- TOAST -->
     <div id="toast-container"></div>
 
-    <!-- ─── INVESTOR MODAL ────────────────────────── -->
+    <!-- INVESTOR MODAL -->
     <div id="investorModal">
         <div class="modal-box">
             <div class="modal-head">
                 <div class="modal-title" id="modalTitle">Configure Investor Node</div>
-                <button class="modal-close" onclick="closeInvestorModal()">✕ Close</button>
+                <button class="modal-close" onclick="closeInvestorModal()">✕</button>
             </div>
             <div class="modal-body">
                 <form id="investorForm" onsubmit="saveInvestorData(event)">
                     <input type="hidden" id="investorId" />
-                    <div class="field" style="margin-bottom:14px;"><label>Legal Name</label><input type="text"
-                            id="invName" required placeholder="Full legal name" /></div>
-                    <div class="field" style="margin-bottom:14px;"><label>Institutional Email</label><input type="email"
-                            id="invEmail" required placeholder="investor@domain.com" /></div>
-                    <div class="field" style="margin-bottom:14px;"><label>Access Passcode</label><input type="text"
-                            id="invPasscode" required placeholder="Secure passcode" /></div>
-                    <div class="modal-grid" style="margin-bottom:14px;">
-                        <div class="field"><label>NAV Valuation (USD/KES)</label><input type="text" id="invNAV"
+                    <div class="field modal-field"><label>Legal Name</label><input type="text" id="invName" required
+                            placeholder="Full legal name" /></div>
+                    <div class="field modal-field"><label>Institutional Email</label><input type="email" id="invEmail"
+                            required placeholder="investor@domain.com" /></div>
+                    <div class="field modal-field"><label>Access Passcode</label><input type="text" id="invPasscode"
+                            required placeholder="Secure passcode" /></div>
+                    <div class="modal-grid modal-field">
+                        <div class="field"><label>NAV (USD/KES)</label><input type="text" id="invNAV"
                                 placeholder="$250,000" required /></div>
-                        <div class="field"><label>Monthly Return Curve</label><input type="text" id="invReturn"
+                        <div class="field"><label>Monthly Return</label><input type="text" id="invReturn"
                                 placeholder="+3.24%" required /></div>
                     </div>
                     <div class="modal-grid">
-                        <div class="field"><label>Sharpe Variance Index</label><input type="text" id="invSharpe"
+                        <div class="field"><label>Sharpe Index</label><input type="text" id="invSharpe"
                                 placeholder="2.45" required /></div>
                         <div class="field"><label>Capital Exposure %</label><input type="text" id="invExposure"
                                 placeholder="68.4%" required /></div>
@@ -1590,18 +1729,18 @@
         </div>
     </div>
 
-    <!-- ─── CREDENTIAL ISSUANCE MODAL ────────────── -->
+    <!-- CREDENTIAL MODAL -->
     <div id="credModal">
         <div class="cred-box">
             <div class="cred-head">
                 <div class="cred-title">Issue Academy Credentials</div>
-                <button class="cred-close" onclick="closeCredModal()">✕ Close</button>
+                <button class="cred-close" onclick="closeCredModal()">✕</button>
             </div>
             <div class="cred-body">
                 <p
-                    style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:18px;line-height:1.7;">
-                    Auto-generated credentials for <strong id="credClientName" style="color:var(--text);">—</strong>.
-                    Sent by email immediately. Stored as a hash — never retrievable after issuance.
+                    style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:18px;line-height:1.7">
+                    Auto-generated credentials for <strong id="credClientName" style="color:var(--text)">—</strong>.
+                    Sent by email immediately.
                 </p>
                 <div class="cred-block">
                     <div class="cb-lbl">Username</div>
@@ -1615,39 +1754,33 @@
                     <div class="cb-lbl">Tier Granted</div>
                     <div class="cb-val" id="credTier">—</div>
                 </div>
-                <div class="cred-warning">
-                    ⚠ Password shown once only. After sending it is stored as a SHA-256 hash.<br>
-                    One active session permitted per account. Sharing = instant revocation.
-                </div>
-                <button class="btn-send-creds" id="credSendBtn" onclick="sendAcademyCredentials()">
-                    Send Credentials by Email →
-                </button>
+                <div class="cred-warning">⚠ Password shown once only. After sending it is stored as a SHA-256
+                    hash.<br>One active session permitted. Sharing = instant revocation.</div>
+                <button class="btn-send-creds" id="credSendBtn" onclick="sendAcademyCredentials()">Send Credentials by
+                    Email →</button>
             </div>
         </div>
     </div>
 
-    <!-- ─── SCRIPTS ───────────────────────────────── -->
     <script>
-        /* ── Config ──────────────────────────────────────── */
+        /* ── Config ── */
         const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD";
         const GOOGLE_READ_URL = "https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec";
-
-        // ── EmailJS — replace with your real IDs ──────────
         const EMAILJS_PUBLIC_KEY = "79XBeB0GrM6rEKRnR";
         const EMAILJS_SERVICE_ID = "service_ys967c9";
-        const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";  // client instructions (CC'd to you)
-        const EMAILJS_CRED_TEMPLATE_ID = "template_elfr3xi";  // credentials after approval
+        const EMAILJS_PAYMENT_TEMPLATE_ID = "template_eekhplo";
+        const EMAILJS_CRED_TEMPLATE_ID = "template_elfr3xi";
 
-        const db = supabase.createClient("https://prxlshwbirmtajtworzc.supabase.co", "sb_publishable_lW8-L4PE39gZSe3idmyYUg_ZJ7arAuD");
-        emailjs.init("79XBeB0GrM6rEKRnR");
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        emailjs.init(EMAILJS_PUBLIC_KEY);
 
         let localInvestorsCache = [];
         let allAcademyRequests = [];
         let currentAcademyTab = "pending";
         let pendingCredRow = null;
 
-        /* ── DOM Ready ───────────────────────────────────── */
+        /* ── Init ── */
         document.addEventListener("DOMContentLoaded", () => {
             startClock();
             fetchLiveInvestors();
@@ -1656,66 +1789,68 @@
             loadAcademyRequests();
             initScrollObserver();
             bindKeyboard();
+            checkMobile();
+            window.addEventListener("resize", checkMobile);
             pushActivity("green", "System booted", "Central Command terminal initialised.");
         });
 
-        /* ── Live Clock ──────────────────────────────────── */
-        function startClock() {
-            const el = document.getElementById("liveClock");
-            const update = () => { el.textContent = new Date().toUTCString().replace("GMT", "UTC"); };
-            update(); setInterval(update, 1000);
+        /* ── Mobile detection ── */
+        function checkMobile() {
+            const isMobile = window.innerWidth < 640;
+            document.getElementById("investorDesktopWrap").style.display = isMobile ? "none" : "block";
+            document.getElementById("investorMobileList").style.display = isMobile ? "block" : "none";
         }
 
-        /* ── Scroll Observer ─────────────────────────────── */
+        /* ── Clock ── */
+        function startClock() {
+            const el = document.getElementById("liveClock");
+            const u = () => { el.textContent = new Date().toUTCString().replace("GMT", "UTC") };
+            u(); setInterval(u, 1000);
+        }
+
+        /* ── Scroll observer ── */
         function initScrollObserver() {
             const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
-            }, { threshold: 0.1 });
+                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible") });
+            }, { threshold: .1 });
             document.querySelectorAll(".fade-in-section").forEach(el => obs.observe(el));
         }
 
-        /* ── Keyboard shortcuts ──────────────────────────── */
+        /* ── Keyboard ── */
         function bindKeyboard() {
             document.addEventListener("keydown", e => {
                 if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
-                if (e.key === "n" || e.key === "N") { e.preventDefault(); openInvestorModal(null); }
-                if (e.key === "r" || e.key === "R") { e.preventDefault(); fetchLiveInvestors(); fetchCorporateRevenue(); loadAcademyRequests(); toast("info", "Data Refresh", "All matrices reloaded."); }
-                if (e.key === "Escape") { closeInvestorModal(); closeCredModal(); }
-                if ((e.ctrlKey || e.metaKey) && e.key === "e") { e.preventDefault(); document.getElementById("profitForm").requestSubmit(); }
+                if (e.key === "n" || e.key === "N") { e.preventDefault(); openInvestorModal(null) }
+                if (e.key === "r" || e.key === "R") { e.preventDefault(); fetchLiveInvestors(); fetchCorporateRevenue(); loadAcademyRequests(); toast("info", "Data Refresh", "All matrices reloaded.") }
+                if (e.key === "Escape") { closeInvestorModal(); closeCredModal() }
+                if ((e.ctrlKey || e.metaKey) && e.key === "e") { e.preventDefault(); document.getElementById("profitForm").requestSubmit() }
             });
         }
 
-        /* ── Toast ───────────────────────────────────────── */
+        /* ── Toast ── */
         function toast(type, title, body) {
             const icons = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
             const colors = { success: "var(--emerald)", error: "var(--red)", warning: "var(--amber)", info: "var(--gold)" };
             const el = document.createElement("div");
             el.className = "toast";
-            el.innerHTML = `
-                <div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div>
-                <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
-                <div class="toast-bar" style="background:${colors[type]}"></div>`;
+            el.innerHTML = `<div class="toast-icon" style="color:${colors[type]}">${icons[type]}</div><div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div><div class="toast-bar" style="background:${colors[type]}"></div>`;
             document.getElementById("toast-container").appendChild(el);
-            setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300); }, 3500);
+            setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300) }, 3500);
         }
 
-        /* ── Activity Feed ───────────────────────────────── */
+        /* ── Activity Feed ── */
         function pushActivity(color, title, detail) {
             const feed = document.getElementById("activityFeed");
             const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
             const item = document.createElement("div");
             item.className = "feed-item";
-            item.innerHTML = `
-                <div class="feed-dot ${color}"></div>
-                <div><div class="feed-text">${title}</div><div class="feed-time">${now} · ${detail}</div></div>`;
-            const placeholder = feed.querySelector("p");
-            if (placeholder) placeholder.remove();
+            item.innerHTML = `<div class="feed-dot ${color}"></div><div><div class="feed-text">${title}</div><div class="feed-time">${now} · ${detail}</div></div>`;
+            const ph = feed.querySelector("p"); if (ph) ph.remove();
             feed.insertBefore(item, feed.firstChild);
             while (feed.children.length > 20) feed.removeChild(feed.lastChild);
         }
 
-        /* ══ INVESTOR FUNCTIONS ══════════════════════════════ */
-
+        /* ══ INVESTOR FUNCTIONS ══ */
         async function fetchLiveInvestors() {
             try {
                 const { data, error } = await db.from('investors').select('*').order('id', { ascending: true });
@@ -1724,31 +1859,28 @@
                 renderInvestorMatrix(data);
                 calculateFundAggregates(data);
                 pushActivity("gold", "Investor matrix synced", `${data.length} account(s) loaded.`);
-            } catch (err) {
-                console.error("Matrix fault:", err.message);
-                toast("error", "Sync Error", err.message);
-            }
+            } catch (err) { console.error(err.message); toast("error", "Sync Error", err.message) }
         }
 
         function renderInvestorMatrix(investors) {
             const tbody = document.getElementById("investorTableBody");
-            tbody.innerHTML = "";
+            const mobileList = document.getElementById("investorMobileList");
+            tbody.innerHTML = ""; mobileList.innerHTML = "";
             if (!investors.length) {
-                tbody.innerHTML = `<tr><td colspan="5" style="padding:24px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">No investor records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="padding:24px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">No investor records found.</td></tr>`;
+                mobileList.innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:24px 0;text-align:center">No records.</p>`;
             } else {
                 investors.forEach((inv, i) => {
+                    // Desktop row
                     const tr = document.createElement("tr");
-                    tr.style.animationDelay = `${i * 0.04}s`;
-                    tr.innerHTML = `
-                        <td class="td-name">${inv.client_name}</td>
-                        <td class="td-email">${inv.email}</td>
-                        <td class="td-pass">${inv.passcode}</td>
-                        <td class="td-nav">${inv.nav}</td>
-                        <td class="td-actions">
-                            <button class="btn-modify" onclick="openInvestorModal(${inv.id})">Edit</button>
-                            <button class="btn-purge"  onclick="purgeInvestorNode(${inv.id})">✕ Purge</button>
-                        </td>`;
+                    tr.style.animationDelay = `${i * .04}s`;
+                    tr.innerHTML = `<td class="td-name">${inv.client_name}</td><td class="td-email desktop-col">${inv.email}</td><td class="td-pass desktop-col">${inv.passcode}</td><td class="td-nav">${inv.nav}</td><td class="td-actions"><button class="btn-modify" onclick="openInvestorModal(${inv.id})">Edit</button><button class="btn-purge" onclick="purgeInvestorNode(${inv.id})">✕</button></td>`;
                     tbody.appendChild(tr);
+                    // Mobile card
+                    const card = document.createElement("div");
+                    card.className = "mobile-investor-card";
+                    card.innerHTML = `<div class="mic-name">${escHtml(inv.client_name)}</div><div class="mic-email">${escHtml(inv.email)}</div><div class="mic-row"><div class="mic-nav">${escHtml(inv.nav)}</div><div class="mic-actions"><button class="btn-modify" onclick="openInvestorModal(${inv.id})">Edit</button><button class="btn-purge" onclick="purgeInvestorNode(${inv.id})">✕ Purge</button></div></div>`;
+                    mobileList.appendChild(card);
                 });
             }
             document.getElementById("totalInvestors").textContent = investors.length;
@@ -1756,31 +1888,19 @@
 
         function filterInvestors(q) {
             q = q.toLowerCase();
-            renderInvestorMatrix(localInvestorsCache.filter(inv =>
-                inv.client_name?.toLowerCase().includes(q) || inv.email?.toLowerCase().includes(q)
-            ));
+            renderInvestorMatrix(localInvestorsCache.filter(inv => inv.client_name?.toLowerCase().includes(q) || inv.email?.toLowerCase().includes(q)));
         }
 
         function calculateFundAggregates(investors) {
             let aum = 0;
-            investors.forEach(inv => {
-                const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, ""));
-                if (!isNaN(n)) aum += n;
-            });
+            investors.forEach(inv => { const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")); if (!isNaN(n)) aum += n });
             document.getElementById("totalAUM").textContent = "$" + aum.toLocaleString('en-US', { minimumFractionDigits: 2 });
             document.getElementById("aumDelta").textContent = `↑ ${investors.length} active allocators`;
         }
 
         async function fetchInboundGoogleLeads() {
             if (!GOOGLE_READ_URL || GOOGLE_READ_URL.includes("YOUR_")) return;
-            try {
-                const res = await fetch(GOOGLE_READ_URL);
-                const result = await res.json();
-                if (result?.status === "online") {
-                    pushActivity("amber", "Pipeline stream active", "Google Macro Matrix sync confirmed.");
-                    toast("success", "Pipeline Online", "Google leads sync is active.");
-                }
-            } catch (err) { console.error("Google sync error:", err); }
+            try { const res = await fetch(GOOGLE_READ_URL); const result = await res.json(); if (result?.status === "online") { pushActivity("amber", "Pipeline stream active", "Google Macro Matrix sync confirmed."); toast("success", "Pipeline Online", "Google leads sync active.") } } catch (err) { console.error(err) }
         }
 
         function openInvestorModal(id = null) {
@@ -1789,69 +1909,30 @@
             if (id !== null) {
                 document.getElementById("modalTitle").textContent = "Modify Investor Node";
                 const rec = localInvestorsCache.find(x => x.id === id);
-                if (rec) {
-                    document.getElementById("invName").value = rec.client_name;
-                    document.getElementById("invEmail").value = rec.email;
-                    document.getElementById("invPasscode").value = rec.passcode;
-                    document.getElementById("invNAV").value = rec.nav;
-                    document.getElementById("invReturn").value = rec.monthly_return;
-                    document.getElementById("invSharpe").value = rec.sharpe_ratio;
-                    document.getElementById("invExposure").value = rec.exposure;
-                }
-            } else {
-                document.getElementById("modalTitle").textContent = "Issue New Investor Account";
-            }
+                if (rec) { document.getElementById("invName").value = rec.client_name; document.getElementById("invEmail").value = rec.email; document.getElementById("invPasscode").value = rec.passcode; document.getElementById("invNAV").value = rec.nav; document.getElementById("invReturn").value = rec.monthly_return; document.getElementById("invSharpe").value = rec.sharpe_ratio; document.getElementById("invExposure").value = rec.exposure }
+            } else { document.getElementById("modalTitle").textContent = "Issue New Investor Account" }
             document.getElementById("investorModal").classList.add("open");
         }
-
-        function closeInvestorModal() { document.getElementById("investorModal").classList.remove("open"); }
+        function closeInvestorModal() { document.getElementById("investorModal").classList.remove("open") }
 
         async function saveInvestorData(e) {
             e.preventDefault();
             const id = document.getElementById("investorId").value;
-            const payload = {
-                client_name: document.getElementById("invName").value,
-                email: document.getElementById("invEmail").value.trim().toLowerCase(),
-                passcode: document.getElementById("invPasscode").value,
-                nav: document.getElementById("invNAV").value,
-                monthly_return: document.getElementById("invReturn").value,
-                sharpe_ratio: document.getElementById("invSharpe").value,
-                exposure: document.getElementById("invExposure").value,
-            };
+            const payload = { client_name: document.getElementById("invName").value, email: document.getElementById("invEmail").value.trim().toLowerCase(), passcode: document.getElementById("invPasscode").value, nav: document.getElementById("invNAV").value, monthly_return: document.getElementById("invReturn").value, sharpe_ratio: document.getElementById("invSharpe").value, exposure: document.getElementById("invExposure").value };
             try {
-                if (id) {
-                    const { error } = await db.from('investors').update(payload).eq('id', id);
-                    if (error) throw error;
-                    toast("success", "Node Updated", `${payload.client_name}'s record modified.`);
-                    pushActivity("gold", "Investor record updated", payload.client_name);
-                } else {
-                    const { error } = await db.from('investors').insert([payload]);
-                    if (error) throw error;
-                    toast("success", "Account Issued", `New investor node created for ${payload.client_name}.`);
-                    pushActivity("green", "New investor onboarded", payload.client_name);
-                    try {
-                        await fetch(GOOGLE_READ_URL, {
-                            method: "POST", mode: "no-cors",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ apiKey: "savanna_private_key_2026", name: payload.client_name, email: payload.email, passcode: payload.passcode, navValuation: payload.nav, monthlyReturn: payload.monthly_return, sharpeIndex: payload.sharpe_ratio, capitalExposure: payload.exposure })
-                        });
-                    } catch (e2) { }
+                if (id) { const { error } = await db.from('investors').update(payload).eq('id', id); if (error) throw error; toast("success", "Node Updated", `${payload.client_name}'s record modified.`); pushActivity("gold", "Investor record updated", payload.client_name) }
+                else {
+                    const { error } = await db.from('investors').insert([payload]); if (error) throw error; toast("success", "Account Issued", `New node: ${payload.client_name}.`); pushActivity("green", "New investor onboarded", payload.client_name);
+                    try { await fetch(GOOGLE_READ_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ apiKey: "savanna_private_key_2026", ...payload }) }) } catch (e2) { }
                 }
-                closeInvestorModal();
-                fetchLiveInvestors();
-            } catch (err) { toast("error", "Save Error", err.message); }
+                closeInvestorModal(); fetchLiveInvestors();
+            } catch (err) { toast("error", "Save Error", err.message) }
         }
 
         async function purgeInvestorNode(id) {
             if (!confirm("Permanently purge this investor account? This cannot be reversed.")) return;
-            try {
-                const inv = localInvestorsCache.find(x => x.id === id);
-                const { error } = await db.from('investors').delete().eq('id', id);
-                if (error) throw error;
-                toast("warning", "Account Purged", `${inv?.client_name || 'Investor'} removed.`);
-                pushActivity("red", "Account purged", inv?.client_name || `ID #${id}`);
-                fetchLiveInvestors();
-            } catch (err) { toast("error", "Purge Error", err.message); }
+            try { const inv = localInvestorsCache.find(x => x.id === id); const { error } = await db.from('investors').delete().eq('id', id); if (error) throw error; toast("warning", "Account Purged", `${inv?.client_name || 'Investor'} removed.`); pushActivity("red", "Account purged", inv?.client_name || `ID #${id}`); fetchLiveInvestors() }
+            catch (err) { toast("error", "Purge Error", err.message) }
         }
 
         async function allocateProfits(e) {
@@ -1859,263 +1940,152 @@
             const grossProfit = parseFloat(document.getElementById("grossProfit").value);
             const feePercent = parseFloat(document.getElementById("managementFee").value) / 100;
             const interval = document.getElementById("pacingInterval").value;
-
-            if (!localInvestorsCache.length) { toast("error", "Allocation Error", "No active investor records in cache."); return; }
-
-            const fundCut = grossProfit * feePercent;
-            const netDist = grossProfit - fundCut;
-            let totalAUM = 0;
-
-            const parsed = localInvestorsCache.map(inv => {
-                const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")) || 0;
-                totalAUM += n; return { ...inv, numericNAV: n };
-            });
-
-            if (!totalAUM) { toast("error", "AUM Zero", "Fund AUM is zero. Cannot allocate."); return; }
-
-            let returnLabel = "+1.50%";
-            if (interval === "week") returnLabel = "+0.346%";
-            if (interval === "spot") returnLabel = `+${((netDist / totalAUM) * 100).toFixed(2)}%`;
-
+            if (!localInvestorsCache.length) { toast("error", "Allocation Error", "No active investor records."); return }
+            const fundCut = grossProfit * feePercent; const netDist = grossProfit - fundCut; let totalAUM = 0;
+            const parsed = localInvestorsCache.map(inv => { const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")) || 0; totalAUM += n; return { ...inv, numericNAV: n } });
+            if (!totalAUM) { toast("error", "AUM Zero", "Cannot allocate with zero AUM."); return }
+            let returnLabel = "+1.50%"; if (interval === "week") returnLabel = "+0.346%"; if (interval === "spot") returnLabel = `+${((netDist / totalAUM) * 100).toFixed(2)}%`;
             let updated = 0;
             for (const inv of parsed) {
                 if (inv.email === "brian@savannacapital.com" || inv.email.includes("admin@")) continue;
-                const share = inv.numericNAV / totalAUM;
-                const newNAV = inv.numericNAV + netDist * share;
-                const navStr = "$" + newNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
-                try {
-                    const { error } = await db.from('investors').update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id);
-                    if (error) throw error; updated++;
-                } catch (err) { console.error(`Update failed for ${inv.client_name}:`, err.message); }
+                const share = inv.numericNAV / totalAUM; const newNAV = inv.numericNAV + netDist * share; const navStr = "$" + newNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                try { const { error } = await db.from('investors').update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id); if (error) throw error; updated++ } catch (err) { console.error(err.message) }
             }
-
-            try {
-                const { error } = await db.from('corporate_revenue').insert([{
-                    source_event: `Mgmt Fee (${(feePercent * 100).toFixed(1)}%) on $${grossProfit.toLocaleString()} gross`,
-                    amount: fundCut
-                }]);
-                if (error) throw error;
-                fetchCorporateRevenue();
-            } catch (err) { console.error("Corporate log error:", err.message); }
-
-            toast("success", "Allocation Complete", `Distributed $${grossProfit.toLocaleString()} · Fee $${fundCut.toLocaleString()} · ${updated} nodes updated.`);
-            pushActivity("green", "Profit allocation executed", `$${grossProfit.toLocaleString()} gross · ${updated} investors · interval: ${interval}`);
-            document.getElementById("profitForm").reset();
-            fetchLiveInvestors();
+            try { const { error } = await db.from('corporate_revenue').insert([{ source_event: `Mgmt Fee (${(feePercent * 100).toFixed(1)}%) on $${grossProfit.toLocaleString()} gross`, amount: fundCut }]); if (error) throw error; fetchCorporateRevenue() } catch (err) { console.error(err.message) }
+            toast("success", "Allocation Complete", `Distributed $${grossProfit.toLocaleString()} · ${updated} nodes updated.`);
+            pushActivity("green", "Profit allocation executed", `$${grossProfit.toLocaleString()} · ${updated} investors · ${interval}`);
+            document.getElementById("profitForm").reset(); fetchLiveInvestors();
         }
 
         async function fetchCorporateRevenue() {
             try {
                 const { data, error } = await db.from('corporate_revenue').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                const tbody = document.getElementById("corporateTableBody");
-                tbody.innerHTML = "";
-                let total = 0;
-                if (!data.length) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">No fee events this cycle.</td></tr>`;
-                } else {
-                    data.forEach(item => {
-                        total += item.amount;
-                        const dt = new Date(item.created_at).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" });
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-                            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;">${dt}</td>
-                            <td style="color:var(--text);font-family:'DM Mono',monospace;font-size:9px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.source_event}</td>
-                            <td class="rev-amount">+$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>`;
-                        tbody.appendChild(tr);
-                    });
-                }
+                const tbody = document.getElementById("corporateTableBody"); tbody.innerHTML = ""; let total = 0;
+                if (!data.length) { tbody.innerHTML = `<tr><td colspan="3" style="padding:20px 0;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">No fee events.</td></tr>` }
+                else { data.forEach(item => { total += item.amount; const dt = new Date(item.created_at).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" }); const tr = document.createElement("tr"); tr.innerHTML = `<td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px">${dt}</td><td style="color:var(--text);font-family:'DM Mono',monospace;font-size:9px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.source_event}</td><td class="rev-amount">+$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>`; tbody.appendChild(tr) }) }
                 document.getElementById("corporateRevenueVault").textContent = "$" + total.toLocaleString('en-US', { minimumFractionDigits: 2 });
-            } catch (err) { console.error("Corporate matrix fault:", err.message); toast("error", "Ledger Error", err.message); }
+            } catch (err) { console.error(err.message); toast("error", "Ledger Error", err.message) }
         }
 
-        /* ══ ACADEMY CLEARANCE FUNCTIONS ════════════════════ */
-
+        /* ══ ACADEMY FUNCTIONS ══ */
         async function loadAcademyRequests() {
-            document.getElementById("academyTableWrapper").innerHTML =
-                `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center;"><span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--violet);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px;"></span>Fetching academy records…</p>`;
-
+            document.getElementById("academyTableWrapper").innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center"><span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--violet);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px"></span>Fetching records…</p>`;
             try {
-                const { data, error } = await db
-                    .from('access_requests')
-                    .select('*')
-                    .order('requested_at', { ascending: false });
-
+                const { data, error } = await db.from('access_requests').select('*').order('requested_at', { ascending: false });
                 if (error) throw error;
-
                 allAcademyRequests = data || [];
-
-                // Update stats card
-                const pending = allAcademyRequests.filter(r => r.status === 'pending').length;
-                document.getElementById("academyPendingCount").textContent = pending;
-
+                document.getElementById("academyPendingCount").textContent = allAcademyRequests.filter(r => r.status === 'pending').length;
                 renderAcademyTable(currentAcademyTab);
                 pushActivity("violet", "Academy desk synced", `${allAcademyRequests.length} request(s) loaded.`);
-
             } catch (err) {
-                document.getElementById("academyTableWrapper").innerHTML =
-                    `<p style="color:var(--red);font-family:'DM Mono',monospace;font-size:10px;padding:20px;text-align:center;">// DB Error: ${escHtml(err.message)}<br><br>Ensure the <strong>access_requests</strong> table exists in Supabase.</p>`;
-                console.error("Academy load error:", err.message);
+                document.getElementById("academyTableWrapper").innerHTML = `<p style="color:var(--red);font-family:'DM Mono',monospace;font-size:10px;padding:20px;text-align:center">// DB Error: ${escHtml(err.message)}</p>`;
+                console.error(err.message);
             }
         }
 
         function switchAcademyTab(tab, el) {
             currentAcademyTab = tab;
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            el.classList.add("active");
-            renderAcademyTable(tab);
+            el.classList.add("active"); renderAcademyTable(tab);
         }
 
         function filterAcademyRequests(q) {
             q = q.toLowerCase();
-            const filtered = allAcademyRequests.filter(r =>
-                r.name?.toLowerCase().includes(q) || r.email?.toLowerCase().includes(q)
-            );
-            renderAcademyTableRows(filtered);
+            renderAcademyTableRows(allAcademyRequests.filter(r => r.name?.toLowerCase().includes(q) || r.email?.toLowerCase().includes(q)));
         }
 
         function renderAcademyTable(filter) {
-            const filtered = filter === 'all'
-                ? allAcademyRequests
-                : allAcademyRequests.filter(r => r.status === filter);
+            const filtered = filter === 'all' ? allAcademyRequests : allAcademyRequests.filter(r => r.status === filter);
             renderAcademyTableRows(filtered);
         }
 
         function renderAcademyTableRows(rows) {
             const wrapper = document.getElementById("academyTableWrapper");
-
-            if (!rows.length) {
-                wrapper.innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:24px 0;text-align:center;">// No records found</p>`;
-                return;
+            if (!rows.length) { wrapper.innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:24px 0;text-align:center">// No records found</p>`; return }
+            const isMobile = window.innerWidth < 640;
+            if (isMobile) {
+                // Mobile: card layout
+                const cards = rows.map(r => {
+                    const date = new Date(r.requested_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const tierBadge = `<span class="badge badge-${r.tier}">${r.tier.toUpperCase()}</span>`;
+                    const statusBadge = `<span class="badge badge-${r.status}">${r.status.toUpperCase()}</span>`;
+                    let actions = '';
+                    if (r.status === 'pending') actions = `<button class="btn-approve" onclick="beginCredentialIssuance('${r.id}')">✓ Approve</button><button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">✕</button>`;
+                    else if (r.status === 'approved') actions = `<button class="btn-resend" onclick="beginCredentialIssuance('${r.id}')">↺ Resend</button><button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">Revoke</button>`;
+                    else actions = `<span style="color:var(--muted2);font-family:'DM Mono',monospace;font-size:9px">— revoked —</span>`;
+                    return `<div style="padding:14px 0;border-bottom:1px solid var(--border2)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:#fff;font-weight:500">${escHtml(r.name)}</div>
+          <div style="display:flex;gap:6px">${tierBadge}${statusBadge}</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px">${escHtml(r.email)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${escHtml(r.amount_kes ? 'KES ' + Number(r.amount_kes).toLocaleString() : '—')} · ${date}</div>
+          <div style="display:flex;gap:6px">${actions}</div>
+        </div>
+      </div>`;
+                }).join('');
+                wrapper.innerHTML = cards;
+            } else {
+                const tableRows = rows.map(r => {
+                    const date = new Date(r.requested_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const tierBadge = `<span class="badge badge-${r.tier}">${r.tier.toUpperCase()}</span>`;
+                    const statusBadge = `<span class="badge badge-${r.status}">${r.status.toUpperCase()}</span>`;
+                    let actions = '';
+                    if (r.status === 'pending') actions = `<button class="btn-approve" onclick="beginCredentialIssuance('${r.id}')">✓ Approve</button><button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">✕</button>`;
+                    else if (r.status === 'approved') actions = `<button class="btn-resend" onclick="beginCredentialIssuance('${r.id}')">↺ Resend</button><button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">Revoke</button>`;
+                    else actions = `<span style="color:var(--muted2);font-family:'DM Mono',monospace;font-size:9px">— revoked —</span>`;
+                    return `<tr>
+        <td style="color:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:500">${escHtml(r.name)}</td>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">${escHtml(r.email)}</td>
+        <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${escHtml(r.phone || '—')}</td>
+        <td>${tierBadge}</td>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">${escHtml(r.amount_kes ? 'KES ' + Number(r.amount_kes).toLocaleString() : '—')}</td>
+        <td>${statusBadge}</td>
+        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px">${date}</td>
+        <td style="text-align:center;white-space:nowrap">${actions}</td>
+      </tr>`;
+                }).join('');
+                wrapper.innerHTML = `<table class="inv-table" style="min-width:700px"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Tier</th><th>Amount</th><th>Status</th><th>Date</th><th class="center">Actions</th></tr></thead><tbody>${tableRows}</tbody></table>`;
             }
-
-            const tableRows = rows.map(r => {
-                const date = new Date(r.requested_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short', year: 'numeric' });
-                const tierBadge = `<span class="badge badge-${r.tier}">${r.tier.toUpperCase()}</span>`;
-                const statusBadge = `<span class="badge badge-${r.status}">${r.status.toUpperCase()}</span>`;
-
-                let actions = '';
-                if (r.status === 'pending') {
-                    actions = `
-                        <button class="btn-approve" onclick="beginCredentialIssuance('${r.id}')">✓ Approve</button>
-                        <button class="btn-reject"  onclick="rejectAcademyRequest('${r.id}')">✕</button>`;
-                } else if (r.status === 'approved') {
-                    actions = `
-                        <button class="btn-resend" onclick="beginCredentialIssuance('${r.id}')">↺ Resend</button>
-                        <button class="btn-reject" onclick="rejectAcademyRequest('${r.id}')">Revoke</button>`;
-                } else {
-                    actions = `<span style="color:var(--muted2);font-family:'DM Mono',monospace;font-size:9px;">— revoked —</span>`;
-                }
-
-                return `
-                    <tr>
-                        <td style="color:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">${escHtml(r.name)}</td>
-                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">${escHtml(r.email)}</td>
-                        <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">${escHtml(r.phone || '—')}</td>
-                        <td>${tierBadge}</td>
-                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;">${escHtml(r.amount_kes ? 'KES ' + Number(r.amount_kes).toLocaleString() : '—')}</td>
-                        <td>${statusBadge}</td>
-                        <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;">${date}</td>
-                        <td style="text-align:center;">${actions}</td>
-                    </tr>`;
-            }).join('');
-
-            wrapper.innerHTML = `
-                <table class="inv-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Tier</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th class="center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>${tableRows}</tbody>
-                </table>`;
         }
 
-        /* ── Credential Issuance ──────────────────────────── */
+        /* ── Credential Issuance ── */
         function beginCredentialIssuance(id) {
-            const row = allAcademyRequests.find(r => r.id === id);
-            if (!row) return;
-
+            const row = allAcademyRequests.find(r => r.id === id); if (!row) return;
             pendingCredRow = row;
-
             const username = row.username || generateUsername(row.name);
             const password = generatePassword();
-
             document.getElementById("credClientName").textContent = row.name;
             document.getElementById("credUsername").textContent = username;
             document.getElementById("credPassword").textContent = password;
             document.getElementById("credTier").textContent = row.tier.toUpperCase();
-
-            // Store on modal element
             const modal = document.getElementById("credModal");
-            modal.dataset.id = id;
-            modal.dataset.username = username;
-            modal.dataset.password = password;
-
+            modal.dataset.id = id; modal.dataset.username = username; modal.dataset.password = password;
             modal.classList.add("open");
         }
-
-        function closeCredModal() {
-            document.getElementById("credModal").classList.remove("open");
-            pendingCredRow = null;
-        }
+        function closeCredModal() { document.getElementById("credModal").classList.remove("open"); pendingCredRow = null }
 
         async function sendAcademyCredentials() {
             const btn = document.getElementById("credSendBtn");
-            btn.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px;"></span>Sending…';
+            btn.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px"></span>Sending…';
             btn.disabled = true;
-
             const modal = document.getElementById("credModal");
-            const id = modal.dataset.id;
-            const username = modal.dataset.username;
-            const password = modal.dataset.password;
+            const id = modal.dataset.id, username = modal.dataset.username, password = modal.dataset.password;
             const row = allAcademyRequests.find(r => r.id === id);
-
-            if (!row) { toast("error", "Error", "Request record not found."); return; }
-
+            if (!row) { toast("error", "Error", "Request record not found."); return }
             const passwordHash = await hashSHA256(password);
-
             try {
-                // 1. Update Supabase — mark approved, store hash, set username
-                const { error: dbErr } = await db
-                    .from('access_requests')
-                    .update({
-                        status: 'approved',
-                        username: username,
-                        password_hash: passwordHash,
-                        approved_at: new Date().toISOString(),
-                        session_token: null
-                    })
-                    .eq('id', id);
-
+                const { error: dbErr } = await db.from('access_requests').update({ status: 'approved', username, password_hash: passwordHash, approved_at: new Date().toISOString(), session_token: null }).eq('id', id);
                 if (dbErr) throw new Error(dbErr.message);
-
-                // 2. Send credential email via EmailJS
-                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CRED_TEMPLATE_ID, {
-                    to_email: row.email,
-                    to_name: row.name,
-                    client_name: row.name,
-                    username: username,
-                    password: password,
-                    tier: row.tier.toUpperCase()
-                });
-
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CRED_TEMPLATE_ID, { to_email: row.email, to_name: row.name, client_name: row.name, username, password, tier: row.tier.toUpperCase() });
                 toast("success", "Credentials Sent", `Login details emailed to ${row.email}`);
                 pushActivity("violet", "Academy credentials issued", `${row.name} → ${row.tier.toUpperCase()}`);
-                closeCredModal();
-                loadAcademyRequests();
-
+                closeCredModal(); loadAcademyRequests();
             } catch (err) {
                 toast("error", "Issue Error", err.message);
-                btn.innerHTML = "Send Credentials by Email →";
-                btn.disabled = false;
+                btn.innerHTML = "Send Credentials by Email →"; btn.disabled = false;
             }
         }
 
@@ -2123,54 +2093,31 @@
             const row = allAcademyRequests.find(r => r.id === id);
             const action = row?.status === 'approved' ? 'revoke' : 'reject';
             if (!confirm(`${action === 'revoke' ? 'Revoke access for' : 'Reject request from'} ${row?.name}?`)) return;
-
-            const { error } = await db
-                .from('access_requests')
-                .update({ status: 'revoked', session_token: null })
-                .eq('id', id);
-
-            if (error) { toast("error", "Error", error.message); return; }
-
+            const { error } = await db.from('access_requests').update({ status: 'revoked', session_token: null }).eq('id', id);
+            if (error) { toast("error", "Error", error.message); return }
             toast("warning", action === 'revoke' ? "Access Revoked" : "Request Rejected", row?.name || id);
             pushActivity("red", `Academy request ${action}d`, row?.name || id);
             loadAcademyRequests();
         }
 
-        /* ── Generators ──────────────────────────────────── */
+        /* ── Utilities ── */
         function generateUsername(fullName) {
             const parts = fullName.trim().toLowerCase().split(/\s+/);
             const base = (parts[0] + (parts[1] ? parts[1][0] : '')).replace(/[^a-z0-9]/g, '');
-            const suffix = Math.floor(Math.random() * 900 + 100);
-            return `${base}${suffix}`;
+            return `${base}${Math.floor(Math.random() * 900 + 100)}`;
         }
-
         function generatePassword() {
-            const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghjkmnpqrstuvwxyz';
-            const D = '23456789', S = '@#$!%*', A = U + L + D + S;
-            let pw = U[~~(Math.random() * U.length)] + L[~~(Math.random() * L.length)]
-                + D[~~(Math.random() * D.length)] + S[~~(Math.random() * S.length)];
-            for (let i = 0; i < 8; i++) pw += A[~~(Math.random() * A.length)];
+            const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghjkmnpqrstuvwxyz', D = '23456789', S = '@#$!%*', A = U + L + D + S;
+            let pw = U[~~(Math.random() * U.length)] + L[~~(Math.random() * L.length)] + D[~~(Math.random() * D.length)] + S[~~(Math.random() * S.length)];
+            for (let i = 0; i < 8; i++)pw += A[~~(Math.random() * A.length)];
             return pw.split('').sort(() => Math.random() - .5).join('');
         }
-
         async function hashSHA256(str) {
             const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
-
-        function escHtml(str) {
-            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
+        function escHtml(str) { return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
     </script>
-
-    <style>
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-
 </body>
 
 </html>
