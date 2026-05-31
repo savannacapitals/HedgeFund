@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAVANNA ALPHA CORE // MULTI-ASSET INTELLIGENCE ENGINE</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #050608;
+            --bg-card: #0a0c10;
+            --bg-card2: #0e1016;
+            --border: #1c2030;
+            --border-bright: #2a3045;
+            --text: #e8eaf0;
+            --muted: #4a566e;
+            --gold: #d4a853;
+            --gold-dim: #7a5c25;
+            --gold-glow: rgba(212, 168, 83, 0.15);
+            --green: #4ade80;
+            --green-glow: rgba(74, 222, 128, 0.12);
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+            --red: #f87171;
+            --orange: #fb923c;
+            --teal: #2dd4bf;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 6px var(--green);
+            }
+
+            50% {
+                opacity: 0.4;
+                box-shadow: 0 0 2px var(--green);
+            }
+        }
+
+        @keyframes float-in {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -400px 0;
+            }
+
+            100% {
+                background-position: 400px 0;
+            }
+        }
+
+        @keyframes ticker-scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes blink-cursor {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes number-flip {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            40% {
+                transform: translateY(-8px);
+                opacity: 0;
+            }
+
+            60% {
+                transform: translateY(8px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes border-pulse {
+
+            0%,
+            100% {
+                border-color: var(--border);
+            }
+
+            50% {
+                border-color: var(--gold-dim);
+            }
+        }
+
+        @keyframes glow-fade {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(212, 168, 83, 0.05);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(212, 168, 83, 0.12);
+            }
+        }
+
+        @keyframes row-highlight {
+            0% {
+                background: rgba(212, 168, 83, 0.1);
+            }
+
+            100% {
+                background: transparent;
+            }
+        }
+
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            background-image:
+                radial-gradient(ellipse 80% 40% at 50% -10%, rgba(212, 168, 83, 0.04) 0%, transparent 70%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.012) 39px, rgba(255, 255, 255, 0.012) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.008) 39px, rgba(255, 255, 255, 0.008) 40px);
+        }
+
+        /* Scanline overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, rgba(212, 168, 83, 0.015), transparent);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* ─── TICKER TAPE ─── */
+        .ticker-tape {
+            background: #07090d;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 6px 0;
+            position: relative;
+        }
+
+        .ticker-tape::before,
+        .ticker-tape::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            z-index: 2;
+        }
+
+        .ticker-tape::before {
+            left: 0;
+            background: linear-gradient(to right, #07090d, transparent);
+        }
+
+        .ticker-tape::after {
+            right: 0;
+            background: linear-gradient(to left, #07090d, transparent);
+        }
+
+        .ticker-inner {
+            display: inline-flex;
+            gap: 0;
+            animation: ticker-scroll 40s linear infinite;
+            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 20px;
+            border-right: 1px solid var(--border);
+        }
+
+        .ticker-sym {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .ticker-val {
+            color: var(--text);
+        }
+
+        .ticker-chg {
+            font-weight: 700;
+        }
+
+        .pos {
+            color: var(--green);
+        }
+
+        .neg {
+            color: var(--red);
+        }
+
+        .neu {
+            color: var(--muted);
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            animation: float-in 0.5s ease both;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--gold-dim);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.08), transparent);
+            animation: glow-fade 4s ease infinite;
+        }
+
+        .brand-logo svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .brand-sub {
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .header-center {
+            display: flex;
+            gap: 6px;
+        }
+
+        .nav-pill {
+            padding: 5px 14px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-pill.active,
+        .nav-pill:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-glow);
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.65rem;
+            color: var(--muted);
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            display: inline-block;
+            animation: pulse-dot 1.4s ease infinite;
+            box-shadow: 0 0 8px var(--green);
+            margin-right: 4px;
+        }
+
+        .status-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.62rem;
+            color: var(--text);
+        }
+
+        /* ─── MAIN GRID ─── */
+        .main {
+            display: grid;
+            grid-template-columns: 220px 1fr 1fr 1fr;
+            grid-template-rows: auto;
+            gap: 1px;
+            background: var(--border);
+            animation: float-in 0.6s ease 0.1s both;
+        }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            background: var(--bg-card);
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            grid-row: 1/4;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-label {
+            font-size: 0.58rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--muted);
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(212, 168, 83, 0.05);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .nav-item.active {
+            background: var(--gold-glow);
+            color: var(--gold);
+            border-color: var(--gold-dim);
+        }
+
+        .nav-badge {
+            background: var(--border);
+            color: var(--muted);
+            font-size: 0.55rem;
+            padding: 1px 5px;
+            border-radius: 99px;
+        }
+
+        .nav-item.active .nav-badge {
+            background: rgba(212, 168, 83, 0.2);
+            color: var(--gold);
+        }
+
+        .mini-stat {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+        }
+
+        .mini-stat-label {
+            font-size: 0.58rem;
+            color: var(--muted);
+            margin-bottom: 3px;
+            letter-spacing: 0.5px;
+        }
+
+        .mini-stat-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--text);
+        }
+
+        .mini-stat-delta {
+            font-size: 0.6rem;
+            margin-top: 2px;
+        }
+
+        .sidebar-clock {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .clock-time {
+            font-size: 1.3rem;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .clock-date {
+            font-size: 0.6rem;
+            color: var(--muted);
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+
+        .clock-zone {
+            font-size: 0.55rem;
+            color: var(--muted);
+        }
+
+        /* ─── HERO METRICS ROW ─── */
+        .hero-row {
+            background: var(--bg-card);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-row::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+
+        .hero-row:nth-child(2)::before {
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+        }
+
+        .hero-row:nth-child(3)::before {
+            background: linear-gradient(to right, transparent, var(--blue), transparent);
+        }
+
+        .hero-row:nth-child(4)::before {
+            background: linear-gradient(to right, transparent, var(--purple), transparent);
+        }
+
+        .hero-label {
+            font-size: 0.58rem;
+            color: var(--muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .hero-value {
+            font-size: 1.9rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: -1px;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .hero-delta {
+            font-size: 0.68rem;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hero-sparkline {
+            margin-top: 6px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-label {
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-label-badge {
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 2px;
+            background: rgba(212, 168, 83, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold-dim);
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── ASSET TABLE ─── */
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+
+        .asset-table th {
+            color: var(--muted);
+            font-size: 0.58rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 0 6px 8px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-weight: 400;
+        }
+
+        .asset-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(28, 32, 48, 0.5);
+            font-family: 'Space Mono', monospace;
+            vertical-align: middle;
+        }
+
+        .asset-table tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .asset-table tr:hover td {
+            background: rgba(212, 168, 83, 0.04);
+        }
+
+        .asset-table tr.updated td {
+            animation: row-highlight 1.2s ease;
+        }
+
+        .asset-color-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .asset-sym {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .asset-name {
+            color: var(--muted);
+            font-size: 0.58rem;
+            margin-top: 1px;
+        }
+
+        .asset-price {
+            font-weight: 700;
+        }
+
+        .asset-vol {
+            color: var(--muted);
+            font-size: 0.65rem;
+        }
+
+        .asset-bar {
+            height: 3px;
+            background: var(--border);
+            border-radius: 99px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .asset-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.6s ease;
+        }
+
+        /* ─── CHARTS ─── */
+        .chart-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        /* ─── ORDER FLOW HEATMAP ─── */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .heatmap-cell {
+            height: 28px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+            font-family: 'Space Mono', monospace;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .heatmap-cell:hover {
+            transform: scaleY(1.1);
+            z-index: 2;
+        }
+
+        /* ─── SIGNAL FEED ─── */
+        .signal-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            max-height: 240px;
+            overflow: hidden;
+        }
+
+        .signal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 7px 8px;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            background: var(--bg-card2);
+            font-size: 0.65rem;
+            transition: all 0.3s;
+            animation: float-in 0.4s ease both;
+        }
+
+        .signal-item:hover {
+            border-color: var(--border-bright);
+        }
+
+        .signal-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .signal-time {
+            color: var(--muted);
+            font-size: 0.58rem;
+            flex-shrink: 0;
+            width: 40px;
+        }
+
+        .signal-text {
+            color: var(--text);
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .signal-action {
+            font-size: 0.58rem;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .sig-buy {
+            background: rgba(74, 222, 128, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .sig-sell {
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--red);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .sig-watch {
+            background: rgba(212, 168, 83, 0.1);
+            color: var(--gold);
+            border: 1px solid rgba(212, 168, 83, 0.2);
+        }
+
+        /* ─── CORRELATION MATRIX ─── */
+        .corr-matrix {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            font-size: 0.6rem;
+        }
+
+        .corr-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.55rem;
+            font-weight: 700;
+            transition: transform 0.2s;
+        }
+
+        .corr-cell:hover {
+            transform: scale(1.2);
+            z-index: 2;
+        }
+
+        /* ─── BOTTOM BAR ─── */
+        .bottom-bar {
+            background: #07090d;
+            border-top: 1px solid var(--border);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.6rem;
+            color: var(--muted);
+            position: relative;
+        }
+
+        .bottom-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 7px;
+            height: 12px;
+            background: var(--gold);
+            margin-left: 3px;
+            animation: blink-cursor 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        /* ─── MODIFIERS ─── */
+        .col-gold {
+            color: var(--gold);
+        }
+
+        .col-green {
+            color: var(--green);
+        }
+
+        .col-red {
+            color: var(--red);
+        }
+
+        .col-blue {
+            color: var(--blue);
+        }
+
+        .col-purple {
+            color: var(--purple);
+        }
+
+        .col-teal {
+            color: var(--teal);
+        }
+
+        .col-orange {
+            color: var(--orange);
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* ─── LAYOUT SPAN ROWS ─── */
+        .row-span {
+            grid-row: span 2;
+        }
+
+        /* ─── SCROLLBAR ─── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-bright);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TICKER TAPE -->
+    <div class="ticker-tape">
+        <div class="ticker-inner" id="ticker">
+            <div class="ticker-item"><span class="ticker-sym">BTC/USD</span><span class="ticker-val"
+                    id="t-btc">$73,941.19</span><span class="ticker-chg pos" id="t-btc-c">+0.65%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">ETH/USD</span><span class="ticker-val"
+                    id="t-eth">$3,422.50</span><span class="ticker-chg pos">+1.24%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">USDT/USD</span><span
+                    class="ticker-val">$1.0000</span><span class="ticker-chg neu">0.00%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">SCOM.KE</span><span class="ticker-val">KES
+                    12.50</span><span class="ticker-chg neg">-0.45%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">EQTY.KE</span><span class="ticker-val">KES
+                    31.20</span><span class="ticker-chg pos">+2.11%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">XAU/USD</span><span
+                    class="ticker-val">$2,318.40</span><span class="ticker-chg pos">+0.32%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">KES/USD</span><span class="ticker-val">0.00775</span><span
+                    class="ticker-chg pos">+0.18%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">SOL/USD</span><span class="ticker-val">$142.60</span><span
+                    class="ticker-chg pos">+3.41%</span></div>
+            <!-- repeat for scroll loop -->
+            <div class="ticker-item"><span class="ticker-sym">BTC/USD</span><span class="ticker-val"
+                    id="t-btc2">$73,941.19</span><span class="ticker-chg pos" id="t-btc-c2">+0.65%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">ETH/USD</span><span
+                    class="ticker-val">$3,422.50</span><span class="ticker-chg pos">+1.24%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">USDT/USD</span><span
+                    class="ticker-val">$1.0000</span><span class="ticker-chg neu">0.00%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">SCOM.KE</span><span class="ticker-val">KES
+                    12.50</span><span class="ticker-chg neg">-0.45%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">EQTY.KE</span><span class="ticker-val">KES
+                    31.20</span><span class="ticker-chg pos">+2.11%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">XAU/USD</span><span
+                    class="ticker-val">$2,318.40</span><span class="ticker-chg pos">+0.32%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">KES/USD</span><span class="ticker-val">0.00775</span><span
+                    class="ticker-chg pos">+0.18%</span></div>
+            <div class="ticker-item"><span class="ticker-sym">SOL/USD</span><span class="ticker-val">$142.60</span><span
+                    class="ticker-chg pos">+3.41%</span></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="brand">
+            <a href="index.html"
+                style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid rgba(212,168,83,0.2);border-radius:3px;font-size:0.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,168,83,0.5);text-decoration:none;margin-right:10px;transition:all .25s;font-family:'Space Mono',monospace;flex-shrink:0;"
+                onmouseover="this.style.borderColor='rgba(212,168,83,0.5)';this.style.color='#d4a853';"
+                onmouseout="this.style.borderColor='rgba(212,168,83,0.2)';this.style.color='rgba(212,168,83,0.5)';">
+                <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                    style="flex-shrink:0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Home
+            </a>
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 7l9 5 9-5-9-5z" fill="#d4a853" opacity="0.9" />
+                    <path d="M3 12l9 5 9-5" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round" opacity="0.5" />
+                    <path d="M3 17l9 5 9-5" stroke="#d4a853" stroke-width="1.5" stroke-linecap="round" opacity="0.25" />
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">SAVANNA ALPHA</div>
+                <div class="brand-sub">Multi-Asset Intelligence Engine</div>
+            </div>
+        </div>
+        <div class="header-center">
+            <button class="nav-pill active" onclick="setFilter('all',this)">All Assets</button>
+            <button class="nav-pill" onclick="setFilter('crypto',this)">Crypto</button>
+            <button class="nav-pill" onclick="setFilter('stable',this)">Stablecoin</button>
+            <button class="nav-pill" onclick="setFilter('equity',this)">Equities</button>
+            <button class="nav-pill" onclick="setFilter('macro',this)">Macro</button>
+        </div>
+        <div class="header-status">
+            <span><span class="live-dot"></span><span class="status-val" id="stream-status">STREAM SECURED</span></span>
+            <span style="color:var(--border-bright);">|</span>
+            <span>LATENCY: <span class="status-val col-green" id="latency">12ms</span></span>
+            <span style="color:var(--border-bright);">|</span>
+            <span>SESSION: <span class="status-val col-gold">RUNNING_ALPHA</span></span>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Navigation</div>
+                <div class="nav-item active">
+                    <span>Ecosystem Overview</span>
+                    <span class="nav-badge">LIVE</span>
+                </div>
+                <div class="nav-item">
+                    <span>Stablecoin Peg</span>
+                    <span class="nav-badge">4</span>
+                </div>
+                <div class="nav-item">
+                    <span>NSE Liquidity</span>
+                    <span class="nav-badge">12</span>
+                </div>
+                <div class="nav-item">
+                    <span>Correlations</span>
+                    <span class="nav-badge">6x6</span>
+                </div>
+                <div class="nav-item">
+                    <span>Alpha Pipeline</span>
+                    <span class="nav-badge col-gold" style="color:var(--gold);">PRO</span>
+                </div>
+                <div class="nav-item">
+                    <span>Risk Matrix</span>
+                    <span class="nav-badge">⚠</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-label">Portfolio Metrics</div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">TOTAL AUM</div>
+                    <div class="mini-stat-value col-gold">$4.82M</div>
+                    <div class="mini-stat-delta col-green">▲ +2.4% MTD</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">SHARPE RATIO</div>
+                    <div class="mini-stat-value">1.84</div>
+                    <div class="mini-stat-delta col-muted" style="color:var(--muted);">30D rolling</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">DRAWDOWN</div>
+                    <div class="mini-stat-value col-red">-3.2%</div>
+                    <div class="mini-stat-delta" style="color:var(--muted);">Max 90D</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-label">WIN RATE</div>
+                    <div class="mini-stat-value col-teal" id="win-rate">68.4%</div>
+                    <div class="mini-stat-delta" style="color:var(--muted);">Last 50 trades</div>
+                </div>
+            </div>
+
+            <div class="sidebar-clock">
+                <div class="clock-time" id="clock-time">00:00:00</div>
+                <div class="clock-date" id="clock-date">LOADING...</div>
+                <div class="clock-zone">UTC+3 · NAIROBI</div>
+            </div>
+        </aside>
+
+        <!-- HERO: BTC -->
+        <div class="hero-row">
+            <div class="hero-label">BTC/USD · Live Feed</div>
+            <div class="hero-value col-gold" id="hero-btc">$73,941.19</div>
+            <div class="hero-delta" id="hero-btc-d"><span class="col-green">▲ +0.65%</span> <span
+                    style="color:var(--muted);">24H · Binance Core</span></div>
+            <div class="hero-sparkline">
+                <canvas id="spark-btc" height="40"></canvas>
+            </div>
+        </div>
+
+        <!-- HERO: VOLUME -->
+        <div class="hero-row">
+            <div class="hero-label">24H Stablecoin Volume</div>
+            <div class="hero-value col-blue">$1.24B</div>
+            <div class="hero-delta"><span class="col-green">▲ +8.3%</span> <span style="color:var(--muted);">vs
+                    yesterday</span></div>
+            <div class="hero-sparkline">
+                <canvas id="spark-vol" height="40"></canvas>
+            </div>
+        </div>
+
+        <!-- HERO: ALPHA INDEX -->
+        <div class="hero-row">
+            <div class="hero-label">Savanna Alpha Index</div>
+            <div class="hero-value col-purple" id="hero-alpha">34.2%</div>
+            <div class="hero-delta"><span class="col-orange">► Neutral bias</span> <span
+                    style="color:var(--muted);">live signal</span></div>
+            <div class="hero-sparkline">
+                <canvas id="spark-alpha" height="40"></canvas>
+            </div>
+        </div>
+
+        <!-- ASSET TABLE -->
+        <div class="card" style="grid-column:2/span 2;background:var(--bg-card);">
+            <div class="card-label">
+                <span>Multi-Asset Corridors · Live</span>
+                <span class="card-label-badge" id="filter-badge">ALL CLASSES</span>
+            </div>
+            <table class="asset-table">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Asset</th>
+                        <th class="text-right">Spot Price</th>
+                        <th class="text-right">24H Δ</th>
+                        <th class="text-right">Volume</th>
+                        <th>Momentum</th>
+                    </tr>
+                </thead>
+                <tbody id="asset-tbody"></tbody>
+            </table>
+        </div>
+
+        <!-- DONUT CHART -->
+        <div class="card" style="background:var(--bg-card);">
+            <div class="card-label"><span>Sector Allocation</span></div>
+            <div class="chart-wrap" style="height:160px;">
+                <canvas id="donut-chart"></canvas>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px;">
+                <div style="font-size:0.6rem;display:flex;align-items:center;gap:5px;color:var(--muted);">
+                    <span
+                        style="width:8px;height:8px;background:var(--gold);border-radius:1px;display:inline-block;"></span>Crypto
+                    45%
+                </div>
+                <div style="font-size:0.6rem;display:flex;align-items:center;gap:5px;color:var(--muted);">
+                    <span
+                        style="width:8px;height:8px;background:var(--blue);border-radius:1px;display:inline-block;"></span>Stable
+                    25%
+                </div>
+                <div style="font-size:0.6rem;display:flex;align-items:center;gap:5px;color:var(--muted);">
+                    <span
+                        style="width:8px;height:8px;background:var(--green);border-radius:1px;display:inline-block;"></span>Equity
+                    18%
+                </div>
+                <div style="font-size:0.6rem;display:flex;align-items:center;gap:5px;color:var(--muted);">
+                    <span
+                        style="width:8px;height:8px;background:var(--purple);border-radius:1px;display:inline-block;"></span>Macro
+                    12%
+                </div>
+            </div>
+        </div>
+
+        <!-- ORDER FLOW HEATMAP -->
+        <div class="card" style="grid-column:2/span 3;background:var(--bg-card);">
+            <div class="card-label">
+                <span>Order Flow Heatmap · BTC 24H Buckets</span>
+                <span class="card-label-badge">LIVE PULSE</span>
+            </div>
+            <div
+                style="display:flex;justify-content:space-between;font-size:0.58rem;color:var(--muted);margin-bottom:4px;">
+                <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>Now</span>
+            </div>
+            <div class="heatmap-grid" id="heatmap"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:0.58rem;color:var(--muted);">
+                <span>Low</span>
+                <div
+                    style="flex:1;height:4px;background:linear-gradient(to right,rgba(248,113,113,0.3),rgba(212,168,83,0.5),rgba(74,222,128,0.7));border-radius:99px;">
+                </div>
+                <span>High</span>
+            </div>
+        </div>
+
+        <!-- LIQUIDITY AREA CHART -->
+        <div class="card" style="background:var(--bg-card);">
+            <div class="card-label"><span>Inflow Stream · QTD</span></div>
+            <div class="chart-wrap" style="height:180px;">
+                <canvas id="area-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- SIGNAL FEED -->
+        <div class="card" style="background:var(--bg-card);">
+            <div class="card-label">
+                <span>Alpha Signal Feed</span>
+                <span class="card-label-badge col-green"
+                    style="color:var(--green);background:var(--green-glow);border-color:rgba(74,222,128,0.2);">LIVE</span>
+            </div>
+            <div class="signal-feed" id="signal-feed"></div>
+        </div>
+
+        <!-- CORRELATION MATRIX -->
+        <div class="card" style="background:var(--bg-card);">
+            <div class="card-label"><span>Cross-Asset Correlation Matrix</span></div>
+            <div
+                style="font-size:0.55rem;color:var(--muted);margin-bottom:6px;display:grid;grid-template-columns:40px repeat(6,1fr);gap:2px;">
+                <span></span>
+                <span class="text-center">BTC</span><span class="text-center">ETH</span><span
+                    class="text-center">USDT</span>
+                <span class="text-center">SCOM</span><span class="text-center">EQTY</span><span
+                    class="text-center">XAU</span>
+            </div>
+            <div style="display:grid;grid-template-columns:40px 1fr;gap:2px;" id="corr-wrap"></div>
+        </div>
+
+        <!-- VOLUME BAR CHART -->
+        <div class="card" style="grid-column:2/span 2;background:var(--bg-card);">
+            <div class="card-label">
+                <span>Volumetric Interaction Pulse · 6H Intervals</span>
+            </div>
+            <div class="chart-wrap" style="height:180px;">
+                <canvas id="bar-chart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar">
+        <span>© SAVANNA ALPHA CORE ENGINE · ALL MARKETS MONITORED<span class="cursor-blink"></span></span>
+        <span>FEEDS: BINANCE · NSE · FOREX · COMEX</span>
+        <span>DATA ENGINE v3.2.1 · <span id="update-count" class="col-gold">0</span> UPDATES/SESSION</span>
+    </div>
+
+    <script>
+        // ────────────────────────────────────────────
+        // DATA STORE
+        // ────────────────────────────────────────────
+        const ASSETS = [
+            { id: "BTC", name: "Bitcoin", cls: "crypto", price: 73941.19, delta: 0.65, vol: "$2.41B", color: "#d4a853" },
+            { id: "ETH", name: "Ethereum", cls: "crypto", price: 3422.50, delta: 1.24, vol: "$891M", color: "#a78bfa" },
+            { id: "SOL", name: "Solana", cls: "crypto", price: 142.60, delta: 3.41, vol: "$204M", color: "#2dd4bf" },
+            { id: "USDT", name: "Tether Anchor", cls: "stable", price: 1.0000, delta: 0.00, vol: "$68B", color: "#60a5fa" },
+            { id: "USDC", name: "Circle Stable", cls: "stable", price: 0.9998, delta: -0.01, vol: "$7.2B", color: "#38bdf8" },
+            { id: "SCOM", name: "Safaricom NSE", cls: "equity", price: 12.50, delta: -0.45, vol: "KES 82M", color: "#fb923c" },
+            { id: "EQTY", name: "Equity Bank NSE", cls: "equity", price: 31.20, delta: 2.11, vol: "KES 44M", color: "#f472b6" },
+            { id: "XAU", name: "Gold Spot", cls: "macro", price: 2318.40, delta: 0.32, vol: "$24B", color: "#fde68a" },
+        ];
+
+        let currentFilter = 'all';
+        let updateCount = 0;
+        const sparkData = { btc: [], vol: [], alpha: [] };
+        for (let i = 0; i < 20; i++) {
+            sparkData.btc.push(73000 + Math.random() * 2000);
+            sparkData.vol.push(1.0 + Math.random() * 0.5);
+            sparkData.alpha.push(33 + Math.random() * 3);
+        }
+
+        // ────────────────────────────────────────────
+        // CLOCK
+        // ────────────────────────────────────────────
+        function updateClock() {
+            const now = new Date();
+            const t = now.toLocaleTimeString('en-KE', { hour12: false, timeZone: 'Africa/Nairobi' });
+            const d = now.toLocaleDateString('en-KE', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', timeZone: 'Africa/Nairobi' });
+            document.getElementById('clock-time').textContent = t;
+            document.getElementById('clock-date').textContent = d.toUpperCase();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ────────────────────────────────────────────
+        // ASSET TABLE
+        // ────────────────────────────────────────────
+        function setFilter(f, btn) {
+            currentFilter = f;
+            document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const badge = document.getElementById('filter-badge');
+            badge.textContent = f === 'all' ? 'ALL CLASSES' : f.toUpperCase();
+            renderTable();
+        }
+
+        function renderTable(updatedId = null) {
+            const tb = document.getElementById('asset-tbody');
+            const filtered = currentFilter === 'all' ? ASSETS : ASSETS.filter(a => a.cls === currentFilter);
+            tb.innerHTML = filtered.map(a => {
+                const pct = Math.abs(a.delta);
+                const barW = Math.min(pct * 20, 100);
+                const deltaStr = (a.delta >= 0 ? '+' : '') + a.delta.toFixed(2) + '%';
+                const deltaClass = a.delta > 0 ? 'col-green' : a.delta < 0 ? 'col-red' : 'col-muted';
+                const updated = a.id === updatedId ? 'updated' : '';
+                return `<tr class="${updated}" onclick="onRowClick('${a.id}')">
+      <td>
+        <span class="asset-color-dot" style="background:${a.color};box-shadow:0 0 6px ${a.color}44;"></span>
+        <span class="asset-sym">${a.id}</span>
+      </td>
+      <td><div class="asset-name">${a.name}</div></td>
+      <td class="text-right asset-price">$${a.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</td>
+      <td class="text-right ${deltaClass}" style="font-weight:700;">${deltaStr}</td>
+      <td class="text-right asset-vol">${a.vol}</td>
+      <td style="width:80px;">
+        <div class="asset-bar">
+          <div class="asset-bar-fill" style="width:${barW}%;background:${a.delta >= 0 ? 'var(--green)' : 'var(--red)'};"></div>
+        </div>
+      </td>
+    </tr>`;
+            }).join('');
+        }
+        renderTable();
+
+        // ────────────────────────────────────────────
+        // SPARKLINE CHARTS
+        // ────────────────────────────────────────────
+        function makeSparkline(id, data, color, fill) {
+            const ctx = document.getElementById(id).getContext('2d');
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map((_, i) => i),
+                    datasets: [{
+                        data, borderColor: color, backgroundColor: fill || 'transparent',
+                        fill: !!fill, tension: 0.4, pointRadius: 0, borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } },
+                }
+            });
+        }
+        const sparkBTC = makeSparkline('spark-btc', sparkData.btc, '#d4a853', 'rgba(212,168,83,0.06)');
+        const sparkVol = makeSparkline('spark-vol', sparkData.vol, '#60a5fa', 'rgba(96,165,250,0.06)');
+        const sparkAlpha = makeSparkline('spark-alpha', sparkData.alpha, '#a78bfa', 'rgba(167,139,250,0.06)');
+
+        // ────────────────────────────────────────────
+        // DONUT CHART
+        // ────────────────────────────────────────────
+        const donutCtx = document.getElementById('donut-chart').getContext('2d');
+        const donutChart = new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Crypto', 'Stablecoin', 'Equity', 'Macro'],
+                datasets: [{
+                    data: [45, 25, 18, 12],
+                    backgroundColor: ['#d4a853', '#60a5fa', '#4ade80', '#a78bfa'],
+                    borderWidth: 0, borderRadius: 3, spacing: 2
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '72%',
+                plugins: {
+                    legend: { display: false }, tooltip: {
+                        callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+                    }
+                },
+                animation: { animateRotate: true, duration: 1000 }
+            }
+        });
+
+        // ────────────────────────────────────────────
+        // AREA CHART
+        // ────────────────────────────────────────────
+        const areaCtx = document.getElementById('area-chart').getContext('2d');
+        const areaChart = new Chart(areaCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1 W1', 'W2', 'W3', 'W4', 'Q2 W1', 'W2', 'W3', 'W4', 'Now'],
+                datasets: [
+                    {
+                        label: 'Crypto', data: [40, 52, 49, 65, 72, 78, 85, 90, 97], borderColor: '#d4a853',
+                        backgroundColor: 'rgba(212,168,83,0.07)', fill: true, tension: 0.45, pointRadius: 0, borderWidth: 1.5
+                    },
+                    {
+                        label: 'Equity', data: [20, 28, 31, 38, 42, 48, 54, 58, 65], borderColor: '#4ade80',
+                        backgroundColor: 'rgba(74,222,128,0.05)', fill: true, tension: 0.45, pointRadius: 0, borderWidth: 1.5
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: '#1c2030', lineWidth: 0.5 }, ticks: { color: '#4a566e', font: { size: 9, family: "'Space Mono'" } } },
+                    y: { grid: { color: '#1c2030', lineWidth: 0.5 }, ticks: { color: '#4a566e', font: { size: 9, family: "'Space Mono'" } } }
+                },
+                animation: { duration: 800 }
+            }
+        });
+
+        // ────────────────────────────────────────────
+        // BAR CHART
+        // ────────────────────────────────────────────
+        const barCtx = document.getElementById('bar-chart').getContext('2d');
+        const barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', 'Now'],
+                datasets: [
+                    { label: 'Crypto', data: [55, 42, 38, 62, 71, 85, 91, 78, 82, 94, 101, 110], backgroundColor: 'rgba(212,168,83,0.7)' },
+                    { label: 'Equity', data: [32, 28, 22, 35, 40, 52, 55, 48, 50, 58, 62, 67], backgroundColor: 'rgba(74,222,128,0.5)' },
+                    { label: 'Stable', data: [18, 15, 12, 21, 25, 31, 34, 28, 30, 35, 38, 42], backgroundColor: 'rgba(96,165,250,0.4)' }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { stacked: true, grid: { display: false }, ticks: { color: '#4a566e', font: { size: 9, family: "'Space Mono'" } } },
+                    y: { stacked: true, grid: { color: '#1c2030', lineWidth: 0.5 }, ticks: { color: '#4a566e', font: { size: 9, family: "'Space Mono'" } } }
+                },
+                animation: { duration: 600 }
+            }
+        });
+
+        // ────────────────────────────────────────────
+        // HEATMAP
+        // ────────────────────────────────────────────
+        function buildHeatmap() {
+            const container = document.getElementById('heatmap');
+            container.innerHTML = '';
+            for (let i = 0; i < 24; i++) {
+                const v = 0.3 + Math.random() * 0.7;
+                const r = Math.floor(248 * (1 - v) + 74 * v);
+                const g = Math.floor(113 * (1 - v) + 222 * v);
+                const b = Math.floor(113 * (1 - v) + 128 * v);
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.style.background = `rgba(${r},${g},${b},${0.2 + v * 0.5})`;
+                cell.style.color = `rgba(${r},${g},${b},0.9)`;
+                cell.textContent = (v * 100).toFixed(0);
+                cell.title = `${String(i).padStart(2, '0')}:00 — Volume: ${(v * 100).toFixed(1)}%`;
+                container.appendChild(cell);
+            }
+        }
+        buildHeatmap();
+
+        // ────────────────────────────────────────────
+        // CORRELATION MATRIX
+        // ────────────────────────────────────────────
+        const CORR_LABELS = ['BTC', 'ETH', 'USDT', 'SCOM', 'EQTY', 'XAU'];
+        const corrData = [
+            [1.00, 0.87, -0.12, 0.23, 0.31, 0.18],
+            [0.87, 1.00, -0.09, 0.19, 0.28, 0.14],
+            [-0.12, -0.09, 1.00, -0.04, -0.07, -0.02],
+            [0.23, 0.19, -0.04, 1.00, 0.62, 0.41],
+            [0.31, 0.28, -0.07, 0.62, 1.00, 0.38],
+            [0.18, 0.14, -0.02, 0.41, 0.38, 1.00],
+        ];
+        function corrColor(v) {
+            if (v >= 0.7) return `rgba(74,222,128,${0.2 + v * 0.5})`;
+            if (v >= 0.3) return `rgba(212,168,83,${0.1 + v * 0.4})`;
+            if (v >= -0.1) return `rgba(74,85,104,0.3)`;
+            return `rgba(248,113,113,${0.1 + Math.abs(v) * 0.4})`;
+        }
+        function buildCorr() {
+            const wrap = document.getElementById('corr-wrap');
+            wrap.innerHTML = '';
+            CORR_LABELS.forEach((lbl, ri) => {
+                const rowLabel = document.createElement('div');
+                rowLabel.textContent = lbl;
+                rowLabel.style.cssText = 'font-size:0.55rem;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;';
+                wrap.appendChild(rowLabel);
+                const row = document.createElement('div');
+                row.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);gap:2px;';
+                corrData[ri].forEach((v, ci) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'corr-cell';
+                    cell.style.background = corrColor(v);
+                    cell.style.color = v > 0.3 ? 'var(--text)' : 'var(--muted)';
+                    cell.textContent = v.toFixed(2);
+                    cell.title = `${CORR_LABELS[ri]} / ${CORR_LABELS[ci]}: ${v.toFixed(3)}`;
+                    row.appendChild(cell);
+                });
+                wrap.appendChild(row);
+            });
+        }
+        buildCorr();
+
+        // ────────────────────────────────────────────
+        // SIGNAL FEED
+        // ────────────────────────────────────────────
+        const SIGNALS = [
+            { dot: '#d4a853', action: 'WATCH', cls: 'sig-watch', text: 'BTC consolidating above $73,800 — breakout zone watch active.' },
+            { dot: '#4ade80', action: 'BUY', cls: 'sig-buy', text: 'ETH momentum signal: RSI crossing 58 with volume confirmation.' },
+            { dot: '#fb923c', action: 'WATCH', cls: 'sig-watch', text: 'SCOM.KE approaching 52W support at KES 12.00.' },
+            { dot: '#f87171', action: 'SELL', cls: 'sig-sell', text: 'USDC mild depeg warning: spread vs USDT at 12bps.' },
+            { dot: '#4ade80', action: 'BUY', cls: 'sig-buy', text: 'XAU breaking resistance at $2,300 — macro bulls active.' },
+            { dot: '#a78bfa', action: 'WATCH', cls: 'sig-watch', text: 'SOL/BTC ratio ticking up — relative strength emerging.' },
+        ];
+        let sigIndex = 0;
+        function addSignal() {
+            const feed = document.getElementById('signal-feed');
+            const s = SIGNALS[sigIndex % SIGNALS.length];
+            const now = new Date().toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Africa/Nairobi' });
+            const item = document.createElement('div');
+            item.className = 'signal-item';
+            item.innerHTML = `
+    <div class="signal-dot" style="background:${s.dot};box-shadow:0 0 6px ${s.dot}66;"></div>
+    <div class="signal-time">${now}</div>
+    <div class="signal-text">${s.text}</div>
+    <div class="signal-action ${s.cls}">${s.action}</div>
+  `;
+            feed.insertBefore(item, feed.firstChild);
+            if (feed.children.length > 5) feed.removeChild(feed.lastChild);
+            sigIndex++;
+        }
+        // Pre-populate
+        for (let i = 0; i < 4; i++) addSignal();
+
+        // ────────────────────────────────────────────
+        // LIVE BINANCE WEBSOCKET
+        // ────────────────────────────────────────────
+        function initWS() {
+            const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker/ethusdt@ticker");
+            ws.onopen = () => {
+                document.getElementById('stream-status').textContent = 'BINANCE STREAM LIVE';
+                document.getElementById('stream-status').style.color = 'var(--green)';
+            };
+            ws.onmessage = (e) => {
+                const d = JSON.parse(e.data);
+                updateCount++;
+                document.getElementById('update-count').textContent = updateCount;
+                // Random latency sim
+                document.getElementById('latency').textContent = (8 + Math.random() * 18).toFixed(0) + 'ms';
+
+                if (d.s === 'BTCUSDT') {
+                    const price = parseFloat(d.c);
+                    const pct = parseFloat(d.P);
+                    ASSETS[0].price = price;
+                    ASSETS[0].delta = pct;
+                    document.getElementById('hero-btc').textContent = '$' + price.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    const dd = document.getElementById('hero-btc-d');
+                    dd.innerHTML = `<span class="${pct >= 0 ? 'col-green' : 'col-red'}">${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%</span> <span style="color:var(--muted);">24H · Binance Core</span>`;
+                    // Update ticker
+                    const price_str = '$' + price.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    document.getElementById('t-btc').textContent = price_str;
+                    document.getElementById('t-btc2').textContent = price_str;
+                    const chg = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+                    ['t-btc-c', 't-btc-c2'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.textContent = chg;
+                        el.className = 'ticker-chg ' + (pct >= 0 ? 'pos' : 'neg');
+                    });
+                    // Sparkline push
+                    sparkData.btc.push(price); sparkData.btc.shift();
+                    sparkBTC.data.datasets[0].data = [...sparkData.btc];
+                    sparkBTC.update('none');
+                }
+                if (d.s === 'ETHUSDT') {
+                    ASSETS[1].price = parseFloat(d.c);
+                    ASSETS[1].delta = parseFloat(d.P);
+                }
+                renderTable(d.s === 'BTCUSDT' ? 'BTC' : 'ETH');
+            };
+            ws.onerror = () => {
+                document.getElementById('stream-status').textContent = 'STREAM ERROR — RETRY';
+                document.getElementById('stream-status').style.color = 'var(--orange)';
+            };
+            ws.onclose = () => setTimeout(initWS, 5000);
+        }
+        initWS();
+
+        // ────────────────────────────────────────────
+        // SIMULATED MICRO-UPDATES
+        // ────────────────────────────────────────────
+        setInterval(() => {
+            // Nudge non-crypto assets
+            ASSETS[3].price += (Math.random() - 0.5) * 0.0002;
+            ASSETS[4].price += (Math.random() - 0.5) * 0.0002;
+            ASSETS[5].price += (Math.random() - 0.48) * 0.08;
+            ASSETS[6].price += (Math.random() - 0.5) * 0.15;
+            ASSETS[7].price += (Math.random() - 0.48) * 1.2;
+            ASSETS[2].price += (Math.random() - 0.5) * 0.4;
+
+            // Alpha index
+            const alpha = 34.2 + (Math.random() - 0.5) * 1.5;
+            document.getElementById('hero-alpha').textContent = alpha.toFixed(1) + '%';
+            sparkData.alpha.push(alpha); sparkData.alpha.shift();
+            sparkAlpha.data.datasets[0].data = [...sparkData.alpha];
+            sparkAlpha.update('none');
+
+            // Win rate micro-flicker
+            const wr = 68.4 + (Math.random() - 0.5) * 1.2;
+            document.getElementById('win-rate').textContent = wr.toFixed(1) + '%';
+
+            // Bar chart live node
+            const ds = barChart.data.datasets;
+            ds[0].data[11] = 100 + Math.floor(Math.random() * 25);
+            ds[1].data[11] = 58 + Math.floor(Math.random() * 15);
+            ds[2].data[11] = 36 + Math.floor(Math.random() * 10);
+            barChart.update('none');
+
+            // Heatmap pulse (last 3 cells)
+            const cells = document.querySelectorAll('.heatmap-cell');
+            [21, 22, 23].forEach(idx => {
+                if (cells[idx]) {
+                    const v = 0.4 + Math.random() * 0.6;
+                    const r = Math.floor(248 * (1 - v) + 74 * v);
+                    const g = Math.floor(113 * (1 - v) + 222 * v);
+                    const b = Math.floor(113 * (1 - v) + 128 * v);
+                    cells[idx].style.background = `rgba(${r},${g},${b},${0.2 + v * 0.5})`;
+                    cells[idx].textContent = (v * 100).toFixed(0);
+                }
+            });
+
+            renderTable();
+            updateCount++;
+            document.getElementById('update-count').textContent = updateCount;
+        }, 1400);
+
+        // Signal injection every 12s
+        setInterval(addSignal, 12000);
+
+        // Donut gentle rotation
+        setInterval(() => {
+            const d = donutChart.data.datasets[0].data;
+            donutChart.data.datasets[0].data = d.map(v => Math.max(5, v + (Math.random() - 0.5) * 1.5));
+            donutChart.update('none');
+        }, 5000);
+
+        // Area chart progression
+        setInterval(() => {
+            areaChart.data.datasets.forEach(ds => {
+                ds.data.push(ds.data[ds.data.length - 1] + (Math.random() - 0.45) * 3);
+                ds.data.shift();
+            });
+            areaChart.update('none');
+        }, 3000);
+
+        // Row click
+        function onRowClick(id) {
+            sparkBTC.data.datasets[0].borderColor = ASSETS.find(a => a.id === id)?.color || '#d4a853';
+            sparkBTC.update();
+        }
+    </script>
+</body>
+
+</html>
