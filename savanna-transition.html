@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savanna Capital — Terminal Transition</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050608;
+            --gold: #d4a853;
+            --gold-dim: rgba(212, 168, 83, 0.15);
+            --gold-mid: rgba(212, 168, 83, 0.4);
+            --blue: #1a2a4a;
+            --blue-bright: #2a4a8a;
+            --text: #e8eaf0;
+            --muted: #4a566e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0e1118;
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── DEMO HOMEPAGE BEHIND ── */
+        .homepage-bg {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 30%, rgba(26, 42, 74, 0.4) 0%, transparent 70%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.015) 39px, rgba(255, 255, 255, 0.015) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px),
+                #07090e;
+            z-index: 0;
+            transition: filter 0.5s ease, opacity 0.5s ease;
+        }
+
+        .homepage-ui {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            transition: opacity 0.8s ease;
+        }
+
+        .hp-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 3rem;
+            letter-spacing: 6px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .hp-tagline {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .hp-divider {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+        }
+
+        .hp-btn {
+            position: relative;
+            padding: 14px 48px;
+            border: 1px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s;
+            overflow: visible;
+            z-index: 10;
+        }
+
+        .hp-btn::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: var(--gold-dim);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .hp-btn:hover::before {
+            opacity: 1;
+        }
+
+        .hp-btn:hover {
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.2), 0 0 60px rgba(212, 168, 83, 0.08);
+        }
+
+        /* ── OVERLAY SYSTEM ── */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        #overlay.active {
+            pointer-events: all;
+        }
+
+        /* Phase 1 — darkening veil */
+        .veil {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Phase 2 — portal canvas */
+        #portal-canvas {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Phase 3 — warp canvas */
+        #warp-canvas {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+        }
+
+        /* Phase 4 — terminal materialise */
+        #term-emerge {
+            position: absolute;
+            inset: 0;
+            background: var(--bg);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .term-grid-lines {
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(212, 168, 83, 0.03) 39px, rgba(212, 168, 83, 0.03) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(212, 168, 83, 0.025) 39px, rgba(212, 168, 83, 0.025) 40px);
+            opacity: 0;
+        }
+
+        .term-scanline {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(212, 168, 83, 0.012) 50%, transparent 60%);
+            animation: scan 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .term-panels {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 220px 1fr 1fr;
+            grid-template-rows: 32px 1fr 1fr;
+            gap: 1px;
+            background: rgba(28, 32, 48, 0.8);
+            opacity: 0;
+        }
+
+        .tp {
+            background: rgba(10, 12, 16, 0.95);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .tp::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(212, 168, 83, 0.03) 3px,
+                    rgba(212, 168, 83, 0.03) 4px);
+        }
+
+        .tp-header {
+            grid-column: 1 / -1;
+            background: rgba(7, 9, 13, 0.98);
+            border-bottom: 1px solid rgba(212, 168, 83, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+            opacity: 0;
+        }
+
+        .tp-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: pulse-d 1.2s ease infinite;
+        }
+
+        @keyframes pulse-d {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .tp-ticker-text {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            color: var(--muted);
+        }
+
+        .tp-ticker-text span {
+            color: var(--gold);
+            margin-right: 4px;
+        }
+
+        .tp-sidebar {
+            grid-row: 2 / -1;
+            background: rgba(8, 10, 14, 0.98);
+        }
+
+        .tp-sidebar-inner {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tp-nav-item {
+            height: 10px;
+            border-radius: 2px;
+            background: rgba(212, 168, 83, 0.08);
+            border: 1px solid rgba(212, 168, 83, 0.1);
+        }
+
+        .tp-nav-item:first-child {
+            background: rgba(212, 168, 83, 0.15);
+            border-color: rgba(212, 168, 83, 0.3);
+        }
+
+        .tp-chart-area {
+            padding: 12px;
+            position: relative;
+        }
+
+        .tp-chart-label {
+            font-size: 0.5rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .tp-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 60px;
+        }
+
+        .tp-bar {
+            flex: 1;
+            background: rgba(212, 168, 83, 0.4);
+            border-radius: 1px;
+            transform-origin: bottom;
+            transform: scaleY(0);
+            transition: transform 0.4s ease;
+        }
+
+        /* access granted text */
+        .access-text {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 8px;
+            color: var(--gold);
+            text-transform: uppercase;
+            opacity: 0;
+            text-align: center;
+        }
+
+        .access-sub {
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: rgba(212, 168, 83, 0.5);
+            text-transform: uppercase;
+            opacity: 0;
+            text-align: center;
+        }
+
+        /* ── PORTAL RING SVG ── */
+        #portal-svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            width: 500px;
+            height: 500px;
+        }
+
+        /* ── PORTAL PULSE TEXT ── */
+        .portal-text {
+            position: absolute;
+            text-align: center;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .portal-text-line1 {
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: rgba(212, 168, 83, 0.7);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .portal-text-line2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        /* ── BUTTON PULSE ── */
+        .btn-pulse-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 0;
+            border: 1px solid rgba(212, 168, 83, 0.6);
+            animation: ring-expand 0.6s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes ring-expand {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        /* ── DEMO TRIGGER ── */
+        .demo-note {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: rgba(74, 86, 110, 0.6);
+            text-transform: uppercase;
+            z-index: 200;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Homepage behind -->
+    <div class="homepage-bg" id="hp-bg"></div>
+    <div class="homepage-ui" id="hp-ui">
+        <div class="hp-logo">Savanna Capital</div>
+        <div class="hp-divider"></div>
+        <div class="hp-tagline">Private Market Intelligence · Est. 2026</div>
+        <button class="hp-btn" id="enter-btn" onclick="beginTransition()">
+            Enter Terminal
+        </button>
+    </div>
+
+    <!-- Overlay system -->
+    <div id="overlay">
+        <div class="veil" id="veil"></div>
+        <canvas id="warp-canvas"></canvas>
+        <div id="portal-canvas">
+            <svg id="portal-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="portalGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#d4a853" stop-opacity="0.0" />
+                        <stop offset="60%" stop-color="#d4a853" stop-opacity="0.05" />
+                        <stop offset="85%" stop-color="#d4a853" stop-opacity="0.2" />
+                        <stop offset="100%" stop-color="#d4a853" stop-opacity="0.0" />
+                    </radialGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <filter id="glow-strong">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Outer ambient glow -->
+                <circle cx="250" cy="250" r="200" fill="url(#portalGlow)" id="portal-ambient" />
+
+                <!-- Ring layers -->
+                <circle cx="250" cy="250" r="195" fill="none" stroke="rgba(212,168,83,0.04)" stroke-width="40"
+                    id="ring-outer-bg" />
+                <circle cx="250" cy="250" r="195" fill="none" stroke="rgba(212,168,83,0.15)" stroke-width="0.5"
+                    id="ring-outer" filter="url(#glow)" />
+                <circle cx="250" cy="250" r="180" fill="none" stroke="rgba(212,168,83,0.08)" stroke-width="0.5"
+                    id="ring-mid1" />
+                <circle cx="250" cy="250" r="165" fill="none" stroke="rgba(212,168,83,0.06)" stroke-width="0.5"
+                    id="ring-mid2" />
+
+                <!-- Main ring arc -->
+                <circle cx="250" cy="250" r="195" fill="none" stroke="#d4a853" stroke-width="1.5"
+                    stroke-dasharray="0 1225" stroke-linecap="round" id="main-arc" filter="url(#glow-strong)"
+                    transform="rotate(-90 250 250)" />
+
+                <!-- Rotating dash segments -->
+                <circle cx="250" cy="250" r="195" fill="none" stroke="rgba(212,168,83,0.3)" stroke-width="0.5"
+                    stroke-dasharray="12 30" stroke-linecap="round" id="dash-ring1" transform="rotate(-90 250 250)" />
+                <circle cx="250" cy="250" r="178" fill="none" stroke="rgba(42,74,138,0.5)" stroke-width="0.5"
+                    stroke-dasharray="6 20" stroke-linecap="round" id="dash-ring2" transform="rotate(-90 250 250)" />
+
+                <!-- Energy nodes on ring -->
+                <g id="energy-nodes" opacity="0">
+                    <circle cx="250" cy="55" r="2.5" fill="#d4a853" filter="url(#glow)" />
+                    <circle cx="445" cy="250" r="2" fill="#d4a853" filter="url(#glow)" />
+                    <circle cx="250" cy="445" r="3" fill="#d4a853" filter="url(#glow)" />
+                    <circle cx="55" cy="250" r="2" fill="#d4a853" filter="url(#glow)" />
+                    <circle cx="388" cy="112" r="1.5" fill="rgba(212,168,83,0.7)" filter="url(#glow)" />
+                    <circle cx="388" cy="388" r="1.5" fill="rgba(212,168,83,0.7)" filter="url(#glow)" />
+                    <circle cx="112" cy="112" r="1.5" fill="rgba(212,168,83,0.7)" filter="url(#glow)" />
+                    <circle cx="112" cy="388" r="1.5" fill="rgba(212,168,83,0.7)" filter="url(#glow)" />
+                </g>
+
+                <!-- Interior portal depth -->
+                <circle cx="250" cy="250" r="155" fill="rgba(5,6,8,0.95)" id="portal-interior" />
+                <circle cx="250" cy="250" r="155" fill="none" stroke="rgba(212,168,83,0.12)" stroke-width="0.5" />
+                <circle cx="250" cy="250" r="130" fill="rgba(5,6,8,0.7)" id="portal-deep" />
+                <circle cx="250" cy="250" r="130" fill="none" stroke="rgba(26,42,74,0.4)" stroke-width="0.5" />
+
+                <!-- Inner cross hairs -->
+                <g stroke="rgba(212,168,83,0.08)" stroke-width="0.5" id="cross-hairs" opacity="0">
+                    <line x1="250" y1="100" x2="250" y2="400" />
+                    <line x1="100" y1="250" x2="400" y2="250" />
+                    <circle cx="250" cy="250" r="30" fill="none" />
+                    <circle cx="250" cy="250" r="60" fill="none" />
+                    <circle cx="250" cy="250" r="90" fill="none" />
+                </g>
+
+                <!-- Particle dots (will be animated in JS) -->
+                <g id="particles" opacity="0"></g>
+
+                <!-- Centre pulse -->
+                <circle cx="250" cy="250" r="8" fill="none" stroke="rgba(212,168,83,0.6)" stroke-width="1"
+                    id="centre-ring" opacity="0" />
+                <circle cx="250" cy="250" r="3" fill="#d4a853" id="centre-dot" opacity="0" filter="url(#glow-strong)" />
+            </svg>
+
+            <!-- Portal text -->
+            <div class="portal-text" id="portal-text">
+                <div class="portal-text-line1">Authenticating Signal Stream</div>
+                <div class="portal-text-line2">Entering The Terminal</div>
+            </div>
+        </div>
+
+        <!-- Terminal emergence -->
+        <div id="term-emerge">
+            <div class="term-grid-lines" id="tgl"></div>
+            <div class="term-scanline"></div>
+            <div class="term-panels" id="term-panels">
+                <div class="tp-header tp" id="tp-header">
+                    <span class="tp-dot" style="background:#d4a853; box-shadow: 0 0 6px #d4a853;"></span>
+                    <div class="tp-ticker-text">
+                        <span>BTC/USD</span>$73,941 &nbsp;
+                        <span>ETH/USD</span>$3,422 &nbsp;
+                        <span>XAU/USD</span>$2,318 &nbsp;
+                        <span>SCOM.KE</span>KES 12.50 &nbsp;
+                        <span>EQTY.KE</span>KES 31.20 &nbsp;
+                        <span>SOL/USD</span>$142.60
+                    </div>
+                </div>
+                <div class="tp tp-sidebar" id="tp-sb">
+                    <div class="tp-sidebar-inner" style="padding:16px 12px;">
+                        <div style="font-size:0.5rem;color:rgba(212,168,83,0.4);letter-spacing:2px;margin-bottom:8px;">
+                            NAVIGATION</div>
+                        <div class="tp-nav-item"></div>
+                        <div class="tp-nav-item"></div>
+                        <div class="tp-nav-item"></div>
+                        <div class="tp-nav-item"></div>
+                        <div class="tp-nav-item"></div>
+                        <div
+                            style="margin-top:16px;font-size:0.5rem;color:rgba(212,168,83,0.4);letter-spacing:2px;margin-bottom:8px;">
+                            PORTFOLIO</div>
+                        <div
+                            style="background:rgba(10,12,16,0.8);border:1px solid rgba(212,168,83,0.12);padding:8px;border-radius:2px;margin-bottom:6px;">
+                            <div style="font-size:0.45rem;color:#4a566e;letter-spacing:1px;">TOTAL AUM</div>
+                            <div style="font-size:0.85rem;font-weight:700;color:#d4a853;font-family:'Space Mono';">
+                                $4.82M</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tp" id="tp-main1">
+                    <div class="tp-chart-area">
+                        <div class="tp-chart-label">BTC/USD · Live Feed</div>
+                        <div
+                            style="font-size:1.6rem;font-weight:700;color:#d4a853;font-family:'Space Mono';margin-bottom:4px;">
+                            $73,941</div>
+                        <div style="font-size:0.5rem;color:#4ade80;margin-bottom:12px;">▲ +0.65% · 24H</div>
+                        <div class="tp-bars" id="btc-bars">
+                            <div class="tp-bar" style="height:35%;"></div>
+                            <div class="tp-bar" style="height:50%;"></div>
+                            <div class="tp-bar" style="height:42%;"></div>
+                            <div class="tp-bar" style="height:70%;"></div>
+                            <div class="tp-bar" style="height:58%;"></div>
+                            <div class="tp-bar" style="height:85%;"></div>
+                            <div class="tp-bar" style="height:72%;"></div>
+                            <div class="tp-bar" style="height:90%;"></div>
+                            <div class="tp-bar" style="height:78%;"></div>
+                            <div class="tp-bar" style="height:95%;background:rgba(212,168,83,0.7);"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tp" id="tp-main2">
+                    <div class="tp-chart-area">
+                        <div class="tp-chart-label">Alpha Signal Feed</div>
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+                            <div
+                                style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);padding:5px 8px;font-size:0.5rem;color:#e8eaf0;border-radius:2px;">
+                                <span style="color:#4ade80;font-weight:700;">BUY</span>&nbsp; ETH momentum RSI 58
+                                confirmation
+                            </div>
+                            <div
+                                style="background:rgba(212,168,83,0.06);border:1px solid rgba(212,168,83,0.15);padding:5px 8px;font-size:0.5rem;color:#e8eaf0;border-radius:2px;">
+                                <span style="color:#d4a853;font-weight:700;">WATCH</span>&nbsp; BTC consolidating above
+                                $73,800
+                            </div>
+                            <div
+                                style="background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);padding:5px 8px;font-size:0.5rem;color:#e8eaf0;border-radius:2px;">
+                                <span style="color:#f87171;font-weight:700;">SELL</span>&nbsp; USDC mild depeg 12bps
+                                spread
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tp" id="tp-bot1">
+                    <div class="tp-chart-area">
+                        <div class="tp-chart-label">Sector Allocation</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;">
+                            <div style="display:flex;align-items:center;gap:4px;font-size:0.5rem;color:#4a566e;">
+                                <span
+                                    style="width:6px;height:6px;background:#d4a853;display:inline-block;"></span>Crypto
+                                45%
+                            </div>
+                            <div style="display:flex;align-items:center;gap:4px;font-size:0.5rem;color:#4a566e;">
+                                <span
+                                    style="width:6px;height:6px;background:#60a5fa;display:inline-block;"></span>Stable
+                                25%
+                            </div>
+                            <div style="display:flex;align-items:center;gap:4px;font-size:0.5rem;color:#4a566e;">
+                                <span
+                                    style="width:6px;height:6px;background:#4ade80;display:inline-block;"></span>Equity
+                                18%
+                            </div>
+                            <div style="display:flex;align-items:center;gap:4px;font-size:0.5rem;color:#4a566e;">
+                                <span style="width:6px;height:6px;background:#a78bfa;display:inline-block;"></span>Macro
+                                12%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tp" id="tp-bot2">
+                    <div class="tp-chart-area">
+                        <div class="tp-chart-label">NSE Correlations</div>
+                        <div style="font-size:0.5rem;color:#4a566e;margin-top:8px;line-height:2;">
+                            SCOM/EQTY &nbsp;<span style="color:#4ade80;">0.62</span><br>
+                            BTC/ETH &nbsp;&nbsp;&nbsp;<span style="color:#4ade80;">0.87</span><br>
+                            XAU/EQTY &nbsp;<span style="color:#d4a853;">0.41</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Access granted overlay on terminal -->
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;pointer-events:none;z-index:50;"
+                id="access-layer">
+                <div class="access-text" id="access-text">ACCESS GRANTED</div>
+                <div style="width:80px;height:1px;background:linear-gradient(to right,transparent,rgba(212,168,83,0.6),transparent);"
+                    id="access-line" style="opacity:0;"></div>
+                <div class="access-sub" id="access-sub">Terminal Ready · Savanna Alpha Core</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-note">Click "Enter Terminal" to preview</div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+
+        let animating = false;
+
+        function beginTransition() {
+            if (animating) return;
+            animating = true;
+
+            const overlay = $('overlay');
+            overlay.style.opacity = '1';
+            overlay.classList.add('active');
+
+            // Phase 1: Activation (0–0.5s)
+            phase1();
+        }
+
+        function phase1() {
+            // Darken homepage
+            $('hp-bg').style.filter = 'brightness(0.3)';
+            $('hp-ui').style.opacity = '0';
+
+            // Button pulse ring
+            const btn = $('enter-btn');
+            const ring = document.createElement('div');
+            ring.className = 'btn-pulse-ring';
+            btn.appendChild(ring);
+            setTimeout(() => {
+                const ring2 = document.createElement('div');
+                ring2.className = 'btn-pulse-ring';
+                ring2.style.animationDelay = '0.15s';
+                btn.appendChild(ring2);
+            }, 150);
+
+            // Show veil
+            const veil = $('veil');
+            veil.style.opacity = '1';
+
+            setTimeout(phase2, 400);
+        }
+
+        function phase2() {
+            // Portal appears
+            const portalSvg = $('portal-svg');
+            portalSvg.style.transition = 'opacity 0.4s ease';
+            portalSvg.style.opacity = '1';
+
+            // Animate main arc drawing
+            const arc = document.getElementById('main-arc');
+            let progress = 0;
+            const totalCircum = 2 * Math.PI * 195; // ~1225
+            const arcAnim = setInterval(() => {
+                progress += 4;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(arcAnim);
+                }
+                const drawn = (progress / 100) * totalCircum;
+                arc.setAttribute('stroke-dasharray', `${drawn} ${totalCircum}`);
+            }, 16);
+
+            // Fade in energy nodes
+            setTimeout(() => {
+                $('energy-nodes').style.opacity = '1';
+                $('energy-nodes').style.transition = 'opacity 0.5s ease';
+                $('cross-hairs').style.opacity = '1';
+                $('cross-hairs').style.transition = 'opacity 0.5s ease';
+                $('centre-dot').style.opacity = '1';
+                $('centre-dot').style.transition = 'opacity 0.4s ease';
+                $('centre-ring').style.opacity = '1';
+                $('centre-ring').style.transition = 'opacity 0.4s ease';
+            }, 300);
+
+            // Rotate dash rings continuously
+            let angle1 = 0, angle2 = 0;
+            const rotateRings = setInterval(() => {
+                angle1 += 0.5;
+                angle2 -= 0.3;
+                document.getElementById('dash-ring1').setAttribute('transform', `rotate(${-90 + angle1} 250 250)`);
+                document.getElementById('dash-ring2').setAttribute('transform', `rotate(${-90 + angle2} 250 250)`);
+            }, 16);
+
+            // Build particles
+            buildParticles();
+
+            // Portal text appears
+            setTimeout(() => {
+                const pt = $('portal-text');
+                pt.style.transition = 'opacity 0.5s ease';
+                pt.style.opacity = '1';
+            }, 500);
+
+            // Store rotation interval for cleanup
+            window._rotateRings = rotateRings;
+
+            setTimeout(phase3, 1100);
+        }
+
+        function buildParticles() {
+            const g = document.getElementById('particles');
+            g.style.transition = 'opacity 0.3s ease';
+            g.style.opacity = '1';
+
+            const particles = [];
+            for (let i = 0; i < 40; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 80 + Math.random() * 80;
+                const x = 250 + Math.cos(angle) * radius;
+                const y = 250 + Math.sin(angle) * radius;
+                const size = 0.8 + Math.random() * 2;
+                const speed = 0.005 + Math.random() * 0.01;
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', size);
+                circle.setAttribute('fill', Math.random() > 0.3 ? 'rgba(212,168,83,0.7)' : 'rgba(96,165,250,0.5)');
+                g.appendChild(circle);
+                particles.push({ el: circle, angle, radius, speed, size });
+            }
+
+            const animParticles = setInterval(() => {
+                particles.forEach(p => {
+                    p.angle += p.speed;
+                    const nx = 250 + Math.cos(p.angle) * p.radius;
+                    const ny = 250 + Math.sin(p.angle) * p.radius;
+                    p.el.setAttribute('cx', nx);
+                    p.el.setAttribute('cy', ny);
+                });
+            }, 16);
+
+            window._animParticles = animParticles;
+        }
+
+        function phase3() {
+            // Portal text fades
+            $('portal-text').style.opacity = '0';
+
+            // Portal collapses, warp begins
+            const portalSvg = $('portal-svg');
+
+            // Quick scale-down + tunnel-in
+            portalSvg.style.transition = 'transform 0.4s ease-in, opacity 0.4s ease-in';
+            portalSvg.style.transform = 'translate(-50%, -50%) scale(0.1)';
+            portalSvg.style.opacity = '0';
+
+            setTimeout(() => {
+                // Initiate warp
+                $('warp-canvas').style.opacity = '1';
+                clearInterval(window._rotateRings);
+                clearInterval(window._animParticles);
+                startWarp();
+            }, 350);
+        }
+
+        function startWarp() {
+            const canvas = $('warp-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+
+            const W = canvas.width;
+            const H = canvas.height;
+            const cx = W / 2;
+            const cy = H / 2;
+
+            // Financial symbols for warp
+            const SYMBOLS = ['BTC', '$', '₿', '73941', '+0.65%', 'XAU', 'ETH', '2318', 'KES', 'EQTY', 'SCOM', 'USDT', '0.9998', 'NSE', '▲', '▼', '◆', '─', '│', 'α', 'Σ', 'SOL', '142.60', '3422'];
+            const CANDLESTICK_SIZES = [8, 12, 16, 20];
+
+            // Stars
+            const stars = Array.from({ length: 300 }, () => {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 10 + Math.random() * 200;
+                return {
+                    x: cx + Math.cos(angle) * dist,
+                    y: cy + Math.sin(angle) * dist,
+                    angle,
+                    dist,
+                    speed: 1.5 + Math.random() * 4,
+                    opacity: 0.3 + Math.random() * 0.7,
+                    isGold: Math.random() > 0.7,
+                    size: 0.5 + Math.random() * 1.5
+                };
+            });
+
+            // Floating symbols
+            const symbols = Array.from({ length: 60 }, () => {
+                const angle = Math.random() * Math.PI * 2;
+                return {
+                    text: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+                    x: cx,
+                    y: cy,
+                    angle,
+                    dist: 20 + Math.random() * 100,
+                    speed: 8 + Math.random() * 20,
+                    opacity: 0,
+                    isGold: Math.random() > 0.4,
+                    size: 8 + Math.random() * 6
+                };
+            });
+
+            let frame = 0;
+            let warpSpeed = 0;
+            const maxWarp = 35;
+
+            function drawFrame() {
+                frame++;
+                warpSpeed = Math.min(warpSpeed + 0.35, maxWarp);
+
+                ctx.fillStyle = `rgba(5,6,8,${0.12 + warpSpeed / maxWarp * 0.1})`;
+                ctx.fillRect(0, 0, W, H);
+
+                // Warp tunnel rings
+                if (frame % 3 === 0) {
+                    const ringOpacity = 0.04 + (warpSpeed / maxWarp) * 0.08;
+                    ctx.strokeStyle = `rgba(212,168,83,${ringOpacity})`;
+                    ctx.lineWidth = 0.5;
+                    for (let r = 20; r < 600; r += 30) {
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                }
+
+                // Stars → streaks
+                stars.forEach(s => {
+                    s.dist += s.speed * (warpSpeed / 8);
+                    s.x = cx + Math.cos(s.angle) * s.dist;
+                    s.y = cy + Math.sin(s.angle) * s.dist;
+
+                    if (s.dist > Math.max(W, H)) {
+                        s.dist = 5 + Math.random() * 15;
+                        s.angle = Math.random() * Math.PI * 2;
+                        s.x = cx + Math.cos(s.angle) * s.dist;
+                        s.y = cy + Math.sin(s.angle) * s.dist;
+                    }
+
+                    const streakLen = s.speed * warpSpeed * 0.25;
+                    const tx = cx + Math.cos(s.angle) * (s.dist - streakLen);
+                    const ty = cy + Math.sin(s.angle) * (s.dist - streakLen);
+                    const alpha = s.opacity * Math.min(warpSpeed / 8, 1);
+
+                    const grad = ctx.createLinearGradient(tx, ty, s.x, s.y);
+                    grad.addColorStop(0, 'transparent');
+                    grad.addColorStop(1, s.isGold ? `rgba(212,168,83,${alpha})` : `rgba(255,255,255,${alpha * 0.6})`);
+
+                    ctx.beginPath();
+                    ctx.moveTo(tx, ty);
+                    ctx.lineTo(s.x, s.y);
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = s.size;
+                    ctx.stroke();
+                });
+
+                // Flying financial symbols
+                symbols.forEach(s => {
+                    s.dist += s.speed * (warpSpeed / 12);
+                    s.opacity = Math.min(s.opacity + 0.04, 0.8);
+                    s.x = cx + Math.cos(s.angle) * s.dist;
+                    s.y = cy + Math.sin(s.angle) * s.dist;
+
+                    if (s.dist > Math.max(W, H) * 0.8 || s.x < 0 || s.x > W || s.y < 0 || s.y > H) {
+                        s.dist = 10 + Math.random() * 30;
+                        s.angle = Math.random() * Math.PI * 2;
+                        s.x = cx; s.y = cy;
+                        s.opacity = 0;
+                    }
+
+                    ctx.save();
+                    ctx.translate(s.x, s.y);
+                    ctx.rotate(s.angle);
+                    ctx.fillStyle = s.isGold
+                        ? `rgba(212,168,83,${s.opacity * Math.min(warpSpeed / 10, 1)})`
+                        : `rgba(96,165,250,${s.opacity * 0.5 * Math.min(warpSpeed / 10, 1)})`;
+                    ctx.font = `${s.size}px "Space Mono", monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(s.text, 0, 0);
+                    ctx.restore();
+                });
+
+                // Central void
+                const voidGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80 + warpSpeed * 1.5);
+                voidGrad.addColorStop(0, `rgba(5,6,8,${0.95})`);
+                voidGrad.addColorStop(0.5, `rgba(5,6,8,${0.7})`);
+                voidGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = voidGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, 80 + warpSpeed * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Central ring glow
+                if (warpSpeed > 15) {
+                    ctx.strokeStyle = `rgba(212,168,83,${(warpSpeed - 15) / maxWarp * 0.4})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 60 + warpSpeed, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+
+            const warpInterval = setInterval(drawFrame, 16);
+            window._warpInterval = warpInterval;
+
+            // Transition to phase 4 after 2 seconds
+            setTimeout(phase4, 2000);
+        }
+
+        function phase4() {
+            clearInterval(window._warpInterval);
+
+            // Canvas fades out, terminal fades in
+            $('warp-canvas').style.transition = 'opacity 0.8s ease';
+            $('warp-canvas').style.opacity = '0';
+
+            const te = $('term-emerge');
+            te.style.transition = 'opacity 0.8s ease';
+            te.style.opacity = '1';
+
+            // Grid lines and panels animate in
+            setTimeout(() => {
+                $('tgl').style.transition = 'opacity 0.5s ease';
+                $('tgl').style.opacity = '1';
+            }, 200);
+
+            // Staggered panel materialisation
+            const panelIds = ['tp-header', 'tp-sb', 'tp-main1', 'tp-main2', 'tp-bot1', 'tp-bot2'];
+            panelIds.forEach((id, i) => {
+                setTimeout(() => {
+                    const el = $(id);
+                    if (!el) return;
+                    el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 300 + i * 90);
+            });
+
+            // Bar chart animates in
+            setTimeout(() => {
+                document.querySelectorAll('.tp-bar').forEach((b, i) => {
+                    setTimeout(() => { b.style.transform = 'scaleY(1)'; }, i * 50);
+                });
+            }, 700);
+
+            // Terminal panels visible
+            setTimeout(() => {
+                $('term-panels').style.transition = 'opacity 0.3s ease';
+                $('term-panels').style.opacity = '1';
+            }, 250);
+
+            // Access granted text
+            setTimeout(() => {
+                const at = $('access-text');
+                at.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                at.style.transform = 'scale(1)';
+                at.style.opacity = '1';
+
+                setTimeout(() => {
+                    $('access-sub').style.transition = 'opacity 0.5s ease';
+                    $('access-sub').style.opacity = '1';
+                }, 300);
+            }, 1100);
+
+            // Final redirect
+            setTimeout(() => {
+                const at = $('access-text');
+                at.style.transition = 'opacity 0.4s ease';
+                at.style.opacity = '0';
+                $('access-sub').style.opacity = '0';
+
+                // Redirect to terminal
+                setTimeout(() => {
+                    window.location.href = 'savanna-terminal.html';
+                }, 500);
+            }, 2500);
+        }
+
+        // Keyboard shortcut for demo reset
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' || e.key === 'r') location.reload();
+        });
+    </script>
+</body>
+
+</html>
