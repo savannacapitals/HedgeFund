@@ -54,32 +54,6 @@
             color: #C8D4E8;
             font-family: 'Syne', sans-serif;
             overflow-x: hidden;
-            cursor: none;
-        }
-
-        #cursor {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--gold);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            transform: translate(-50%, -50%);
-            transition: width .2s, height .2s, background .2s;
-            mix-blend-mode: difference;
-        }
-
-        #cursor-ring {
-            position: fixed;
-            width: 32px;
-            height: 32px;
-            border: 1px solid rgba(201, 169, 110, .4);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99998;
-            transform: translate(-50%, -50%);
-            transition: transform .08s linear, width .3s, height .3s, border-color .3s;
         }
 
         body::before {
@@ -902,8 +876,6 @@
 </head>
 
 <body class="antialiased selection:bg-brandGold selection:text-brandDark">
-    <div id="cursor"></div>
-    <div id="cursor-ring"></div>
 
     <!-- ══════════════════════════════════════════════ NAV -->
     <nav id="main-nav"
@@ -928,7 +900,7 @@
             <a href="#strategies" class="nav-link hover:text-white transition-colors">Strategies</a>
             <a href="#performance" class="nav-link hover:text-white transition-colors">Performance</a>
             <a href="#insights" class="nav-link hover:text-white transition-colors">Insights</a>
-            <a href="savanna-terminal.html" class="terminal-pill">
+            <a href="savanna-transition.html" class="terminal-pill">
                 <span class="live-dot"></span>Live Terminal
             </a>
         </div>
@@ -1592,13 +1564,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ── Custom cursor
-        const cursor = document.getElementById('cursor'), cursorRing = document.getElementById('cursor-ring');
-        let mx = 0, my = 0, rx = 0, ry = 0;
-        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
-        (function animRing() { rx += (mx - rx) * .12; ry += (my - ry) * .12; cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px'; requestAnimationFrame(animRing); })();
-        document.querySelectorAll('a,button,[onclick]').forEach(el => { el.addEventListener('mouseenter', () => { cursor.style.width = '14px'; cursor.style.height = '14px'; cursorRing.style.width = '46px'; cursorRing.style.height = '46px'; cursorRing.style.borderColor = 'rgba(201,169,110,.6)'; }); el.addEventListener('mouseleave', () => { cursor.style.width = '8px'; cursor.style.height = '8px'; cursorRing.style.width = '32px'; cursorRing.style.height = '32px'; cursorRing.style.borderColor = 'rgba(201,169,110,.4)'; }); });
-
         // ── Hero canvas
         const hCanvas = document.getElementById('hero-canvas'), hCtx = hCanvas.getContext('2d');
         let particles = []; const GOLD = 'rgba(201,169,110,';
