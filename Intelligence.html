@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savanna Intelligence — Savanna Capitals</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap');
+
+        :root {
+            --black: #080a0e;
+            --navy: #0b0f1a;
+            --charcoal: #111827;
+            --emerald: #10b981;
+            --emerald-dim: #064e35;
+            --gold: #c9a84c;
+            --gold-dim: #7a6020;
+            --white: #f0ede8;
+            --muted: #6b7280;
+            --border: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--emerald);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+            mix-blend-mode: screen;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.25s ease, width 0.3s ease, height 0.3s ease;
+        }
+
+        /* CANVAS BACKGROUND */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* LOADING SCREEN */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-logo {
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .loader-bar-wrap {
+            width: 200px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: var(--emerald);
+            width: 0%;
+            transition: width 0.05s linear;
+        }
+
+        .loader-pct {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 0.15em;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 28px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.5s, background 0.5s;
+        }
+
+        nav.scrolled {
+            background: rgba(8, 10, 14, 0.85);
+            backdrop-filter: blur(20px);
+            border-color: var(--border);
+        }
+
+        .nav-logo {
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            color: var(--emerald);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .nav-cta {
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 9px 22px;
+            text-decoration: none;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.6);
+        }
+
+        /* SCROLL PROGRESS */
+        #progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 1px;
+            background: var(--emerald);
+            z-index: 2000;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px var(--emerald);
+        }
+
+        /* SECTIONS */
+        section {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 60px;
+            overflow: hidden;
+        }
+
+        /* S1 — ENTER THE SYSTEM */
+        #s1 {
+            min-height: 100vh;
+        }
+
+        .s1-content {
+            text-align: center;
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        .s1-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .s1-tag {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            margin-bottom: 48px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .s1-headline {
+            font-size: clamp(48px, 7vw, 96px);
+            font-weight: 200;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--white);
+            margin-bottom: 32px;
+        }
+
+        .s1-headline em {
+            font-style: italic;
+            color: rgba(240, 237, 232, 0.5);
+        }
+
+        .s1-sub {
+            font-size: 16px;
+            font-weight: 300;
+            color: var(--muted);
+            line-height: 1.7;
+            max-width: 500px;
+            margin: 0 auto 60px;
+        }
+
+        .scroll-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.4;
+            animation: scrollpulse 2.5s ease infinite;
+        }
+
+        .scroll-indicator span {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, var(--emerald), transparent);
+            animation: scrolldown 2.5s ease infinite;
+        }
+
+        @keyframes scrollpulse {
+
+            0%,
+            100% {
+                opacity: 0.4
+            }
+
+            50% {
+                opacity: 0.8
+            }
+        }
+
+        @keyframes scrolldown {
+            0% {
+                transform: translateY(-10px);
+                opacity: 0
+            }
+
+            50% {
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(10px);
+                opacity: 0
+            }
+        }
+
+        /* S2 — EVOLUTION */
+        #s2 {
+            background: transparent;
+        }
+
+        .s2-inner {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .s2-label {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            margin-bottom: 80px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .timeline-wrap {
+            position: relative;
+            padding-left: 1px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .timeline-progress-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1px;
+            height: 0%;
+            background: var(--emerald);
+            transition: height 0.5s ease;
+            box-shadow: 0 0 6px var(--emerald);
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 40px;
+            padding: 40px 0 40px 40px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            position: relative;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -5px;
+            top: 50%;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: var(--black);
+            transform: translateY(-50%);
+            transition: border-color 0.5s, background 0.5s;
+        }
+
+        .timeline-item.visible .timeline-dot {
+            border-color: var(--emerald);
+            background: var(--emerald);
+            box-shadow: 0 0 12px var(--emerald);
+        }
+
+        .timeline-era {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            padding-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .timeline-title {
+            font-size: 28px;
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+
+        .timeline-desc {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        /* S3 — GLOBAL NETWORK */
+        #s3 {
+            min-height: 120vh;
+            flex-direction: column;
+            gap: 80px;
+        }
+
+        .s3-text {
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            margin-bottom: 24px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .section-headline {
+            font-size: clamp(32px, 5vw, 64px);
+            font-weight: 200;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .section-sub {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        #globe-canvas {
+            width: 600px;
+            height: 600px;
+            max-width: 90vw;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        /* S4 — BLOCKCHAIN */
+        #s4 {
+            gap: 80px;
+        }
+
+        .concept-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            max-width: 700px;
+        }
+
+        .concept-pill {
+            padding: 10px 22px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            transition: all 0.4s ease;
+            cursor: default;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .concept-pill.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-pill:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--white);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        #network-canvas {
+            width: 100%;
+            max-width: 700px;
+            height: 350px;
+        }
+
+        /* S5 — AI INTELLIGENCE */
+        #s5 {
+            gap: 60px;
+        }
+
+        .data-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .data-card {
+            background: var(--black);
+            padding: 32px 28px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+        }
+
+        .data-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .data-card:hover {
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        .dc-label {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            margin-bottom: 16px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .dc-title {
+            font-size: 20px;
+            font-weight: 300;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+
+        .dc-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .dc-bar {
+            height: 1px;
+            background: var(--border);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dc-bar-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--emerald);
+            width: 0%;
+            transition: width 1.5s ease;
+        }
+
+        .data-card.visible .dc-bar-fill {
+            width: var(--fill);
+        }
+
+        /* S6 — AFRICA */
+        #s6 {
+            flex-direction: row;
+            gap: 100px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .africa-text {
+            max-width: 480px;
+        }
+
+        .africa-text .section-headline {
+            text-align: left;
+        }
+
+        .africa-quote {
+            font-size: 22px;
+            font-weight: 200;
+            line-height: 1.5;
+            color: rgba(240, 237, 232, 0.6);
+            margin: 32px 0;
+            padding-left: 20px;
+            border-left: 1px solid var(--emerald);
+            font-style: italic;
+        }
+
+        .africa-stat-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .a-stat {
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .a-stat-num {
+            font-size: 36px;
+            font-weight: 200;
+            color: var(--white);
+            letter-spacing: -0.03em;
+        }
+
+        .a-stat-num span {
+            color: var(--emerald);
+        }
+
+        .a-stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        #africa-canvas {
+            width: 400px;
+            height: 480px;
+            max-width: 90vw;
+        }
+
+        /* S7 — SAVANNA INTELLIGENCE */
+        #s7 {
+            background: transparent;
+        }
+
+        .s7-inner {
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .savanna-logo-mark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 48px;
+            position: relative;
+        }
+
+        .savanna-logo-mark svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .main-headline {
+            font-size: clamp(48px, 8vw, 110px);
+            font-weight: 200;
+            letter-spacing: -0.04em;
+            line-height: 0.95;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .main-sub {
+            font-size: 16px;
+            font-weight: 300;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 80px;
+        }
+
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .pillars {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .pillar {
+            background: var(--black);
+            padding: 40px 24px;
+            text-align: left;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.7s ease, transform 0.7s ease, background 0.3s;
+        }
+
+        .pillar.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pillar:hover {
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        .pillar-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--emerald);
+            letter-spacing: 0.3em;
+            margin-bottom: 24px;
+        }
+
+        .pillar-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 20px;
+        }
+
+        .pillar-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+
+        .pillar-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* S8 — CTA */
+        #s8 {
+            min-height: 80vh;
+            background: linear-gradient(to bottom, transparent, rgba(16, 185, 129, 0.02) 50%, transparent);
+        }
+
+        .cta-inner {
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .cta-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 32px;
+        }
+
+        .cta-headline {
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 200;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--white);
+            margin-bottom: 48px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 15px 40px;
+            background: var(--emerald);
+            color: var(--black);
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: #0ea472;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            padding: 14px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--white);
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            text-decoration: none;
+            transition: border-color 0.3s, transform 0.2s, background 0.3s;
+            display: inline-block;
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* FOOTER */
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 60px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+
+            section {
+                padding: 80px 24px;
+            }
+
+            nav {
+                padding: 20px 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .s1-headline {
+                font-size: 42px;
+            }
+
+            #s6 {
+                flex-direction: column;
+            }
+        }
+
+        .footer-brand {
+            font-size: 22px;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand span {
+            color: var(--emerald);
+        }
+
+        .footer-tagline {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .footer-col h4 {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            font-size: 13px;
+            color: rgba(240, 237, 232, 0.5);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-legal {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        .footer-statement {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--emerald);
+        }
+
+        /* DIVIDERS */
+        .section-divider {
+            position: absolute;
+            bottom: 0;
+            left: 60px;
+            right: 60px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* REVEAL ANIMATIONS */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* GRID OVERLAY */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* PARTICLES CANVAS */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="loader-logo">Savanna Capitals</div>
+        <div class="loader-bar-wrap">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
+        <div class="loader-pct" id="loader-pct">0%</div>
+    </div>
+
+    <div id="progress"></div>
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <div class="grid-overlay"></div>
+    <canvas id="starfield"></canvas>
+    <canvas id="particle-canvas"></canvas>
+
+    <nav id="nav">
+        <a href="#" class="nav-logo">Savanna <span>Capitals</span></a>
+        <ul class="nav-links">
+            <li><a href="#s2">Evolution</a></li>
+            <li><a href="#s5">Intelligence</a></li>
+            <li><a href="#s6">Africa</a></li>
+            <li><a href="#s7">Platform</a></li>
+        </ul>
+        <a href="#s8" class="nav-cta">Join Network</a>
+    </nav>
+
+    <!-- S1 — ENTER THE SYSTEM -->
+    <section id="s1">
+        <div class="s1-content" id="s1-content">
+            <div class="s1-tag">System Initialize — 2024</div>
+            <h1 class="s1-headline">Capital follows<br><em>information.</em></h1>
+            <p class="s1-sub">The future belongs to those who understand the systems shaping it.</p>
+            <div class="scroll-indicator">
+                <span>Scroll to Enter</span>
+                <div class="scroll-line"></div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S2 — EVOLUTION OF CAPITAL -->
+    <section id="s2">
+        <div class="s2-inner">
+            <div class="s2-label">The Evolution of Capital</div>
+            <div class="timeline-wrap">
+                <div class="timeline-line"></div>
+                <div class="timeline-progress-line" id="timeline-progress"></div>
+                <div class="timeline-item" data-delay="0">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">1760–1870</div>
+                    <div>
+                        <div class="timeline-title">Industrial Capital</div>
+                        <div class="timeline-desc">Steam, steel, and scale. Capital concentrates around physical
+                            production and extractive resource systems.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-delay="100">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">1944–1990</div>
+                    <div>
+                        <div class="timeline-title">Global Capital Markets</div>
+                        <div class="timeline-desc">Bretton Woods, petrodollars, and the rise of transnational financial
+                            institutions. Money becomes a geopolitical instrument.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-delay="200">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">2000–2015</div>
+                    <div>
+                        <div class="timeline-title">Digital Finance</div>
+                        <div class="timeline-desc">Electronic trading, algorithmic systems, and mobile money begin to
+                            decouple finance from physical infrastructure.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-delay="300">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">2015–2021</div>
+                    <div>
+                        <div class="timeline-title">Blockchain Infrastructure</div>
+                        <div class="timeline-desc">Distributed ledgers, smart contracts, and programmable value systems
+                            challenge the architecture of trust.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-delay="400">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">2021–Present</div>
+                    <div>
+                        <div class="timeline-title">Artificial Intelligence</div>
+                        <div class="timeline-desc">Machine intelligence enters every layer of financial infrastructure —
+                            from credit underwriting to macroeconomic modeling.</div>
+                    </div>
+                </div>
+                <div class="timeline-item" data-delay="500">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-era">Emerging Now</div>
+                    <div>
+                        <div class="timeline-title">Financial Intelligence Networks</div>
+                        <div class="timeline-desc">The convergence of AI, blockchain, and real-time data creates
+                            sovereign-grade intelligence infrastructure.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S3 — GLOBAL NETWORK -->
+    <section id="s3">
+        <div class="s3-text reveal">
+            <div class="section-label">Global Network</div>
+            <h2 class="section-headline">Capital is becoming<br>increasingly interconnected.</h2>
+            <p class="section-sub">Six financial cities. Infinite capital flows. One emerging intelligence layer.</p>
+        </div>
+        <canvas id="globe-canvas"></canvas>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S4 — BLOCKCHAIN INFRASTRUCTURE -->
+    <section id="s4">
+        <div class="s3-text reveal" style="margin-bottom:60px;">
+            <div class="section-label">Decentralized Infrastructure</div>
+            <h2 class="section-headline">The network is<br>the architecture.</h2>
+            <p class="section-sub">Programmable finance is dissolving the boundaries between assets, currencies, and
+                contracts.</p>
+        </div>
+        <canvas id="network-canvas"></canvas>
+        <div class="concept-grid">
+            <div class="concept-pill">Web3 Infrastructure</div>
+            <div class="concept-pill">Tokenized Assets</div>
+            <div class="concept-pill">Stablecoin Economies</div>
+            <div class="concept-pill">Digital Ownership</div>
+            <div class="concept-pill">Programmable Finance</div>
+            <div class="concept-pill">Smart Contracts</div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S5 — AI FINANCIAL INTELLIGENCE -->
+    <section id="s5">
+        <div class="s3-text reveal" style="margin-bottom:60px;">
+            <div class="section-label">AI Financial Intelligence</div>
+            <h2 class="section-headline">The market is a<br>signal. We read it.</h2>
+            <p class="section-sub">Neural pathways processing millions of data points. Continuously. In real time.</p>
+        </div>
+        <div class="data-cards" id="data-cards">
+            <div class="data-card" data-fill="87">
+                <div class="dc-label">Module 01</div>
+                <div class="dc-title">AI Intelligence</div>
+                <div class="dc-value">Adaptive signal processing</div>
+                <div class="dc-bar">
+                    <div class="dc-bar-fill" style="--fill:87%"></div>
+                </div>
+            </div>
+            <div class="data-card" data-fill="64">
+                <div class="dc-label">Module 02</div>
+                <div class="dc-title">Macro Signals</div>
+                <div class="dc-value">Cross-market correlation</div>
+                <div class="dc-bar">
+                    <div class="dc-bar-fill" style="--fill:64%"></div>
+                </div>
+            </div>
+            <div class="data-card" data-fill="92">
+                <div class="dc-label">Module 03</div>
+                <div class="dc-title">Liquidity Flows</div>
+                <div class="dc-value">Real-time depth mapping</div>
+                <div class="dc-bar">
+                    <div class="dc-bar-fill" style="--fill:92%"></div>
+                </div>
+            </div>
+            <div class="data-card" data-fill="71">
+                <div class="dc-label">Module 04</div>
+                <div class="dc-title">Market Sentiment</div>
+                <div class="dc-value">NLP + behavioral signals</div>
+                <div class="dc-bar">
+                    <div class="dc-bar-fill" style="--fill:71%"></div>
+                </div>
+            </div>
+            <div class="data-card" data-fill="55">
+                <div class="dc-label">Module 05</div>
+                <div class="dc-title">Digital Assets</div>
+                <div class="dc-value">On-chain analytics</div>
+                <div class="dc-bar">
+                    <div class="dc-bar-fill" style="--fill:55%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S6 — AFRICA'S OPPORTUNITY -->
+    <section id="s6">
+        <div class="africa-text">
+            <div class="section-label">Africa's Moment</div>
+            <h2 class="section-headline" style="text-align:left;">The frontier is<br>distributed.</h2>
+            <p class="africa-quote">"The next generation of financial infrastructure will not be built in a single
+                financial center."</p>
+            <p class="section-sub" style="text-align:left;">Nairobi, Lagos, Accra, Kigali — Africa's capital cities are
+                becoming nodes in a global intelligence network.</p>
+            <div class="africa-stat-row">
+                <div class="a-stat reveal">
+                    <div class="a-stat-num">1.4<span>B</span></div>
+                    <div class="a-stat-label">Population entering digital economy</div>
+                </div>
+                <div class="a-stat reveal">
+                    <div class="a-stat-num">$3.4<span>T</span></div>
+                    <div class="a-stat-label">Projected GDP by 2030</div>
+                </div>
+                <div class="a-stat reveal">
+                    <div class="a-stat-num">54<span>+</span></div>
+                    <div class="a-stat-label">Markets integrating digital finance</div>
+                </div>
+                <div class="a-stat reveal">
+                    <div class="a-stat-num">#1</div>
+                    <div class="a-stat-label">Mobile money innovation globally</div>
+                </div>
+            </div>
+        </div>
+        <canvas id="africa-canvas"></canvas>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S7 — SAVANNA INTELLIGENCE -->
+    <section id="s7">
+        <div class="s7-inner">
+            <div class="savanna-logo-mark reveal">
+                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="40" cy="40" r="38" stroke="rgba(16,185,129,0.2)" stroke-width="1" />
+                    <circle cx="40" cy="40" r="28" stroke="rgba(16,185,129,0.12)" stroke-width="1" />
+                    <circle cx="40" cy="40" r="4" fill="#10b981" />
+                    <line x1="40" y1="12" x2="40" y2="28" stroke="#10b981" stroke-width="0.8" opacity="0.6" />
+                    <line x1="40" y1="52" x2="40" y2="68" stroke="#10b981" stroke-width="0.8" opacity="0.6" />
+                    <line x1="12" y1="40" x2="28" y2="40" stroke="#10b981" stroke-width="0.8" opacity="0.6" />
+                    <line x1="52" y1="40" x2="68" y2="40" stroke="#10b981" stroke-width="0.8" opacity="0.6" />
+                    <line x1="21" y1="21" x2="31.5" y2="31.5" stroke="#10b981" stroke-width="0.8" opacity="0.35" />
+                    <line x1="48.5" y1="48.5" x2="59" y2="59" stroke="#10b981" stroke-width="0.8" opacity="0.35" />
+                    <line x1="59" y1="21" x2="48.5" y2="31.5" stroke="#10b981" stroke-width="0.8" opacity="0.35" />
+                    <line x1="31.5" y1="48.5" x2="21" y2="59" stroke="#10b981" stroke-width="0.8" opacity="0.35" />
+                </svg>
+            </div>
+            <p class="section-label reveal">Savanna Capitals</p>
+            <h2 class="main-headline reveal">Savanna<br>Intelligence</h2>
+            <p class="main-sub reveal">Building Africa's Financial Intelligence Infrastructure.</p>
+            <div class="pillars">
+                <div class="pillar" data-delay="0">
+                    <div class="pillar-num">01</div>
+                    <svg class="pillar-icon" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="6" stroke="#10b981" stroke-width="0.8" />
+                        <path d="M16 2L16 10M16 22L16 30M2 16L10 16M22 16L30 16" stroke="#10b981" stroke-width="0.8"
+                            opacity="0.5" />
+                    </svg>
+                    <div class="pillar-title">AI Intelligence</div>
+                    <div class="pillar-desc">Machine learning models processing global financial signals in real time.
+                    </div>
+                </div>
+                <div class="pillar" data-delay="100">
+                    <div class="pillar-num">02</div>
+                    <svg class="pillar-icon" viewBox="0 0 32 32" fill="none">
+                        <rect x="4" y="4" width="10" height="10" stroke="#10b981" stroke-width="0.8" />
+                        <rect x="18" y="4" width="10" height="10" stroke="#10b981" stroke-width="0.8" />
+                        <rect x="4" y="18" width="10" height="10" stroke="#10b981" stroke-width="0.8" />
+                        <rect x="18" y="18" width="10" height="10" stroke="#10b981" stroke-width="0.8" />
+                        <path d="M14 9L18 9M9 14L9 18M23 14L23 18M14 23L18 23" stroke="#10b981" stroke-width="0.8"
+                            opacity="0.5" />
+                    </svg>
+                    <div class="pillar-title">Web3 Infrastructure</div>
+                    <div class="pillar-desc">Distributed ledger systems for programmable financial architecture.</div>
+                </div>
+                <div class="pillar" data-delay="200">
+                    <div class="pillar-num">03</div>
+                    <svg class="pillar-icon" viewBox="0 0 32 32" fill="none">
+                        <polygon points="16,4 28,12 28,24 16,28 4,24 4,12" stroke="#10b981" stroke-width="0.8" />
+                        <line x1="16" y1="4" x2="16" y2="28" stroke="#10b981" stroke-width="0.8" opacity="0.4" />
+                        <line x1="4" y1="12" x2="28" y2="24" stroke="#10b981" stroke-width="0.8" opacity="0.4" />
+                        <line x1="28" y1="12" x2="4" y2="24" stroke="#10b981" stroke-width="0.8" opacity="0.4" />
+                    </svg>
+                    <div class="pillar-title">Tokenized Assets</div>
+                    <div class="pillar-desc">Real-world asset tokenization enabling fractional ownership at scale.</div>
+                </div>
+                <div class="pillar" data-delay="300">
+                    <div class="pillar-num">04</div>
+                    <svg class="pillar-icon" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 28L10 18L16 22L22 10L28 4" stroke="#10b981" stroke-width="0.8" fill="none" />
+                        <circle cx="10" cy="18" r="2" fill="#10b981" opacity="0.6" />
+                        <circle cx="16" cy="22" r="2" fill="#10b981" opacity="0.6" />
+                        <circle cx="22" cy="10" r="2" fill="#10b981" opacity="0.6" />
+                    </svg>
+                    <div class="pillar-title">Macroeconomic Research</div>
+                    <div class="pillar-desc">Institutional-grade analysis of emerging market capital flows and trends.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- S8 — CTA -->
+    <section id="s8">
+        <div class="cta-inner">
+            <div class="cta-eyebrow reveal">Savanna Intelligence Platform</div>
+            <h2 class="cta-headline reveal">Understand The Future<br>Before It Arrives.</h2>
+            <div class="cta-buttons reveal">
+                <a href="#" class="btn-primary">Explore Research</a>
+                <a href="#" class="btn-secondary">Join The Network</a>
+                <a href="#" class="btn-secondary">Partner With Us</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">Savanna <span>Capitals</span></div>
+                <p class="footer-tagline">Building Africa's next-generation financial intelligence platform. Where
+                    capital meets intelligence.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#">AI Intelligence</a></li>
+                    <li><a href="#">Web3 Infrastructure</a></li>
+                    <li><a href="#">Tokenized Assets</a></li>
+                    <li><a href="#">Research</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Team</a></li>
+                    <li><a href="#">Partners</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">Nairobi</a></li>
+                    <li><a href="#">London</a></li>
+                    <li><a href="#">contact@savannacapitals.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">© 2024 Savanna Capitals. All rights reserved.</div>
+            <div class="footer-statement">Future Financial Intelligence.</div>
+        </div>
+    </footer>
+
+    <script>
+        // ─── LOADER ───────────────────────────────────────────────
+        const bar = document.getElementById('loader-bar');
+        const pct = document.getElementById('loader-pct');
+        const loader = document.getElementById('loader');
+        let progress = 0;
+        const loadInterval = setInterval(() => {
+            progress += Math.random() * 18;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loadInterval);
+                setTimeout(() => { loader.classList.add('hidden'); }, 400);
+            }
+            bar.style.width = progress + '%';
+            pct.textContent = Math.floor(progress) + '%';
+        }, 80);
+
+        // ─── CURSOR ───────────────────────────────────────────────
+        const cur = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+        function animCursor() {
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+            ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+            requestAnimationFrame(animCursor);
+        }
+        animCursor();
+        document.querySelectorAll('a, button, .pillar, .data-card, .timeline-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cur.style.width = '16px'; cur.style.height = '16px';
+                ring.style.width = '48px'; ring.style.height = '48px';
+            });
+            el.addEventListener('mouseleave', () => {
+                cur.style.width = '8px'; cur.style.height = '8px';
+                ring.style.width = '32px'; ring.style.height = '32px';
+            });
+        });
+
+        // ─── NAV SCROLL ───────────────────────────────────────────
+        const nav = document.getElementById('nav');
+        const prog = document.getElementById('progress');
+        window.addEventListener('scroll', () => {
+            const sh = document.documentElement.scrollHeight - window.innerHeight;
+            prog.style.width = (window.scrollY / sh * 100) + '%';
+            nav.classList.toggle('scrolled', window.scrollY > 60);
+        }, { passive: true });
+
+        // ─── STARFIELD CANVAS ─────────────────────────────────────
+        const sc = document.getElementById('starfield');
+        const sx = sc.getContext('2d');
+        let W, H, stars = [], nebs = [];
+        function resizeStar() {
+            W = sc.width = window.innerWidth;
+            H = sc.height = window.innerHeight;
+            stars = Array.from({ length: 320 }, () => ({
+                x: Math.random() * W, y: Math.random() * H,
+                r: Math.random() * 1.4, s: Math.random() * 0.4 + 0.1,
+                b: Math.random(), db: (Math.random() - 0.5) * 0.006
+            }));
+            nebs = Array.from({ length: 5 }, () => ({
+                x: Math.random() * W, y: Math.random() * H,
+                rx: Math.random() * 300 + 150, ry: Math.random() * 200 + 100,
+                c: Math.random() > 0.5 ? '10,185,129' : '201,168,76',
+                a: Math.random() * 0.03 + 0.008
+            }));
+        }
+        resizeStar();
+        window.addEventListener('resize', resizeStar);
+        let scrollSpd = 0;
+        window.addEventListener('scroll', () => { scrollSpd = Math.min(window.scrollY / 3000 + 1, 3); }, { passive: true });
+        function drawStars() {
+            sx.clearRect(0, 0, W, H);
+            sx.fillStyle = '#080a0e';
+            sx.fillRect(0, 0, W, H);
+            nebs.forEach(n => {
+                const g = sx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
+                g.addColorStop(0, `rgba(${n.c},${n.a})`);
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                sx.save();
+                sx.scale(1, n.ry / n.rx);
+                sx.fillStyle = g;
+                sx.beginPath();
+                sx.ellipse(n.x, n.y * n.rx / n.ry, n.rx, n.rx, 0, 0, Math.PI * 2);
+                sx.fill();
+                sx.restore();
+            });
+            stars.forEach(s => {
+                s.b += s.db;
+                if (s.b > 1 || s.b < 0) s.db *= -1;
+                s.y -= s.s * scrollSpd;
+                if (s.y < -2) s.y = H + 2;
+                sx.beginPath();
+                sx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                sx.fillStyle = `rgba(240,237,232,${0.3 + s.b * 0.7})`;
+                sx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        // ─── FLOATING PARTICLES ───────────────────────────────────
+        const pc = document.getElementById('particle-canvas');
+        const px = pc.getContext('2d');
+        let PW, PH, parts = [];
+        function resizePart() {
+            PW = pc.width = window.innerWidth;
+            PH = pc.height = window.innerHeight;
+            parts = Array.from({ length: 60 }, () => ({
+                x: Math.random() * PW, y: Math.random() * PH,
+                vx: (Math.random() - 0.5) * 0.3, vy: -Math.random() * 0.5 - 0.1,
+                r: Math.random() * 2 + 0.5, a: Math.random() * 0.4 + 0.05,
+                life: Math.random() * 200 + 100
+            }));
+        }
+        resizePart();
+        window.addEventListener('resize', resizePart);
+        function drawParts() {
+            px.clearRect(0, 0, PW, PH);
+            parts.forEach(p => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                if (p.life <= 0 || p.y < -10) {
+                    p.x = Math.random() * PW; p.y = PH + 10;
+                    p.life = Math.random() * 200 + 100;
+                }
+                px.beginPath();
+                px.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                px.fillStyle = `rgba(16,185,129,${p.a * (p.life / 300)})`;
+                px.fill();
+            });
+            requestAnimationFrame(drawParts);
+        }
+        drawParts();
+
+        // ─── S1 REVEAL ────────────────────────────────────────────
+        setTimeout(() => { document.getElementById('s1-content').classList.add('visible'); }, 1600);
+
+        // ─── INTERSECTION OBSERVER ────────────────────────────────
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const d = +e.target.dataset.delay || 0;
+                    setTimeout(() => e.target.classList.add('visible'), d);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.timeline-item, .reveal, .data-card, .concept-pill, .pillar').forEach(el => io.observe(el));
+
+        // ─── GLOBE CANVAS ─────────────────────────────────────────
+        const gc = document.getElementById('globe-canvas');
+        const gx = gc.getContext('2d');
+        const GS = Math.min(600, window.innerWidth * 0.9);
+        gc.width = GS; gc.height = GS;
+        const GR = GS * 0.42;
+        const GCX = GS / 2, GCY = GS / 2;
+        let globeAngle = 0;
+        const cities = [
+            { name: 'Nairobi', lat: -1.286, lng: 36.817, primary: true },
+            { name: 'London', lat: 51.507, lng: -0.127 },
+            { name: 'New York', lat: 40.712, lng: -74.006 },
+            { name: 'Singapore', lat: 1.352, lng: 103.819 },
+            { name: 'Dubai', lat: 25.204, lng: 55.270 },
+            { name: 'Johannesburg', lat: -26.204, lng: 28.046 },
+        ];
+        function latLngTo3D(lat, lng, r) {
+            const phi = (90 - lat) * Math.PI / 180;
+            const theta = (lng + 180) * Math.PI / 180;
+            return {
+                x: r * Math.sin(phi) * Math.cos(theta),
+                y: r * Math.cos(phi),
+                z: r * Math.sin(phi) * Math.sin(theta)
+            };
+        }
+        function project(p3, angle) {
+            const cos = Math.cos(angle), sin = Math.sin(angle);
+            const x2 = p3.x * cos - p3.z * sin;
+            const z2 = p3.x * sin + p3.z * cos;
+            return { x: GCX + x2, y: GCY - p3.y, z: z2 };
+        }
+        let trails = [];
+        function addTrail(c1, c2) {
+            trails.push({ from: c1, to: c2, t: 0, speed: 0.003 + Math.random() * 0.003 });
+        }
+        cities.forEach((c, i) => { if (i > 0) addTrail(cities[0], c); });
+        function drawGlobe() {
+            gx.clearRect(0, 0, GS, GS);
+            // globe sphere
+            const grd = gx.createRadialGradient(GCX - GR * 0.2, GCY - GR * 0.2, GR * 0.05, GCX, GCY, GR * 1.1);
+            grd.addColorStop(0, 'rgba(16,185,129,0.04)');
+            grd.addColorStop(0.6, 'rgba(11,15,26,0.95)');
+            grd.addColorStop(1, 'rgba(8,10,14,0.98)');
+            gx.beginPath();
+            gx.arc(GCX, GCY, GR, 0, Math.PI * 2);
+            gx.fillStyle = grd;
+            gx.fill();
+            gx.strokeStyle = 'rgba(16,185,129,0.1)';
+            gx.lineWidth = 0.5;
+            gx.stroke();
+            // latitude lines
+            for (let lat = -60; lat <= 60; lat += 30) {
+                gx.beginPath();
+                for (let lng = -180; lng <= 180; lng += 2) {
+                    const p3 = latLngTo3D(lat, lng, GR);
+                    const p2 = project(p3, globeAngle);
+                    if (p2.z < 0) continue;
+                    if (lng === -180) gx.moveTo(p2.x, p2.y);
+                    else gx.lineTo(p2.x, p2.y);
+                }
+                gx.strokeStyle = 'rgba(255,255,255,0.03)';
+                gx.lineWidth = 0.5;
+                gx.stroke();
+            }
+            // longitude lines
+            for (let lng = -180; lng < 180; lng += 30) {
+                gx.beginPath();
+                for (let lat = -90; lat <= 90; lat += 2) {
+                    const p3 = latLngTo3D(lat, lng, GR);
+                    const p2 = project(p3, globeAngle);
+                    if (p2.z < 0) continue;
+                    if (lat === -90) gx.moveTo(p2.x, p2.y);
+                    else gx.lineTo(p2.x, p2.y);
+                }
+                gx.strokeStyle = 'rgba(255,255,255,0.03)';
+                gx.lineWidth = 0.5;
+                gx.stroke();
+            }
+            // trails
+            trails.forEach(tr => {
+                tr.t += tr.speed;
+                if (tr.t > 1.4) tr.t = 0;
+                const t = Math.min(tr.t, 1);
+                const f3 = latLngTo3D(tr.from.lat, tr.from.lng, GR);
+                const to3 = latLngTo3D(tr.to.lat, tr.to.lng, GR);
+                const fp = project(f3, globeAngle);
+                const tp = project(to3, globeAngle);
+                if (fp.z < 0 || tp.z < 0) return;
+                // arc
+                const mx2 = (fp.x + tp.x) / 2, my2 = (fp.y + tp.y) / 2;
+                const dist = Math.hypot(tp.x - fp.x, tp.y - fp.y);
+                const cp = { x: mx2 + (my2 - GCY) * 0.3 * (-1), y: my2 - dist * 0.25 };
+                gx.beginPath();
+                gx.moveTo(fp.x, fp.y);
+                gx.quadraticCurveTo(cp.x, cp.y, tp.x, tp.y);
+                gx.strokeStyle = 'rgba(16,185,129,0.08)';
+                gx.lineWidth = 0.8;
+                gx.stroke();
+                // moving dot
+                if (t <= 1) {
+                    const tt = t;
+                    const bx = (1 - tt) * (1 - tt) * fp.x + 2 * (1 - tt) * tt * cp.x + tt * tt * tp.x;
+                    const by = (1 - tt) * (1 - tt) * fp.y + 2 * (1 - tt) * tt * cp.y + tt * tt * tp.y;
+                    gx.beginPath();
+                    gx.arc(bx, by, 2, 0, Math.PI * 2);
+                    gx.fillStyle = 'rgba(16,185,129,0.9)';
+                    gx.fill();
+                }
+            });
+            // cities
+            cities.forEach(c => {
+                const p3 = latLngTo3D(c.lat, c.lng, GR);
+                const p2 = project(p3, globeAngle);
+                if (p2.z < 0) return;
+                const isPrimary = c.primary;
+                gx.beginPath();
+                gx.arc(p2.x, p2.y, isPrimary ? 5 : 3, 0, Math.PI * 2);
+                gx.fillStyle = isPrimary ? '#10b981' : 'rgba(201,168,76,0.8)';
+                gx.fill();
+                if (isPrimary) {
+                    gx.beginPath();
+                    gx.arc(p2.x, p2.y, 10 + Math.sin(Date.now() * 0.003) * 4, 0, Math.PI * 2);
+                    gx.strokeStyle = 'rgba(16,185,129,0.3)';
+                    gx.lineWidth = 0.8;
+                    gx.stroke();
+                }
+                gx.font = '10px DM Mono, monospace';
+                gx.fillStyle = isPrimary ? 'rgba(16,185,129,0.9)' : 'rgba(240,237,232,0.5)';
+                gx.fillText(c.name, p2.x + 8, p2.y + 3);
+            });
+            globeAngle += 0.003;
+            requestAnimationFrame(drawGlobe);
+        }
+        drawGlobe();
+
+        // ─── NETWORK CANVAS ───────────────────────────────────────
+        const nc = document.getElementById('network-canvas');
+        const nx = nc.getContext('2d');
+        nc.width = Math.min(700, window.innerWidth - 120);
+        nc.height = 350;
+        const NW = nc.width, NH = nc.height;
+        const nodes = Array.from({ length: 28 }, (_, i) => ({
+            x: Math.random() * NW * 0.9 + NW * 0.05,
+            y: Math.random() * NH * 0.85 + NH * 0.08,
+            r: Math.random() * 3 + 1,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4
+        }));
+        let pulses = [];
+        setInterval(() => {
+            if (pulses.length < 8) {
+                const n = nodes[Math.floor(Math.random() * nodes.length)];
+                pulses.push({ x: n.x, y: n.y, r: 0, maxR: 60, a: 0.5 });
+            }
+        }, 800);
+        function drawNetwork() {
+            nx.clearRect(0, 0, NW, NH);
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > NW) n.vx *= -1;
+                if (n.y < 0 || n.y > NH) n.vy *= -1;
+            });
+            // connections
+            nodes.forEach((a, i) => {
+                nodes.slice(i + 1).forEach(b => {
+                    const d = Math.hypot(b.x - a.x, b.y - a.y);
+                    if (d < 140) {
+                        nx.beginPath();
+                        nx.moveTo(a.x, a.y);
+                        nx.lineTo(b.x, b.y);
+                        nx.strokeStyle = `rgba(16,185,129,${(1 - d / 140) * 0.2})`;
+                        nx.lineWidth = 0.5;
+                        nx.stroke();
+                    }
+                });
+            });
+            // pulses
+            pulses = pulses.filter(p => p.a > 0.01);
+            pulses.forEach(p => {
+                p.r += 1.2; p.a *= 0.96;
+                nx.beginPath();
+                nx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                nx.strokeStyle = `rgba(16,185,129,${p.a})`;
+                nx.lineWidth = 0.8;
+                nx.stroke();
+            });
+            // nodes
+            nodes.forEach(n => {
+                nx.beginPath();
+                nx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                nx.fillStyle = 'rgba(16,185,129,0.7)';
+                nx.fill();
+            });
+            requestAnimationFrame(drawNetwork);
+        }
+        drawNetwork();
+
+        // ─── AFRICA CANVAS ────────────────────────────────────────
+        const ac = document.getElementById('africa-canvas');
+        const ax = ac.getContext('2d');
+        ac.width = 400; ac.height = 480;
+        const AW = 400, AH = 480;
+        // Simplified Africa outline path points
+        const africaPts = [
+            [200, 20], [230, 30], [250, 50], [255, 80], [270, 100], [280, 130], [285, 160],
+            [290, 190], [295, 220], [290, 250], [285, 280], [270, 300], [260, 320], [270, 340],
+            [280, 360], [275, 380], [260, 395], [240, 405], [220, 415], [200, 420], [180, 415],
+            [160, 405], [140, 395], [125, 380], [120, 360], [130, 340], [140, 320], [130, 300],
+            [115, 280], [110, 250], [105, 220], [110, 190], [115, 160], [120, 130], [130, 100],
+            [145, 80], [150, 50], [170, 30], [200, 20]
+        ];
+        let glow = 0;
+        const nairobiPt = { x: 255, y: 260 };
+        const capitals = [
+            { x: 255, y: 260, name: 'Nairobi', primary: true },
+            { x: 180, y: 180, name: 'Lagos' },
+            { x: 210, y: 365, name: 'Johannesburg' },
+            { x: 240, y: 195, name: 'Kigali' },
+            { x: 160, y: 220, name: 'Accra' },
+        ];
+        let aTrails = capitals.slice(1).map(c => ({ from: nairobiPt, to: c, t: Math.random(), speed: 0.005 }));
+        function drawAfrica() {
+            ax.clearRect(0, 0, AW, AH);
+            glow = (glow + 0.02) % (Math.PI * 2);
+            // glow behind continent
+            const gl = ax.createRadialGradient(200, 250, 20, 200, 250, 200);
+            gl.addColorStop(0, `rgba(16,185,129,${0.06 + Math.sin(glow) * 0.02})`);
+            gl.addColorStop(1, 'rgba(0,0,0,0)');
+            ax.fillStyle = gl;
+            ax.fillRect(0, 0, AW, AH);
+            // Africa outline fill
+            ax.beginPath();
+            ax.moveTo(africaPts[0][0], africaPts[0][1]);
+            africaPts.slice(1).forEach(p => ax.lineTo(p[0], p[1]));
+            ax.closePath();
+            ax.fillStyle = 'rgba(16,185,129,0.04)';
+            ax.fill();
+            ax.strokeStyle = 'rgba(16,185,129,0.25)';
+            ax.lineWidth = 1;
+            ax.stroke();
+            // trails
+            aTrails.forEach(tr => {
+                tr.t = (tr.t + tr.speed) % 1.3;
+                const t = Math.min(tr.t, 1);
+                const mx2 = (tr.from.x + tr.to.x) / 2, my2 = (tr.from.y + tr.to.y) / 2;
+                const dist = Math.hypot(tr.to.x - tr.from.x, tr.to.y - tr.from.y);
+                const cp = { x: mx2, y: my2 - dist * 0.3 };
+                ax.beginPath();
+                ax.moveTo(tr.from.x, tr.from.y);
+                ax.quadraticCurveTo(cp.x, cp.y, tr.to.x, tr.to.y);
+                ax.strokeStyle = 'rgba(16,185,129,0.1)';
+                ax.lineWidth = 0.8;
+                ax.stroke();
+                if (t <= 1) {
+                    const bx = (1 - t) * (1 - t) * tr.from.x + 2 * (1 - t) * t * cp.x + t * t * tr.to.x;
+                    const by = (1 - t) * (1 - t) * tr.from.y + 2 * (1 - t) * t * cp.y + t * t * tr.to.y;
+                    ax.beginPath();
+                    ax.arc(bx, by, 2, 0, Math.PI * 2);
+                    ax.fillStyle = '#10b981';
+                    ax.fill();
+                }
+            });
+            // capitals
+            capitals.forEach(c => {
+                const pulse = Math.sin(glow + c.x * 0.1) * 3;
+                if (c.primary) {
+                    ax.beginPath();
+                    ax.arc(c.x, c.y, 12 + pulse, 0, Math.PI * 2);
+                    ax.strokeStyle = 'rgba(16,185,129,0.2)';
+                    ax.lineWidth = 0.8;
+                    ax.stroke();
+                    ax.beginPath();
+                    ax.arc(c.x, c.y, 6, 0, Math.PI * 2);
+                    ax.fillStyle = '#10b981';
+                    ax.fill();
+                } else {
+                    ax.beginPath();
+                    ax.arc(c.x, c.y, 3, 0, Math.PI * 2);
+                    ax.fillStyle = 'rgba(201,168,76,0.7)';
+                    ax.fill();
+                }
+                ax.font = '10px DM Mono, monospace';
+                ax.fillStyle = c.primary ? 'rgba(16,185,129,0.9)' : 'rgba(240,237,232,0.45)';
+                ax.fillText(c.name, c.x + 8, c.y + 3);
+            });
+            requestAnimationFrame(drawAfrica);
+        }
+        drawAfrica();
+
+        // ─── TIMELINE PROGRESS ────────────────────────────────────
+        const tpEl = document.getElementById('timeline-progress');
+        const tlSec = document.getElementById('s2');
+        window.addEventListener('scroll', () => {
+            const rect = tlSec.getBoundingClientRect();
+            const visible = (-rect.top) / (rect.height - window.innerHeight);
+            tpEl.style.height = Math.min(Math.max(visible * 100, 0), 100) + '%';
+        }, { passive: true });
+    </script>
+</body>
+
+</html>
