@@ -943,6 +943,55 @@
                                 d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
                     </a>
+                    <!-- The Call-To-Action Button -->
+                    <a href="research.html" class="terminal-cta-btn">
+                        <span class="btn-pulse"></span>
+                        <span class="btn-text">INITIALIZE RESEARCH INTEL ARCHIVE →</span>
+                    </a>
+
+                    <!-- Styling (Can be pasted into your master CSS file or a <style> tag) -->
+                    <style>
+                        .terminal-cta-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 12px;
+                            background-color: #0C0E12;
+                            /* Matches surface color */
+                            color: #10B981;
+                            /* Emerald accent */
+                            font-family: 'JetBrains Mono', monospace;
+                            font-size: 0.85rem;
+                            font-weight: 600;
+                            text-decoration: none;
+                            letter-spacing: 0.5px;
+                            padding: 14px 28px;
+                            border: 1px solid #1F2633;
+                            border-left: 4px solid #10B981;
+                            transition: all 0.2s ease-in-out;
+                            cursor: pointer;
+                        }
+
+                        .terminal-cta-btn:hover {
+                            background-color: #10B981;
+                            color: #060709;
+                            border-color: #10B981;
+                            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+                        }
+
+                        .btn-pulse {
+                            width: 6px;
+                            height: 6px;
+                            background-color: #10B981;
+                            border-radius: 50%;
+                            box-shadow: 0 0 8px #10B981;
+                            transition: all 0.2s ease-in-out;
+                        }
+
+                        .terminal-cta-btn:hover .btn-pulse {
+                            background-color: #060709;
+                            box-shadow: none;
+                        }
+                    </style>
                     <a href="#philosophy"
                         class="link-gold text-[9.5px] uppercase tracking-[.17em] text-brandGold/70 hover:text-brandGold transition-colors">Our
                         Philosophy →</a>
