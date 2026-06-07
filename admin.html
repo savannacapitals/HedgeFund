@@ -1526,7 +1526,10 @@
                     <div class="panel-title" style="color:var(--gold)">Execute Master Profit Allocation</div>
                     <div class="panel-sub">Distributes gains pro-rata &amp; computes performance retention</div>
                 </div>
-                <div class="pill pill-green">Target: 18.00% p.a.</div>
+                <div style="display:flex;gap:8px">
+                    <div class="pill pill-green">Mgmt: 2% p.a.</div>
+                    <div class="pill pill-gold">Perf: 20% of gains</div>
+                </div>
             </div>
             <div class="panel-body">
                 <form id="profitForm" onsubmit="allocateProfits(event)">
@@ -1966,23 +1969,69 @@
         async function allocateProfits(e) {
             e.preventDefault();
             const grossProfit = parseFloat(document.getElementById("grossProfit").value);
-            const feePercent = parseFloat(document.getElementById("managementFee").value) / 100;
+            const mgmtFeePercent = parseFloat(document.getElementById("managementFee").value) / 100;
+            const perfFeePercent = 0.20; // 20% performance fee
             const interval = document.getElementById("pacingInterval").value;
+
             if (!localInvestorsCache.length) { toast("error", "Allocation Error", "No active investor records."); return }
-            const fundCut = grossProfit * feePercent; const netDist = grossProfit - fundCut; let totalAUM = 0;
-            const parsed = localInvestorsCache.map(inv => { const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")) || 0; totalAUM += n; return { ...inv, numericNAV: n } });
+
+            // ── Fee waterfall ──
+            const mgmtCut = grossProfit * mgmtFeePercent;
+            const afterMgmt = grossProfit - mgmtCut;
+            const perfCut = afterMgmt * perfFeePercent;
+            const netDist = afterMgmt - perfCut;
+            const totalFundRetention = mgmtCut + perfCut;
+
+            let totalAUM = 0;
+            const parsed = localInvestorsCache.map(inv => {
+                const n = parseFloat((inv.nav || "").replace(/[^0-9.-]+/g, "")) || 0;
+                totalAUM += n;
+                return { ...inv, numericNAV: n }
+            });
+
             if (!totalAUM) { toast("error", "AUM Zero", "Cannot allocate with zero AUM."); return }
-            let returnLabel = "+1.50%"; if (interval === "week") returnLabel = "+0.346%"; if (interval === "spot") returnLabel = `+${((netDist / totalAUM) * 100).toFixed(2)}%`;
+
+            let returnLabel = "+1.50%";
+            if (interval === "week") returnLabel = "+0.346%";
+            if (interval === "spot") returnLabel = `+${((netDist / totalAUM) * 100).toFixed(2)}%`;
+
             let updated = 0;
             for (const inv of parsed) {
                 if (inv.email === "brian@savannacapital.com" || inv.email.includes("admin@")) continue;
-                const share = inv.numericNAV / totalAUM; const newNAV = inv.numericNAV + netDist * share; const navStr = "$" + newNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
-                try { const { error } = await db.from('investors').update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id); if (error) throw error; updated++ } catch (err) { console.error(err.message) }
+                const share = inv.numericNAV / totalAUM;
+                const newNAV = inv.numericNAV + netDist * share;
+                const navStr = "$" + newNAV.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                try {
+                    const { error } = await db.from('investors').update({ nav: navStr, monthly_return: returnLabel }).eq('id', inv.id);
+                    if (error) throw error;
+                    updated++;
+                } catch (err) { console.error(err.message) }
             }
-            try { const { error } = await db.from('corporate_revenue').insert([{ source_event: `Mgmt Fee (${(feePercent * 100).toFixed(1)}%) on $${grossProfit.toLocaleString()} gross`, amount: fundCut }]); if (error) throw error; fetchCorporateRevenue() } catch (err) { console.error(err.message) }
-            toast("success", "Allocation Complete", `Distributed $${grossProfit.toLocaleString()} · ${updated} nodes updated.`);
-            pushActivity("green", "Profit allocation executed", `$${grossProfit.toLocaleString()} · ${updated} investors · ${interval}`);
-            document.getElementById("profitForm").reset(); fetchLiveInvestors();
+
+            // ── Log both fees to corporate revenue ──
+            try {
+                await db.from('corporate_revenue').insert([
+                    {
+                        source_event: `Mgmt Fee (${(mgmtFeePercent * 100).toFixed(1)}%) on $${grossProfit.toLocaleString()} gross`,
+                        amount: mgmtCut
+                    },
+                    {
+                        source_event: `Perf Fee (20%) on $${afterMgmt.toLocaleString(undefined, { maximumFractionDigits: 2 })} net-of-mgmt`,
+                        amount: perfCut
+                    }
+                ]);
+                fetchCorporateRevenue();
+            } catch (err) { console.error(err.message) }
+
+            toast("success", "Allocation Complete",
+                `Gross $${grossProfit.toLocaleString()} · Mgmt $${mgmtCut.toLocaleString(undefined, { maximumFractionDigits: 2 })} · Perf $${perfCut.toLocaleString(undefined, { maximumFractionDigits: 2 })} · Net to investors $${netDist.toLocaleString(undefined, { maximumFractionDigits: 2 })} · ${updated} nodes updated.`
+            );
+            pushActivity("green", "Profit allocation executed",
+                `$${grossProfit.toLocaleString()} gross · 2% mgmt + 20% perf retained · ${updated} investors · ${interval}`
+            );
+
+            document.getElementById("profitForm").reset();
+            fetchLiveInvestors();
         }
 
         async function fetchCorporateRevenue() {
@@ -2228,20 +2277,20 @@
                 if (updErr) throw new Error("Status update: " + updErr.message);
 
                 // 3. Send welcome email via EmailJS
-               await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
-    to_email: rows.email,
-    to_name: rows.full_name,
-    client_name: rows.full_name,
-    passcode: passcode,
-    nav: startingNAV,
-    monthly_return: "+0.00%",
-    // Dummy values so template doesn't break
-    tier: "Investor",
-    amount: startingNAV,
-    amount_usd: "",
-    client_phone: "",
-    timestamp: new Date().toLocaleString()
-});
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
+                    to_email: rows.email,
+                    to_name: rows.full_name,
+                    client_name: rows.full_name,
+                    passcode: passcode,
+                    nav: startingNAV,
+                    monthly_return: "+0.00%",
+                    // Dummy values so template doesn't break
+                    tier: "Investor",
+                    amount: startingNAV,
+                    amount_usd: "",
+                    client_phone: "",
+                    timestamp: new Date().toLocaleString()
+                });
 
                 // 4. Refresh both panels + AUM
                 toast("success", "Investor Approved", `${rows.full_name} onboarded. Credentials sent to ${rows.email}.`);
