@@ -1679,6 +1679,29 @@
                 </div>
             </div>
         </div>
+        <!-- INVESTOR INTAKE PIPELINE -->
+        <div class="academy-section" style="margin-top:clamp(16px,3vw,24px)">
+            <div class="panel fade-in-section">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(52,211,153,.05),transparent);border-bottom-color:rgba(52,211,153,.12)">
+                    <div>
+                        <div class="panel-title" style="color:var(--emerald)">Investor Intake Pipeline</div>
+                        <div class="panel-sub">New access requests · Auto-onboarding engine</div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn-new" onclick="loadInvestorIntakes()"
+                            style="border-color:rgba(52,211,153,.3);color:var(--emerald)">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding-top:14px">
+                    <div class="table-wrap academy-scroll" id="intakePipelineWrapper">
+                        <p
+                            style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center">
+                            Loading intake requests…</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
 
@@ -1791,6 +1814,7 @@
             fetchCorporateRevenue();
             fetchInboundGoogleLeads();
             loadAcademyRequests();
+            loadInvestorIntakes();
             initScrollObserver();
             bindKeyboard();
             checkMobile();
@@ -2121,7 +2145,124 @@
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
         function escHtml(str) { return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
+        /* ══ INVESTOR INTAKE PIPELINE ══ */
+        async function loadInvestorIntakes() {
+            document.getElementById("intakePipelineWrapper").innerHTML =
+                `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center">
+        <span style="display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--emerald);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px"></span>
+        Fetching intake records…</p>`;
+            try {
+                const { data, error } = await db.from('investor_requests').select('*').order('submitted_at', { ascending: false });
+                if (error) throw error;
+                renderIntakePipeline(data || []);
+                // Update pending count in stats
+                const pending = (data || []).filter(r => r.status === 'pending').length;
+                document.getElementById("pendingIntakesCount").textContent = pending;
+                pushActivity("green", "Intake pipeline synced", `${(data || []).length} request(s) loaded.`);
+            } catch (err) {
+                document.getElementById("intakePipelineWrapper").innerHTML =
+                    `<p style="color:var(--red);font-family:'DM Mono',monospace;font-size:10px;padding:20px">// DB Error: ${escHtml(err.message)}</p>`;
+            }
+        }
 
+        function renderIntakePipeline(rows) {
+            const wrapper = document.getElementById("intakePipelineWrapper");
+            if (!rows.length) {
+                wrapper.innerHTML = `<p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:24px 0;text-align:center">// No intake requests found</p>`;
+                return;
+            }
+            const tableRows = rows.map(r => {
+                const date = new Date(r.submitted_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short', year: 'numeric' });
+                const statusBadge = r.status === 'pending'
+                    ? `<span class="badge badge-pending">PENDING</span>`
+                    : r.status === 'approved'
+                        ? `<span class="badge badge-approved">APPROVED</span>`
+                        : `<span class="badge badge-revoked">REJECTED</span>`;
+                const actions = r.status === 'pending'
+                    ? `<button class="btn-approve" onclick="approveInvestorIntake('${r.id}')">✓ Accept</button>
+               <button class="btn-reject" onclick="rejectInvestorIntake('${r.id}')">✕</button>`
+                    : `<span style="color:var(--muted2);font-family:'DM Mono',monospace;font-size:9px">— ${r.status} —</span>`;
+                return `<tr>
+            <td style="color:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:500">${escHtml(r.full_name)}</td>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px">${escHtml(r.email)}</td>
+            <td style="color:var(--emerald);font-family:'DM Mono',monospace;font-size:10px">${escHtml(r.capital_scale || '—')}</td>
+            <td>${statusBadge}</td>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:9px">${date}</td>
+            <td style="text-align:center;white-space:nowrap">${actions}</td>
+        </tr>`;
+            }).join('');
+            wrapper.innerHTML = `
+        <table class="inv-table" style="min-width:600px">
+            <thead><tr>
+                <th>Name</th><th>Email</th><th>Capital Scale</th>
+                <th>Status</th><th>Date</th><th class="center">Actions</th>
+            </tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>`;
+        }
+
+        async function approveInvestorIntake(id) {
+            if (!confirm("Approve this investor and send them their login credentials?")) return;
+
+            const { data: rows, error: fetchErr } = await db.from('investor_requests').select('*').eq('id', id).single();
+            if (fetchErr) { toast("error", "Fetch Error", fetchErr.message); return; }
+
+            const passcode = "SVN-" + Math.random().toString(36).substr(2, 5).toUpperCase() + "-" + Math.random().toString(36).substr(2, 4).toUpperCase();
+            const startingNAV = rows.capital_scale || "$0.00";
+
+            try {
+                // 1. Add to investors table
+                const { error: invErr } = await db.from('investors').insert([{
+                    client_name: rows.full_name,
+                    email: rows.email,
+                    passcode: passcode,
+                    nav: startingNAV,
+                    monthly_return: "+0.00%",
+                    sharpe_ratio: "—",
+                    exposure: "0%"
+                }]);
+                if (invErr) throw new Error("Investor insert: " + invErr.message);
+
+                // 2. Mark intake as approved
+                const { error: updErr } = await db.from('investor_requests').update({ status: 'approved' }).eq('id', id);
+                if (updErr) throw new Error("Status update: " + updErr.message);
+
+                // 3. Send welcome email via EmailJS
+               await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PAYMENT_TEMPLATE_ID, {
+    to_email: rows.email,
+    to_name: rows.full_name,
+    client_name: rows.full_name,
+    passcode: passcode,
+    nav: startingNAV,
+    monthly_return: "+0.00%",
+    // Dummy values so template doesn't break
+    tier: "Investor",
+    amount: startingNAV,
+    amount_usd: "",
+    client_phone: "",
+    timestamp: new Date().toLocaleString()
+});
+
+                // 4. Refresh both panels + AUM
+                toast("success", "Investor Approved", `${rows.full_name} onboarded. Credentials sent to ${rows.email}.`);
+                pushActivity("green", "Investor intake approved", `${rows.full_name} → added to investor matrix`);
+                loadInvestorIntakes();
+                fetchLiveInvestors();
+
+            } catch (err) {
+                toast("error", "Approval Error", err.message);
+            }
+        }
+
+        async function rejectInvestorIntake(id) {
+            const { data: rows } = await db.from('investor_requests').select('full_name').eq('id', id).single();
+            if (!confirm(`Reject intake request from ${rows?.full_name}?`)) return;
+            const { error } = await db.from('investor_requests').update({ status: 'rejected' }).eq('id', id);
+            if (error) { toast("error", "Error", error.message); return; }
+            toast("warning", "Request Rejected", rows?.full_name || id);
+            pushActivity("red", "Intake request rejected", rows?.full_name || id);
+            loadInvestorIntakes();
+        }
 
     </script>
 </body>

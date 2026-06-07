@@ -1686,7 +1686,68 @@
         function toggleModal(show) { const modal = document.getElementById('loginModal'); modal.classList.toggle('opacity-0', !show); modal.classList.toggle('invisible', !show); document.body.classList.toggle('overflow-hidden', show); }
         async function handleLogin(e) { e.preventDefault(); const ei = e.target.querySelector('input[type="email"]').value.trim().toLowerCase(), pi = e.target.querySelector('input[type="password"]').value, btn = e.target.querySelector('button[type="submit"]'); btn.querySelector('span').textContent = 'Verifying...'; btn.disabled = true; try { const { data: investors, error } = await supabaseClient.from('investors').select('*').eq('email', ei).eq('passcode', pi); if (error) throw error; if (investors && investors.length > 0) { const inv = investors[0]; sessionStorage.setItem("activeInvestorSession", JSON.stringify(inv)); window.location.href = (inv.email === "brian@savannacapital.com" || inv.email === "admin@savannacapital.com") ? "admin.html" : "dashboard.html"; } else { alert("ACCESS DENIED: Invalid credentials."); btn.querySelector('span').textContent = 'Initialize Session →'; btn.disabled = false; } } catch (err) { alert("Connection error. Please try again."); btn.querySelector('span').textContent = 'Initialize Session →'; btn.disabled = false; } }
         function toggleIntakeForm(show) { const im = document.getElementById('intakeModal'), lm = document.getElementById('loginModal'); if (show) { if (lm) lm.classList.add('opacity-0', 'invisible'); im.classList.remove('opacity-0', 'invisible'); im.classList.add('opacity-100'); } else { im.classList.remove('opacity-100'); im.classList.add('opacity-0', 'invisible'); } }
-        async function handleIntakeSubmission(e) { e.preventDefault(); const form = document.getElementById('accessRequestForm'), btn = form.querySelector('button[type="submit"]'); btn.innerText = "TRANSMITTING..."; btn.disabled = true; const GS = "https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec"; const payload = { apiKey: "savanna_private_key_2026", name: form.querySelector('input[name="fullName"]').value.trim(), email: form.querySelector('input[name="emailAddress"]').value.trim().toLowerCase(), phone: "N/A", organisation: "Savanna Private Investor Network", enquiryType: "Investor Enquiry", investmentRange: form.querySelector('input[name="capitalScale"]').value.trim(), message: "Automated Terminal Profile Request.", source: window.location.href }; try { await fetch(GS, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) }); alert("TRANSMISSION COMPLETE: Your request has been logged."); form.reset(); toggleIntakeForm(false); } catch (err) { alert("TRANSMISSION ERROR: Please try again."); } finally { btn.innerText = "Transmit Request ➔"; btn.disabled = false; } }
+        async function handleIntakeSubmission(e) {
+            e.preventDefault();
+            const form = document.getElementById('accessRequestForm');
+            const btn = form.querySelector('button[type="submit"]');
+            btn.innerText = "TRANSMITTING...";
+            btn.disabled = true;
+
+            const fullName = form.querySelector('input[name="fullName"]').value.trim();
+            const emailAddress = form.querySelector('input[name="emailAddress"]').value.trim().toLowerCase();
+            const capitalScale = form.querySelector('input[name="capitalScale"]').value.trim();
+
+            try {
+                // ── 1. INSERT INTO SUPABASE ──────────────────────────────
+                const { error } = await supabaseClient
+                    .from('investor_requests')
+                    .insert([{
+                        full_name: fullName,
+                        email: emailAddress,
+                        capital_scale: capitalScale,
+                        status: 'pending',
+                        submitted_at: new Date().toISOString()
+                    }]);
+
+                if (error) throw new Error('Supabase error: ' + error.message);
+
+                // ── 2. SEND TO GOOGLE SHEETS (your existing script) ──────
+                const GS = "https://script.google.com/macros/s/AKfycbxamSxysYQ5iPT3ZUBRAsw18nYkV80erC8jZtmJl1xypB5JGtILCpENkN5QnmDjmnQZ0A/exec";
+                const payload = {
+                    apiKey: "savanna_private_key_2026",
+                    name: fullName,
+                    email: emailAddress,
+                    phone: "N/A",
+                    organisation: "Savanna Private Investor Network",
+                    enquiryType: "Investor Enquiry",
+                    investmentRange: capitalScale,
+                    message: "Automated Terminal Profile Request.",
+                    source: window.location.href
+                };
+                await fetch(GS, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+
+                // ── 3. EMAIL NOTIFICATION VIA SUPABASE EDGE FUNCTION ─────
+                await supabaseClient.functions.invoke('notify-new-investor', {
+                    body: { name: fullName, email: emailAddress, capitalScale }
+                });
+
+                alert("TRANSMISSION COMPLETE: Your request has been logged.");
+                form.reset();
+                toggleIntakeForm(false);
+
+            } catch (err) {
+                console.error(err);
+                alert("TRANSMISSION ERROR: " + err.message);
+            } finally {
+                btn.innerText = "Transmit Request ➔";
+                btn.disabled = false;
+            }
+        }
     </script>
 </body>
 
