@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academy Oversight | Savanna Command</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #03050A;
+            --bg2: #080C14;
+            --card: #0B0F1A;
+            --card2: #0F1420;
+            --border: rgba(255, 255, 255, .06);
+            --border2: rgba(255, 255, 255, .03);
+            --gold: #C8A96E;
+            --gold-dim: #8B7340;
+            --emerald: #34D399;
+            --red: #F87171;
+            --violet: #A78BFA;
+            --amber: #F59E0B;
+            --cyan: #22D3EE;
+            --text: #D4CECC;
+            --muted: #5A6070;
+            --muted2: #3A3F4C;
+            --nav-h: 56px;
+            --hk-h: 40px;
+            --px: clamp(14px, 4vw, 28px)
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 300;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased
+        }
+
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted2);
+            border-radius: 2px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: .5
+        }
+
+        .glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(140px);
+            pointer-events: none;
+            z-index: 0
+        }
+
+        .g1 {
+            top: -180px;
+            left: -80px;
+            width: 500px;
+            height: 500px;
+            background: rgba(167, 139, 250, .04)
+        }
+
+        .g2 {
+            bottom: -180px;
+            right: -80px;
+            width: 500px;
+            height: 500px;
+            background: rgba(34, 211, 238, .025)
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: var(--nav-h);
+            background: rgba(3, 5, 10, .94);
+            backdrop-filter: blur(24px) saturate(1.5);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--px);
+            animation: slideDown .5s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-56px);
+                opacity: 0
+            }
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .nav-logo svg {
+            width: 24px;
+            height: 24px;
+            color: var(--violet);
+            flex-shrink: 0
+        }
+
+        .nav-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: .12em;
+            color: #fff;
+            text-transform: uppercase
+        }
+
+        .nav-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .18em;
+            color: var(--violet);
+            text-transform: uppercase;
+            opacity: .85
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 2vw, 18px)
+        }
+
+        .nav-back {
+            font-family: 'DM Mono', monospace;
+            font-size: 8.5px;
+            color: var(--muted);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            transition: color .2s, border-color .2s
+        }
+
+        .nav-back:hover {
+            color: var(--gold);
+            border-color: rgba(200, 169, 110, .3)
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--emerald);
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, .5);
+            animation: pulse 2s infinite;
+            flex-shrink: 0
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, .5)
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(52, 211, 153, 0)
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0)
+            }
+        }
+
+        .live-badge {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--emerald);
+            letter-spacing: .14em;
+            text-transform: uppercase
+        }
+
+        main {
+            padding: calc(var(--nav-h) + 22px) var(--px) calc(var(--hk-h) + 22px);
+            max-width: 1700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1
+        }
+
+        .page-header {
+            margin-bottom: clamp(22px, 4vw, 34px);
+            animation: fadeUp .6s .15s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(28px, 5vw, 40px);
+            font-weight: 300;
+            letter-spacing: .04em;
+            color: #fff;
+            line-height: 1
+        }
+
+        .page-header h1 em {
+            font-style: italic;
+            color: var(--violet)
+        }
+
+        .page-header p {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7px, 1.5vw, 9px);
+            letter-spacing: .2em;
+            color: var(--muted);
+            margin-top: 6px;
+            text-transform: uppercase;
+            line-height: 1.6
+        }
+
+        .header-rule {
+            width: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--violet), transparent);
+            margin-top: 12px
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(8px, 1.8vw, 12px);
+            margin-bottom: clamp(16px, 3vw, 22px);
+            animation: fadeUp .6s .25s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @media(min-width:640px) {
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        @media(min-width:1100px) {
+            .stats-row {
+                grid-template-columns: repeat(6, 1fr)
+            }
+        }
+
+        .scard {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: clamp(12px, 2.5vw, 18px) clamp(14px, 3vw, 20px);
+            position: relative;
+            overflow: hidden;
+            transition: border-color .3s, transform .25s
+        }
+
+        .scard::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            opacity: 0;
+            transition: opacity .3s
+        }
+
+        .scard:hover {
+            transform: translateY(-2px)
+        }
+
+        .scard.v::after {
+            background: linear-gradient(90deg, transparent, var(--violet), transparent)
+        }
+
+        .scard.g::after {
+            background: linear-gradient(90deg, transparent, var(--emerald), transparent)
+        }
+
+        .scard.go::after {
+            background: linear-gradient(90deg, transparent, var(--gold), transparent)
+        }
+
+        .scard.a::after {
+            background: linear-gradient(90deg, transparent, var(--amber), transparent)
+        }
+
+        .scard.c::after {
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent)
+        }
+
+        .scard.r::after {
+            background: linear-gradient(90deg, transparent, var(--red), transparent)
+        }
+
+        .scard:hover {
+            border-color: rgba(255, 255, 255, .1)
+        }
+
+        .scard:hover::after {
+            opacity: 1
+        }
+
+        .sc-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .18em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            line-height: 1.4
+        }
+
+        .sc-val {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(16px, 3vw, 22px);
+            font-weight: 400;
+            line-height: 1;
+            color: #fff
+        }
+
+        .sc-val.v {
+            color: var(--violet)
+        }
+
+        .sc-val.g {
+            color: var(--emerald)
+        }
+
+        .sc-val.go {
+            color: var(--gold)
+        }
+
+        .sc-val.a {
+            color: var(--amber)
+        }
+
+        .sc-val.c {
+            color: var(--cyan)
+        }
+
+        .sc-val.r {
+            color: var(--red)
+        }
+
+        .sc-delta {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            margin-top: 6px;
+            color: var(--muted)
+        }
+
+        .sc-delta.up {
+            color: var(--emerald)
+        }
+
+        .sc-delta.dn {
+            color: var(--red)
+        }
+
+        /* ── PANEL ── */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden
+        }
+
+        .panel-head {
+            padding: clamp(14px, 2.5vw, 18px) clamp(16px, 3vw, 22px);
+            border-bottom: 1px solid var(--border2);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .panel-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(14px, 2.5vw, 16px);
+            font-weight: 400;
+            letter-spacing: .06em;
+            color: #fff;
+            text-transform: uppercase
+        }
+
+        .panel-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-top: 2px
+        }
+
+        .panel-body {
+            padding: clamp(14px, 3vw, 20px)
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        /* ── GRIDS ── */
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(12px, 2vw, 16px);
+            margin-bottom: clamp(12px, 2vw, 16px);
+            animation: fadeUp .6s .35s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @media(min-width:1100px) {
+            .top-grid {
+                grid-template-columns: 1fr 340px
+            }
+        }
+
+        .bot-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(12px, 2vw, 16px);
+            animation: fadeUp .6s .45s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @media(min-width:900px) {
+            .bot-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(min-width:1300px) {
+            .bot-grid {
+                grid-template-columns: 1fr 1fr 340px
+            }
+        }
+
+        /* ── Balance Edit Panel (new dedicated section) ── */
+        .balance-panel-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(12px, 2vw, 16px);
+            margin-bottom: clamp(12px, 2vw, 16px);
+            animation: fadeUp .6s .55s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @media(min-width:900px) {
+            .balance-panel-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(min-width:1300px) {
+            .balance-panel-grid {
+                grid-template-columns: 1.6fr 1fr
+            }
+        }
+
+        /* Student quick-select for balance edit */
+        .student-picker {
+            width: 100%;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 9px 12px;
+            outline: none;
+            transition: border-color .2s;
+            appearance: none;
+            cursor: pointer;
+            margin-bottom: 12px
+        }
+
+        .student-picker:focus {
+            border-color: rgba(34, 211, 238, .4)
+        }
+
+        .student-picker option {
+            background: #0F1420
+        }
+
+        .balance-display {
+            background: rgba(34, 211, 238, .03);
+            border: 1px solid rgba(34, 211, 238, .1);
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px
+        }
+
+        .bd-item .bd-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 5px
+        }
+
+        .bd-item .bd-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: #fff
+        }
+
+        .bd-item .bd-val.cyan {
+            color: var(--cyan)
+        }
+
+        .bd-item .bd-val.gold {
+            color: var(--gold)
+        }
+
+        .bd-item .bd-val.pos {
+            color: var(--emerald)
+        }
+
+        .bd-item .bd-val.neg {
+            color: var(--red)
+        }
+
+        .adjustment-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px
+        }
+
+        .adj-mode-btns {
+            display: flex;
+            gap: 0;
+            margin-bottom: 12px;
+            border: 1px solid var(--border)
+        }
+
+        .adj-mode-btn {
+            flex: 1;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            padding: 7px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all .2s
+        }
+
+        .adj-mode-btn.active {
+            background: rgba(34, 211, 238, .1);
+            color: var(--cyan)
+        }
+
+        .diff-preview {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 9px 12px;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border2);
+            margin-bottom: 12px;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .diff-arrow {
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        /* ── INPUTS / BUTTONS ── */
+        .search-inp {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            padding: 7px 12px;
+            outline: none;
+            transition: border-color .2s;
+            width: clamp(130px, 22vw, 200px)
+        }
+
+        .search-inp::placeholder {
+            color: var(--muted)
+        }
+
+        .search-inp:focus {
+            border-color: rgba(167, 139, 250, .35)
+        }
+
+        .btn-sm {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: 5px 11px;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all .2s;
+            background: none;
+            white-space: nowrap
+        }
+
+        .btn-violet {
+            color: var(--violet);
+            border-color: rgba(167, 139, 250, .3)
+        }
+
+        .btn-violet:hover {
+            background: rgba(167, 139, 250, .1)
+        }
+
+        .btn-gold {
+            color: var(--gold);
+            border-color: rgba(200, 169, 110, .3)
+        }
+
+        .btn-gold:hover {
+            background: rgba(200, 169, 110, .08)
+        }
+
+        .btn-red {
+            color: var(--muted2);
+            border-color: transparent
+        }
+
+        .btn-red:hover {
+            color: var(--red)
+        }
+
+        .btn-green {
+            color: var(--emerald);
+            border-color: rgba(52, 211, 153, .25)
+        }
+
+        .btn-green:hover {
+            background: rgba(52, 211, 153, .08)
+        }
+
+        .btn-amber {
+            color: var(--amber);
+            border-color: rgba(245, 158, 11, .25)
+        }
+
+        .btn-amber:hover {
+            background: rgba(245, 158, 11, .08)
+        }
+
+        .btn-cyan {
+            color: var(--cyan);
+            border-color: rgba(34, 211, 238, .25)
+        }
+
+        .btn-cyan:hover {
+            background: rgba(34, 211, 238, .08)
+        }
+
+        /* ── TABLES ── */
+        .lb-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 540px
+        }
+
+        .lb-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 8px 10px 0;
+            font-weight: 400;
+            text-align: left;
+            white-space: nowrap
+        }
+
+        .lb-table thead th.right {
+            text-align: right
+        }
+
+        .lb-table tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .lb-table tbody tr:hover {
+            background: rgba(255, 255, 255, .012)
+        }
+
+        .lb-table tbody td {
+            padding: 11px 8px 11px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px
+        }
+
+        .lb-table tbody td.right {
+            text-align: right
+        }
+
+        .pos {
+            color: var(--emerald)
+        }
+
+        .neg {
+            color: var(--red)
+        }
+
+        .flat {
+            color: var(--muted)
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500
+        }
+
+        .rank-1 {
+            color: var(--gold)
+        }
+
+        .rank-2 {
+            color: rgba(200, 169, 110, .65)
+        }
+
+        .rank-3 {
+            color: rgba(200, 169, 110, .45)
+        }
+
+        .rank-n {
+            color: var(--muted)
+        }
+
+        .ret-bar-wrap {
+            width: 70px;
+            height: 3px;
+            background: rgba(255, 255, 255, .04);
+            display: inline-block;
+            vertical-align: middle
+        }
+
+        .ret-bar {
+            height: 100%;
+            transition: width .8s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .ret-bar.pos {
+            background: var(--emerald)
+        }
+
+        .ret-bar.neg {
+            background: var(--red)
+        }
+
+        .tr-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 460px
+        }
+
+        .tr-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 0 10px;
+            font-weight: 400;
+            text-align: left;
+            white-space: nowrap
+        }
+
+        .tr-table tbody tr {
+            border-bottom: 1px solid var(--border2)
+        }
+
+        .tr-table tbody td {
+            padding: 9px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--text)
+        }
+
+        .side-buy {
+            color: var(--emerald)
+        }
+
+        .side-sell {
+            color: var(--red)
+        }
+
+        .badge-open {
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, .25);
+            background: rgba(245, 158, 11, .06);
+            padding: 2px 7px;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase
+        }
+
+        .badge-closed {
+            color: var(--muted);
+            border: 1px solid var(--border2);
+            padding: 2px 7px;
+            font-size: 8px;
+            letter-spacing: .1em;
+            text-transform: uppercase
+        }
+
+        .op-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 480px
+        }
+
+        .op-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 8px 10px 0;
+            font-weight: 400;
+            text-align: left;
+            white-space: nowrap
+        }
+
+        .op-table thead th.right {
+            text-align: right
+        }
+
+        .op-table tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .op-table tbody tr:hover {
+            background: rgba(255, 255, 255, .012)
+        }
+
+        .op-table tbody td {
+            padding: 10px 8px 10px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px
+        }
+
+        .scroll-area {
+            overflow-y: auto;
+            max-height: clamp(280px, 42vh, 420px)
+        }
+
+        .scroll-sm {
+            overflow-y: auto;
+            max-height: clamp(240px, 38vh, 360px)
+        }
+
+        .tw {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        /* ── TABS ── */
+        .tab-strip {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid var(--border2);
+            margin-bottom: 14px
+        }
+
+        .tab-strip::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            padding: 8px 14px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-bottom: -1px
+        }
+
+        .tab-btn.active {
+            color: var(--violet);
+            border-bottom-color: var(--violet)
+        }
+
+        /* ── FEED ── */
+        .feed-item {
+            display: flex;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border2)
+        }
+
+        .feed-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px
+        }
+
+        .fd-green {
+            background: var(--emerald)
+        }
+
+        .fd-violet {
+            background: var(--violet)
+        }
+
+        .fd-red {
+            background: var(--red)
+        }
+
+        .fd-amber {
+            background: var(--amber)
+        }
+
+        .fd-gold {
+            background: var(--gold)
+        }
+
+        .fd-cyan {
+            background: var(--cyan)
+        }
+
+        .feed-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--text);
+            line-height: 1.5
+        }
+
+        .feed-time {
+            font-size: 9px;
+            color: var(--muted)
+        }
+
+        /* ── HOTKEY BAR ── */
+        .hkbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            background: rgba(3, 5, 10, .92);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            padding: 7px var(--px);
+            display: flex;
+            gap: clamp(12px, 3vw, 24px);
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+            min-height: var(--hk-h)
+        }
+
+        .hkbar::-webkit-scrollbar {
+            display: none
+        }
+
+        .hk {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0
+        }
+
+        .hk-key {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: var(--text);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        .hk-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .1em
+        }
+
+        .hk.d-only {
+            display: none
+        }
+
+        @media(min-width:700px) {
+            .hk.d-only {
+                display: flex
+            }
+        }
+
+        /* ── TOAST ── */
+        #toast-c {
+            position: fixed;
+            bottom: clamp(50px, 8vh, 60px);
+            right: clamp(12px, 3vw, 20px);
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .toast {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            padding: 11px 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            min-width: 230px;
+            max-width: 320px;
+            animation: toastIn .3s cubic-bezier(.16, 1, .3, 1) both;
+            position: relative
+        }
+
+        .toast.closing {
+            animation: toastOut .25s ease both
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(16px)
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(16px)
+            }
+        }
+
+        .toast-title {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 2px
+        }
+
+        .toast-body {
+            color: var(--muted)
+        }
+
+        .toast-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            animation: toastBar 3.2s linear both
+        }
+
+        @keyframes toastBar {
+            from {
+                width: 100%
+            }
+
+            to {
+                width: 0%
+            }
+        }
+
+        /* ── MISC ── */
+        .empty {
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            padding: 24px 0;
+            text-align: center
+        }
+
+        .cohort-select {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            padding: 5px 10px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color .2s;
+            appearance: none
+        }
+
+        .cohort-select:focus {
+            border-color: rgba(167, 139, 250, .35)
+        }
+
+        .cohort-select option {
+            background: #0F1420
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: 2px solid rgba(255, 255, 255, .1);
+            border-top-color: var(--violet);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px
+        }
+
+        /* ── MODALS ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(3, 5, 10, .92);
+            backdrop-filter: blur(18px);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: clamp(12px, 4vw, 24px);
+            overflow-y: auto
+        }
+
+        .modal-overlay.open {
+            display: flex
+        }
+
+        .modal-box {
+            background: var(--card2);
+            border: 1px solid rgba(167, 139, 250, .2);
+            width: 100%;
+            max-width: 760px;
+            margin: auto;
+            animation: modalIn .35s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.96) translateY(10px)
+            }
+        }
+
+        .modal-head {
+            padding: clamp(16px, 3vw, 20px) clamp(18px, 4vw, 24px);
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(167, 139, 250, .06), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px
+        }
+
+        .modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(15px, 3vw, 18px);
+            font-weight: 400;
+            letter-spacing: .06em;
+            color: #fff;
+            text-transform: uppercase
+        }
+
+        .modal-close {
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            transition: color .2s;
+            flex-shrink: 0
+        }
+
+        .modal-close:hover {
+            color: var(--red)
+        }
+
+        .modal-body {
+            padding: clamp(16px, 3vw, 24px)
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        @media(min-width:560px) {
+            .modal-stats {
+                grid-template-columns: repeat(4, 1fr)
+            }
+        }
+
+        .m-stat {
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            padding: 12px 14px
+        }
+
+        .m-stat .ms-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        .m-stat .ms-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 16px;
+            color: #fff
+        }
+
+        .ms-val.green {
+            color: var(--emerald)
+        }
+
+        .ms-val.gold {
+            color: var(--gold)
+        }
+
+        .ms-val.violet {
+            color: var(--violet)
+        }
+
+        .ms-val.red {
+            color: var(--red)
+        }
+
+        .modal-section-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border2)
+        }
+
+        .modal-box.danger {
+            border-color: rgba(248, 113, 113, .25)
+        }
+
+        .modal-head.danger {
+            background: linear-gradient(135deg, rgba(248, 113, 113, .06), transparent)
+        }
+
+        .modal-box.balance {
+            border-color: rgba(34, 211, 238, .2);
+            max-width: 420px
+        }
+
+        .modal-head.balance {
+            background: linear-gradient(135deg, rgba(34, 211, 238, .06), transparent)
+        }
+
+        /* ── FORM ── */
+        .form-field {
+            margin-bottom: 14px
+        }
+
+        .form-field label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 7px
+        }
+
+        .form-field input,
+        .form-field select {
+            width: 100%;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            padding: 9px 12px;
+            outline: none;
+            transition: border-color .2s;
+            border-radius: 0;
+            appearance: none
+        }
+
+        .form-field input:focus,
+        .form-field select:focus {
+            border-color: rgba(167, 139, 250, .4)
+        }
+
+        .form-field select option {
+            background: #0F1420
+        }
+
+        .warn-box {
+            background: rgba(248, 113, 113, .06);
+            border: 1px solid rgba(248, 113, 113, .2);
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--red);
+            line-height: 1.8
+        }
+
+        .info-box {
+            background: rgba(34, 211, 238, .04);
+            border: 1px solid rgba(34, 211, 238, .15);
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--cyan);
+            line-height: 1.8
+        }
+
+        .btn-full {
+            width: 100%;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            border: none;
+            padding: 13px;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s
+        }
+
+        .btn-full:hover:not(:disabled) {
+            transform: translateY(-1px)
+        }
+
+        .btn-full:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
+
+        .btn-full.violet {
+            background: linear-gradient(135deg, #A78BFA, #7C5FD4);
+            color: #fff
+        }
+
+        .btn-full.violet:hover:not(:disabled) {
+            box-shadow: 0 8px 24px rgba(167, 139, 250, .25)
+        }
+
+        .btn-full.red {
+            background: linear-gradient(135deg, #F87171, #EF4444);
+            color: #fff
+        }
+
+        .btn-full.red:hover:not(:disabled) {
+            box-shadow: 0 8px 24px rgba(248, 113, 113, .25)
+        }
+
+        .btn-full.cyan {
+            background: linear-gradient(135deg, #22D3EE, #0891B2);
+            color: #05080d
+        }
+
+        .btn-full.cyan:hover:not(:disabled) {
+            box-shadow: 0 8px 24px rgba(34, 211, 238, .2)
+        }
+
+        .hint {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 10px;
+            line-height: 1.6
+        }
+
+        .balance-current {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border2);
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .balance-current .bc-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            letter-spacing: .14em;
+            text-transform: uppercase
+        }
+
+        .balance-current .bc-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: var(--cyan)
+        }
+
+        /* Section divider label */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: clamp(12px, 2vw, 16px);
+            margin-top: clamp(20px, 3vw, 28px);
+            animation: fadeUp .6s .5s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        .section-divider span {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            white-space: nowrap
+        }
+
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-brand">
+            <div class="nav-logo">
+                <svg viewBox="0 0 100 100" fill="currentColor">
+                    <path
+                        d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+                </svg>
+            </div>
+            <div>
+                <div class="nav-title">Academy</div>
+                <div class="nav-sub">Student Performance Oversight</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="pulse-dot"></div>
+            <div class="live-badge">Live</div>
+            <a href="admin.html" class="nav-back">← Command</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Student <em>Oversight</em></h1>
+            <p>Live portfolio tracking · Leaderboard · Trade audit · Balance management · Capital reset · Cohort
+                management</p>
+            <div class="header-rule"></div>
+        </div>
+
+        <!-- STATS (counters fixed) -->
+        <div class="stats-row">
+            <div class="scard v">
+                <div class="sc-label">Enrolled Students</div>
+                <div class="sc-val v" id="statEnrolled">—</div>
+                <div class="sc-delta" id="statEnrolledDelta">Across all cohorts</div>
+            </div>
+            <div class="scard g">
+                <div class="sc-label">Total Trades Placed</div>
+                <div class="sc-val g" id="statTrades">—</div>
+                <div class="sc-delta up" id="statTradesDelta">All time</div>
+            </div>
+            <div class="scard go">
+                <div class="sc-label">Avg Portfolio Return</div>
+                <div class="sc-val go" id="statAvgReturn">—</div>
+                <div class="sc-delta" id="statAvgReturnDelta">vs starting capital</div>
+            </div>
+            <div class="scard a">
+                <div class="sc-label">Open Positions</div>
+                <div class="sc-val a" id="statOpenPos">—</div>
+                <div class="sc-delta">Currently held</div>
+            </div>
+            <div class="scard c">
+                <div class="sc-label">Top Student Return</div>
+                <div class="sc-val c" id="statTopReturn">—</div>
+                <div class="sc-delta" id="statTopName">—</div>
+            </div>
+            <div class="scard r">
+                <div class="sc-label">In Drawdown</div>
+                <div class="sc-val r" id="statDrawdown">—</div>
+                <div class="sc-delta">Portfolio below start</div>
+            </div>
+        </div>
+
+        <!-- TOP GRID: Leaderboard + Activity Feed -->
+        <div class="top-grid">
+            <div class="panel">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(167,139,250,.05),transparent);border-bottom-color:rgba(167,139,250,.1)">
+                    <div>
+                        <div class="panel-title" style="color:var(--violet)">Live Leaderboard</div>
+                        <div class="panel-sub">Ranked by total return · Click row to drill down</div>
+                    </div>
+                    <div class="panel-actions">
+                        <select class="cohort-select" id="cohortFilter" onchange="filterByCohort(this.value)">
+                            <option value="all">All Cohorts</option>
+                        </select>
+                        <input type="text" class="search-inp" id="lbSearch" placeholder="Search…"
+                            oninput="filterLeaderboard(this.value)" />
+                        <button class="btn-sm btn-violet" onclick="loadAll()">↻ Refresh</button>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding-top:12px">
+                    <div class="tw scroll-area" id="leaderboardWrap">
+                        <div class="empty"><span class="spinner"></span>Loading leaderboard…</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="height:fit-content">
+                <div class="panel-head">
+                    <div>
+                        <div class="panel-title">Activity Feed</div>
+                        <div class="panel-sub">Real-time events</div>
+                    </div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)" id="feedCount">—</div>
+                </div>
+                <div class="panel-body" style="padding-top:12px">
+                    <div class="scroll-sm" id="activityFeed">
+                        <div class="empty">Initialising…</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BALANCE MANAGEMENT SECTION -->
+        <div class="section-divider"><span>Balance Management</span></div>
+        <div class="balance-panel-grid">
+
+            <!-- Quick Balance Editor -->
+            <div class="panel">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(34,211,238,.05),transparent);border-bottom-color:rgba(34,211,238,.1)">
+                    <div>
+                        <div class="panel-title" style="color:var(--cyan)">Quick Balance Editor</div>
+                        <div class="panel-sub">Select a student · set new balance or apply adjustment</div>
+                    </div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)"
+                        id="balancePanelStatus">No student selected</div>
+                </div>
+                <div class="panel-body">
+                    <!-- Student selector -->
+                    <div
+                        style="margin-bottom:4px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
+                        Select Student</div>
+                    <select class="student-picker" id="quickBalancePicker" onchange="onPickerChange(this.value)">
+                        <option value="">— Choose a student —</option>
+                    </select>
+
+                    <!-- Live stats display -->
+                    <div class="balance-display" id="quickBalanceDisplay" style="display:none">
+                        <div class="bd-item">
+                            <div class="bd-label">Cash Balance</div>
+                            <div class="bd-val cyan" id="qb_cash">—</div>
+                        </div>
+                        <div class="bd-item">
+                            <div class="bd-label">Portfolio Value</div>
+                            <div class="bd-val gold" id="qb_portfolio">—</div>
+                        </div>
+                        <div class="bd-item">
+                            <div class="bd-label">Return</div>
+                            <div class="bd-val" id="qb_return">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Mode: Set / Increase / Decrease -->
+                    <div
+                        style="margin-bottom:6px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
+                        Adjustment Mode</div>
+                    <div class="adj-mode-btns" id="adjModeBtns">
+                        <button class="adj-mode-btn active" data-mode="set" onclick="setAdjMode('set',this)">Set
+                            Exact</button>
+                        <button class="adj-mode-btn" data-mode="add" onclick="setAdjMode('add',this)">Add Funds</button>
+                        <button class="adj-mode-btn" data-mode="sub" onclick="setAdjMode('sub',this)">Deduct
+                            Funds</button>
+                    </div>
+
+                    <div class="adjustment-row">
+                        <div class="form-field" style="margin-bottom:0">
+                            <label id="adjAmountLabel">New Cash Balance (KES)</label>
+                            <input type="number" id="adjAmount" placeholder="e.g. 120000" min="0" step="1000"
+                                oninput="updateQuickDiff()" />
+                        </div>
+                        <div class="form-field" style="margin-bottom:0">
+                            <label>Reason / Note</label>
+                            <input type="text" id="adjNote" placeholder="e.g. bonus, correction…" />
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="diff-preview" id="quickDiffPreview">
+                        <span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview
+                            the change.</span>
+                    </div>
+
+                    <button class="btn-full cyan" id="quickSaveBtn" onclick="saveQuickBalance()" disabled>Apply Balance
+                        Change →</button>
+                    <p class="hint">Changes are reflected immediately in the leaderboard and logged to the activity
+                        feed.</p>
+                </div>
+            </div>
+
+            <!-- Bulk Reset Panel -->
+            <div class="panel" style="height:fit-content">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(245,158,11,.04),transparent);border-bottom-color:rgba(245,158,11,.08)">
+                    <div>
+                        <div class="panel-title" style="color:var(--amber)">Capital Reset</div>
+                        <div class="panel-sub">Close all positions & restart a student's portfolio</div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div
+                        style="margin-bottom:4px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
+                        Select Student</div>
+                    <select class="student-picker" id="resetPicker" onchange="onResetPickerChange(this.value)"
+                        style="border-color:rgba(245,158,11,.2)">
+                        <option value="">— Choose a student —</option>
+                    </select>
+                    <div class="form-field">
+                        <label>New Starting Capital (KES)</label>
+                        <input type="number" id="resetCapitalPanel" value="100000" min="1000" step="1000" />
+                    </div>
+                    <div class="form-field">
+                        <label>Confirm by typing student username</label>
+                        <input type="text" id="resetConfirmPanel" placeholder="username"
+                            oninput="checkResetPanelConfirm()" />
+                    </div>
+                    <div class="warn-box" style="margin-bottom:12px">⚠ Closes all open positions and wipes trade
+                        history. Cannot be undone.</div>
+                    <button class="btn-full red" id="resetPanelBtn" onclick="confirmPanelReset()" disabled>Confirm
+                        Capital Reset →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOT GRID: Trades + Positions + Enrol -->
+        <div class="section-divider"><span>Trades & Positions</span></div>
+        <div class="bot-grid">
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <div class="panel-title">Trade Audit Log</div>
+                        <div class="panel-sub">All student trades · <span id="tradeCountLabel">—</span> records</div>
+                    </div>
+                    <div class="panel-actions">
+                        <div class="tab-strip" style="border:none;margin:0">
+                            <button class="tab-btn active" onclick="switchTradeTab('all',this)">All</button>
+                            <button class="tab-btn" onclick="switchTradeTab('open',this)">Open</button>
+                            <button class="tab-btn" onclick="switchTradeTab('closed',this)">Closed</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding-top:12px">
+                    <div class="tw scroll-area" id="tradesWrap">
+                        <div class="empty"><span class="spinner"></span>Loading trades…</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(245,158,11,.04),transparent);border-bottom-color:rgba(245,158,11,.08)">
+                    <div>
+                        <div class="panel-title" style="color:var(--amber)">Open Positions Monitor</div>
+                        <div class="panel-sub">All students · live</div>
+                    </div>
+                    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)" id="openPosCount">—
+                        positions</div>
+                </div>
+                <div class="panel-body" style="padding-top:12px">
+                    <div class="tw scroll-area" id="openPosWrap">
+                        <div class="empty"><span class="spinner"></span>Loading positions…</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrol Student -->
+            <div class="panel" style="height:fit-content">
+                <div class="panel-head"
+                    style="background:linear-gradient(135deg,rgba(52,211,153,.04),transparent);border-bottom-color:rgba(52,211,153,.08)">
+                    <div>
+                        <div class="panel-title" style="color:var(--emerald)">Enrol Student</div>
+                        <div class="panel-sub">Add directly from admin</div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-field"><label>Full Name</label><input type="text" id="enrolName"
+                            placeholder="Jane Wanjiru" /></div>
+                    <div class="form-field"><label>Email</label><input type="email" id="enrolEmail"
+                            placeholder="jane@email.com" /></div>
+                    <div class="form-field"><label>Username</label><input type="text" id="enrolUsername"
+                            placeholder="Auto-generated or custom" /></div>
+                    <div class="form-field"><label>Cohort</label><input type="text" id="enrolCohort"
+                            placeholder="e.g. Cohort 1" /></div>
+                    <div class="form-field"><label>Starting Capital (KES)</label><input type="number" id="enrolCapital"
+                            value="100000" min="1000" step="1000" /></div>
+                    <button class="btn-full violet" onclick="enrolStudent()">Enrol & Create Account →</button>
+                    <p class="hint">Student receives a generated password. Share credentials manually or via the Academy
+                        Clearance Desk.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- HOTKEY BAR -->
+    <div class="hkbar">
+        <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh</span></div>
+        <div class="hk"><span class="hk-key">E</span><span class="hk-label">Enrol</span></div>
+        <div class="hk"><span class="hk-key">B</span><span class="hk-label">Balance Editor</span></div>
+        <div class="hk"><span class="hk-key">Esc</span><span class="hk-label">Close modal</span></div>
+        <div class="hk d-only"><span class="hk-key">← Back</span><span class="hk-label">Command Centre</span></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <div class="pulse-dot" style="width:5px;height:5px"></div>
+            <span
+                style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase">Live</span>
+        </div>
+    </div>
+
+    <div id="toast-c"></div>
+
+    <!-- ══ STUDENT DETAIL MODAL ══ -->
+    <div id="studentModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div>
+                    <div class="modal-title" id="modalStudentName">Student</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--violet);letter-spacing:.14em;text-transform:uppercase;margin-top:3px"
+                        id="modalStudentMeta">—</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <button class="btn-sm btn-cyan" onclick="jumpToBalanceEditor(currentStudentId)">✎ Edit
+                        Balance</button>
+                    <button class="btn-sm btn-amber" onclick="jumpToResetPanel(currentStudentId)">↺ Reset
+                        Capital</button>
+                    <button class="modal-close" onclick="closeStudentModal()">✕</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-stats" id="modalStats"></div>
+                <div class="modal-section-title">Trade History</div>
+                <div class="tw" style="max-height:280px;overflow-y:auto" id="modalTradesWrap">
+                    <div class="empty">Loading…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ── Config ── */
+        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allPortfolios = [];
+        let allTrades = [];
+        let openTrades = [];
+        let totalTradeCount = 0;   // true count from separate query
+        let currentTradeTab = 'all';
+        let currentStudentId = null;
+
+        // balance panel state
+        let adjMode = 'set';
+        let quickTargetId = null;
+
+        // reset panel state
+        let resetPanelTargetId = null;
+        let resetPanelTargetUsername = null;
+
+        /* ── Init ── */
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAll();
+            bindKeys();
+            pushFeed("violet", "Oversight terminal loaded", "Academy dashboard initialised.");
+            setInterval(loadOpenPositions, 15000);
+        });
+
+        async function loadAll() {
+            await Promise.all([loadPortfolios(), loadTrades(), loadOpenPositions(), loadTotalTradeCount()]);
+        }
+
+        /* ══════════════════════════════════════════════
+           TRADE COUNT — separate query for accurate total
+        ══════════════════════════════════════════════ */
+        async function loadTotalTradeCount() {
+            try {
+                const { count, error } = await db.from('student_trades')
+                    .select('*', { count: 'exact', head: true });
+                if (error) throw error;
+                totalTradeCount = count || 0;
+                document.getElementById("statTrades").textContent = totalTradeCount.toLocaleString('en-KE');
+                document.getElementById("statTradesDelta").textContent =
+                    totalTradeCount === 1 ? "1 trade all time" : `${totalTradeCount.toLocaleString('en-KE')} trades all time`;
+            } catch (err) {
+                // fallback: use allTrades.length
+            }
+        }
+
+        /* ══════════════════════════════════════════════
+           PORTFOLIOS / LEADERBOARD
+        ══════════════════════════════════════════════ */
+        async function loadPortfolios() {
+            try {
+                const { data, error } = await db.from('student_portfolios')
+                    .select('*').order('return_pct', { ascending: false });
+                if (error) throw error;
+                allPortfolios = data || [];
+                buildCohortFilter();
+                buildStudentPickers();
+                renderLeaderboard(allPortfolios);
+                calcStats();
+                pushFeed("violet", "Leaderboard synced", `${allPortfolios.length} portfolio(s) loaded.`);
+            } catch (err) {
+                document.getElementById("leaderboardWrap").innerHTML =
+                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+            }
+        }
+
+        function buildCohortFilter() {
+            const sel = document.getElementById("cohortFilter");
+            const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
+            const current = sel.value;
+            sel.innerHTML = '<option value="all">All Cohorts</option>' +
+                cohorts.map(c => `<option value="${escHtml(c)}" ${current === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('');
+        }
+
+        function buildStudentPickers() {
+            const opts = '<option value="">— Choose a student —</option>' +
+                allPortfolios.map(p =>
+                    `<option value="${p.id}">${escHtml(p.name || p.username || p.id)} · @${escHtml(p.username || '')} (KES ${(Number(p.cash_balance) || 0).toLocaleString('en-KE', { maximumFractionDigits: 0 })})</option>`
+                ).join('');
+            document.getElementById("quickBalancePicker").innerHTML = opts;
+            document.getElementById("resetPicker").innerHTML = opts;
+        }
+
+        function calcStats() {
+            const total = allPortfolios.length;
+            document.getElementById("statEnrolled").textContent = total;
+            const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
+            document.getElementById("statEnrolledDelta").textContent =
+                cohorts.length ? cohorts.join(', ') : 'No cohorts yet';
+
+            if (!total) return;
+
+            const returns = allPortfolios.map(p => Number(p.return_pct) || 0);
+            const avg = returns.reduce((a, b) => a + b, 0) / total;
+            // best is index 0 — already sorted desc by return_pct from Supabase
+            const best = allPortfolios[0];
+            const drawdown = allPortfolios.filter(p => (Number(p.return_pct) || 0) < 0).length;
+
+            const avgEl = document.getElementById("statAvgReturn");
+            avgEl.textContent = (avg >= 0 ? "+" : "") + avg.toFixed(2) + "%";
+            avgEl.className = "sc-val " + (avg > 0 ? "g" : avg < 0 ? "r" : "go");
+
+            const topRet = Number(best.return_pct) || 0;
+            document.getElementById("statTopReturn").textContent = (topRet >= 0 ? "+" : "") + topRet.toFixed(2) + "%";
+            document.getElementById("statTopName").textContent = best.name || best.username || "—";
+            document.getElementById("statDrawdown").textContent = drawdown;
+        }
+
+        function renderLeaderboard(portfolios) {
+            const wrap = document.getElementById("leaderboardWrap");
+            if (!portfolios.length) {
+                wrap.innerHTML = `<div class="empty">No student portfolios found.</div>`;
+                return;
+            }
+            // Sort by return_pct descending for correct rank assignment
+            const sorted = [...portfolios].sort((a, b) => (Number(b.return_pct) || 0) - (Number(a.return_pct) || 0));
+            const maxAbs = Math.max(...sorted.map(p => Math.abs(Number(p.return_pct) || 0)), 1);
+
+            const rows = sorted.map((p, i) => {
+                const rank = i + 1;
+                const ret = Number(p.return_pct) || 0;
+                const rankCls = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-n";
+                const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "";
+                const barW = Math.abs(ret) / maxAbs * 100;
+                const retCls = ret > 0 ? "pos" : ret < 0 ? "neg" : "flat";
+                const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
+                const bal = Number(p.cash_balance) || 0;
+                const startCap = Number(p.starting_capital) || 100000;
+                // Recalculate return % live from actual values for display accuracy
+                const calcRet = startCap > 0 ? ((pv - startCap) / startCap * 100) : ret;
+                const displayRet = calcRet;
+                const displayRetCls = displayRet > 0 ? "pos" : displayRet < 0 ? "neg" : "flat";
+                const displayBarW = Math.abs(displayRet) / maxAbs * 100;
+
+                return `<tr style="cursor:pointer" onclick="openStudentModal('${p.id}')">
+                    <td><span class="rank-badge ${rankCls}">${medal || "#" + rank}</span></td>
+                    <td style="color:#fff;font-weight:500">${escHtml(p.name || p.username || "—")}</td>
+                    <td style="color:var(--muted);font-size:10px">${escHtml(p.username || "—")}</td>
+                    <td style="color:var(--muted);font-size:10px">${escHtml(p.cohort || "—")}</td>
+                    <td style="color:var(--gold)">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                    <td style="color:var(--cyan);font-size:10px">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                    <td><div class="ret-bar-wrap"><div class="ret-bar ${displayRetCls}" style="width:${displayBarW}%"></div></div></td>
+                    <td class="right ${displayRetCls}" style="font-weight:500">${displayRet >= 0 ? "+" : ""}${displayRet.toFixed(2)}%</td>
+                    <td style="text-align:right;white-space:nowrap">
+                        <button class="btn-sm btn-cyan" style="font-size:7px;padding:3px 7px" onclick="event.stopPropagation();jumpToBalanceEditor('${p.id}')">✎</button>
+                        <button class="btn-sm btn-amber" style="font-size:7px;padding:3px 7px;margin-left:3px" onclick="event.stopPropagation();jumpToResetPanel('${p.id}')">↺</button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            wrap.innerHTML = `<table class="lb-table">
+                <thead><tr>
+                    <th style="width:28px">#</th><th>Name</th><th>Username</th><th>Cohort</th>
+                    <th>Portfolio</th><th>Cash Balance</th><th style="width:80px">Return</th>
+                    <th class="right">%</th><th class="right">Actions</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        function filterLeaderboard(q) {
+            q = q.toLowerCase();
+            const cohort = document.getElementById("cohortFilter").value;
+            let filtered = allPortfolios;
+            if (cohort !== 'all') filtered = filtered.filter(p => p.cohort === cohort);
+            if (q) filtered = filtered.filter(p =>
+                (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
+            renderLeaderboard(filtered);
+        }
+
+        function filterByCohort(cohort) {
+            const q = document.getElementById("lbSearch").value.toLowerCase();
+            let filtered = allPortfolios;
+            if (cohort !== 'all') filtered = filtered.filter(p => p.cohort === cohort);
+            if (q) filtered = filtered.filter(p =>
+                (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
+            renderLeaderboard(filtered);
+        }
+
+        /* ══════════════════════════════════════════════
+           TRADES
+        ══════════════════════════════════════════════ */
+        async function loadTrades() {
+            try {
+                const { data, error } = await db.from('student_trades').select('*')
+                    .order('created_at', { ascending: false }).limit(200);
+                if (error) throw error;
+                allTrades = data || [];
+                // update trade count label with note about 200 cap
+                const tradeLabel = document.getElementById("tradeCountLabel");
+                if (tradeLabel) tradeLabel.textContent = allTrades.length >= 200 ? "200+ (latest)" : allTrades.length;
+                renderTrades(currentTradeTab);
+                pushFeed("green", "Trade log synced", `${allTrades.length} trade(s) in view.`);
+            } catch (err) {
+                document.getElementById("tradesWrap").innerHTML =
+                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+            }
+        }
+
+        function switchTradeTab(tab, el) {
+            currentTradeTab = tab;
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            el.classList.add("active");
+            renderTrades(tab);
+        }
+
+        function renderTrades(filter) {
+            const wrap = document.getElementById("tradesWrap");
+            const trades = filter === 'all' ? allTrades : allTrades.filter(t => t.status === filter);
+            if (!trades.length) {
+                wrap.innerHTML = `<div class="empty">No ${filter === 'all' ? '' : filter + ' '}trades found.</div>`;
+                return;
+            }
+            const rows = trades.slice(0, 100).map(t => {
+                const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
+                const pnlKES = (t.pnl || 0) * 130;
+                const pnlCls = pnlKES >= 0 ? "pos" : "neg";
+                return `<tr>
+                    <td style="color:#fff;font-size:10px">${escHtml(t.username || "—")}</td>
+                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                    <td style="color:var(--muted)">${(t.quantity || 0).toFixed(4)}</td>
+                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                    <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status || "—"}</span></td>
+                    <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+                    <td style="color:var(--muted);font-size:9px">${dt}</td>
+                </tr>`;
+            }).join('');
+            wrap.innerHTML = `<table class="tr-table">
+                <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Qty</th><th>Lev</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        /* ══════════════════════════════════════════════
+           OPEN POSITIONS
+        ══════════════════════════════════════════════ */
+        async function loadOpenPositions() {
+            try {
+                const { data, error } = await db.from('student_trades').select('*')
+                    .eq('status', 'open').order('created_at', { ascending: false });
+                if (error) throw error;
+                openTrades = data || [];
+                document.getElementById("statOpenPos").textContent = openTrades.length;
+                document.getElementById("openPosCount").textContent =
+                    openTrades.length + " position" + (openTrades.length !== 1 ? "s" : "");
+                renderOpenPositions();
+                pushFeed("amber", "Open positions loaded", `${openTrades.length} active.`);
+            } catch (err) {
+                document.getElementById("openPosWrap").innerHTML =
+                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+            }
+        }
+
+        function renderOpenPositions() {
+            const wrap = document.getElementById("openPosWrap");
+            if (!openTrades.length) {
+                wrap.innerHTML = `<div class="empty">No open positions across any student.</div>`;
+                return;
+            }
+            const rows = openTrades.map(t => {
+                const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
+                const marginKES = Number(t.margin_kes) || 0;
+                return `<tr>
+                    <td style="color:#fff">${escHtml(t.username || "—")}</td>
+                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                    <td style="color:var(--gold)">KES ${marginKES.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                    <td style="color:var(--muted);font-size:9px">${dt}</td>
+                </tr>`;
+            }).join('');
+            wrap.innerHTML = `<table class="op-table">
+                <thead><tr>
+                    <th>Student</th><th>Symbol</th><th>Side</th><th>Lev</th>
+                    <th>Entry</th><th>Margin (KES)</th><th>Opened</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        /* ══════════════════════════════════════════════
+           QUICK BALANCE EDITOR (inline panel)
+        ══════════════════════════════════════════════ */
+        function setAdjMode(mode, el) {
+            adjMode = mode;
+            document.querySelectorAll(".adj-mode-btn").forEach(b => b.classList.remove("active"));
+            el.classList.add("active");
+            const labels = { set: "New Cash Balance (KES)", add: "Amount to Add (KES)", sub: "Amount to Deduct (KES)" };
+            document.getElementById("adjAmountLabel").textContent = labels[mode];
+            document.getElementById("adjAmount").value = "";
+            updateQuickDiff();
+        }
+
+        function onPickerChange(portfolioId) {
+            quickTargetId = portfolioId || null;
+            const p = allPortfolios.find(x => x.id === portfolioId);
+            const display = document.getElementById("quickBalanceDisplay");
+            const status = document.getElementById("balancePanelStatus");
+            const btn = document.getElementById("quickSaveBtn");
+
+            if (!p) {
+                display.style.display = "none";
+                status.textContent = "No student selected";
+                btn.disabled = true;
+                document.getElementById("quickDiffPreview").innerHTML =
+                    `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`;
+                return;
+            }
+
+            const bal = Number(p.cash_balance) || 0;
+            const pv = Number(p.portfolio_value) || bal;
+            const ret = Number(p.return_pct) || 0;
+
+            display.style.display = "grid";
+            status.textContent = p.name || p.username || "Student";
+            document.getElementById("qb_cash").textContent = "KES " + bal.toLocaleString('en-KE', { maximumFractionDigits: 0 });
+            document.getElementById("qb_portfolio").textContent = "KES " + pv.toLocaleString('en-KE', { maximumFractionDigits: 0 });
+            const retEl = document.getElementById("qb_return");
+            retEl.textContent = (ret >= 0 ? "+" : "") + ret.toFixed(2) + "%";
+            retEl.className = "bd-val " + (ret > 0 ? "pos" : ret < 0 ? "neg" : "");
+
+            document.getElementById("adjAmount").value = "";
+            updateQuickDiff();
+        }
+
+        function updateQuickDiff() {
+            const p = allPortfolios.find(x => x.id === quickTargetId);
+            const el = document.getElementById("quickDiffPreview");
+            const btn = document.getElementById("quickSaveBtn");
+
+            if (!p) {
+                el.innerHTML = `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`;
+                btn.disabled = true;
+                return;
+            }
+
+            const inputVal = parseFloat(document.getElementById("adjAmount").value);
+            if (isNaN(inputVal) || inputVal < 0) {
+                el.innerHTML = `<span style="color:var(--muted);font-size:9px">Enter a valid amount above.</span>`;
+                btn.disabled = true;
+                return;
+            }
+
+            const oldBal = Number(p.cash_balance) || 0;
+            let newBal;
+            if (adjMode === 'set') newBal = inputVal;
+            else if (adjMode === 'add') newBal = oldBal + inputVal;
+            else newBal = Math.max(0, oldBal - inputVal);
+
+            const diff = newBal - oldBal;
+            const startCap = Number(p.starting_capital) || 100000;
+            const newReturn = startCap > 0 ? ((newBal - startCap) / startCap * 100) : 0;
+
+            const diffStr = diff === 0 ? "No change"
+                : (diff > 0 ? `<span style="color:var(--emerald)">▲ +KES ${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`
+                    : `<span style="color:var(--red)">▼ -KES ${Math.abs(diff).toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`);
+
+            el.innerHTML = `
+                <span style="color:var(--muted);font-size:10px">KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+                <span class="diff-arrow">→</span>
+                <span style="color:#fff;font-size:12px">KES ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+                <span style="margin-left:8px;font-size:10px">${diffStr}</span>
+                <span style="margin-left:auto;font-size:9px;color:var(--muted)">Return: <span style="color:${newReturn >= 0 ? 'var(--emerald)' : 'var(--red)'}">${newReturn >= 0 ? '+' : ''}${newReturn.toFixed(2)}%</span></span>`;
+
+            btn.disabled = (diff === 0);
+        }
+
+        async function saveQuickBalance() {
+            if (!quickTargetId) return;
+            const p = allPortfolios.find(x => x.id === quickTargetId);
+            if (!p) return;
+
+            const inputVal = parseFloat(document.getElementById("adjAmount").value);
+            if (isNaN(inputVal) || inputVal < 0) {
+                toast("error", "Invalid Amount", "Enter a valid non-negative number.");
+                return;
+            }
+
+            const oldBal = Number(p.cash_balance) || 0;
+            let newBal;
+            if (adjMode === 'set') newBal = inputVal;
+            else if (adjMode === 'add') newBal = oldBal + inputVal;
+            else newBal = Math.max(0, oldBal - inputVal);
+
+            const note = document.getElementById("adjNote").value.trim() || "Admin balance adjustment";
+            const btn = document.getElementById("quickSaveBtn");
+            btn.textContent = "Saving…"; btn.disabled = true;
+
+            try {
+                const startCap = Number(p.starting_capital) || 100000;
+                const newReturn = startCap > 0 ? ((newBal - startCap) / startCap * 100) : 0;
+
+                const { error } = await db.from('student_portfolios').update({
+                    cash_balance: newBal,
+                    portfolio_value: newBal,
+                    return_pct: newReturn
+                }).eq('id', quickTargetId);
+                if (error) throw error;
+
+                const diff = newBal - oldBal;
+                const modeLabel = adjMode === 'add' ? 'Funds added' : adjMode === 'sub' ? 'Funds deducted' : 'Balance set';
+                toast("success", "Balance Updated",
+                    `${p.name || p.username} → KES ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} (${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })})`);
+                pushFeed("cyan", modeLabel,
+                    `${p.name || p.username}: KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} → ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} · ${note}`);
+
+                document.getElementById("adjAmount").value = "";
+                await loadPortfolios();
+                // Re-select same student so display refreshes
+                onPickerChange(quickTargetId);
+
+            } catch (err) {
+                toast("error", "Save Error", err.message);
+            }
+            btn.textContent = "Apply Balance Change →"; btn.disabled = false;
+        }
+
+        /* ══════════════════════════════════════════════
+           RESET PANEL (inline, no modal)
+        ══════════════════════════════════════════════ */
+        function onResetPickerChange(portfolioId) {
+            resetPanelTargetId = portfolioId || null;
+            const p = allPortfolios.find(x => x.id === portfolioId);
+            resetPanelTargetUsername = p ? p.username : null;
+            document.getElementById("resetConfirmPanel").value = "";
+            document.getElementById("resetPanelBtn").disabled = true;
+        }
+
+        function checkResetPanelConfirm() {
+            const val = document.getElementById("resetConfirmPanel").value;
+            document.getElementById("resetPanelBtn").disabled =
+                (!resetPanelTargetId || val !== resetPanelTargetUsername);
+        }
+
+        async function confirmPanelReset() {
+            if (!resetPanelTargetId) return;
+            const newCapital = parseFloat(document.getElementById("resetCapitalPanel").value);
+            if (!newCapital || newCapital < 1000) { toast("error", "Invalid Capital", "Minimum KES 1,000."); return; }
+            const btn = document.getElementById("resetPanelBtn");
+            btn.textContent = "Resetting…"; btn.disabled = true;
+            try {
+                const p = allPortfolios.find(x => x.id === resetPanelTargetId);
+                await db.from('student_trades')
+                    .update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 })
+                    .eq('user_id', p.user_id).eq('status', 'open');
+                await db.from('student_portfolios').update({
+                    cash_balance: newCapital, starting_capital: newCapital,
+                    portfolio_value: newCapital, return_pct: 0, total_trades: 0,
+                }).eq('id', resetPanelTargetId);
+                toast("success", "Capital Reset", `${p.name || p.username} reset to KES ${newCapital.toLocaleString('en-KE')}.`);
+                pushFeed("amber", "Capital reset", `${p.name || p.username} → KES ${newCapital.toLocaleString('en-KE')}`);
+                // Clear panel
+                document.getElementById("resetPicker").value = "";
+                document.getElementById("resetConfirmPanel").value = "";
+                resetPanelTargetId = null; resetPanelTargetUsername = null;
+                btn.disabled = true;
+                loadAll();
+            } catch (err) {
+                toast("error", "Reset Error", err.message);
+                btn.textContent = "Confirm Capital Reset →"; btn.disabled = false;
+            }
+        }
+
+        /* ══════════════════════════════════════════════
+           JUMP-TO helpers (from leaderboard row actions)
+        ══════════════════════════════════════════════ */
+        function jumpToBalanceEditor(portfolioId) {
+            // Close modal if open
+            document.getElementById("studentModal").classList.remove("open");
+            currentStudentId = null;
+            // Pre-select student in balance panel
+            const picker = document.getElementById("quickBalancePicker");
+            picker.value = portfolioId;
+            onPickerChange(portfolioId);
+            // Scroll to balance panel
+            document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            toast("info", "Balance Editor", "Student loaded into balance editor.");
+        }
+
+        function jumpToResetPanel(portfolioId) {
+            document.getElementById("studentModal").classList.remove("open");
+            currentStudentId = null;
+            const picker = document.getElementById("resetPicker");
+            picker.value = portfolioId;
+            onResetPickerChange(portfolioId);
+            document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            toast("info", "Reset Panel", "Student loaded into reset panel.");
+        }
+
+        /* ══════════════════════════════════════════════
+           STUDENT DETAIL MODAL
+        ══════════════════════════════════════════════ */
+        async function openStudentModal(portfolioId) {
+            currentStudentId = portfolioId;
+            const p = allPortfolios.find(x => x.id === portfolioId);
+            if (!p) return;
+            document.getElementById("modalStudentName").textContent = p.name || p.username || "Student";
+            document.getElementById("modalStudentMeta").textContent =
+                (p.cohort || "No cohort") + " · @" + (p.username || "—");
+
+            const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
+            const bal = Number(p.cash_balance) || 0;
+            const startCap = Number(p.starting_capital) || 100000;
+            // Recalculate return from live values
+            const ret = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
+
+            document.getElementById("modalStats").innerHTML = `
+                <div class="m-stat"><div class="ms-label">Portfolio Value</div><div class="ms-val green">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+                <div class="m-stat"><div class="ms-label">Cash Balance</div><div class="ms-val gold">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+                <div class="m-stat"><div class="ms-label">Total Return</div><div class="ms-val ${ret > 0 ? 'green' : ret < 0 ? 'red' : ''}">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</div></div>
+                <div class="m-stat"><div class="ms-label">Starting Capital</div><div class="ms-val violet">KES ${startCap.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+            `;
+            document.getElementById("studentModal").classList.add("open");
+
+            const modalWrap = document.getElementById("modalTradesWrap");
+            modalWrap.innerHTML = `<div class="empty"><span class="spinner"></span>Loading…</div>`;
+            try {
+                const { data } = await db.from('student_trades').select('*')
+                    .eq('user_id', p.user_id).order('created_at', { ascending: false }).limit(50);
+                const trades = data || [];
+                if (!trades.length) { modalWrap.innerHTML = `<div class="empty">No trades yet.</div>`; return; }
+                const rows = trades.map(t => {
+                    const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
+                    const pnlKES = (t.pnl || 0) * 130;
+                    const pnlCls = pnlKES >= 0 ? "pos" : "neg";
+                    return `<tr>
+                        <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                        <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                        <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                        <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                        <td>${(t.quantity || 0).toFixed(4)}</td>
+                        <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status}</span></td>
+                        <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+                        <td style="color:var(--muted);font-size:9px">${dt}</td>
+                    </tr>`;
+                }).join('');
+                modalWrap.innerHTML = `<table class="tr-table">
+                    <thead><tr><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Qty</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+            } catch (err) {
+                modalWrap.innerHTML = `<div class="empty" style="color:var(--red)">Error: ${escHtml(err.message)}</div>`;
+            }
+        }
+
+        function closeStudentModal() {
+            document.getElementById("studentModal").classList.remove("open");
+            currentStudentId = null;
+        }
+
+        /* ══════════════════════════════════════════════
+           ENROL STUDENT
+        ══════════════════════════════════════════════ */
+        async function enrolStudent() {
+            const name = document.getElementById("enrolName").value.trim();
+            const email = document.getElementById("enrolEmail").value.trim().toLowerCase();
+            const uInput = document.getElementById("enrolUsername").value.trim().toLowerCase();
+            const cohort = document.getElementById("enrolCohort").value.trim();
+            const capital = parseFloat(document.getElementById("enrolCapital").value);
+            if (!name || !email) { toast("error", "Missing Fields", "Name and email are required."); return; }
+            if (!capital || capital < 1000) { toast("error", "Invalid Capital", "Minimum KES 1,000."); return; }
+            const username = uInput || generateUsername(name);
+            const rawPass = generatePassword();
+            const hash = await hashSHA256(rawPass);
+            try {
+                const { data: ar, error: arErr } = await db.from('access_requests').insert([{
+                    name, email, username, password_hash: hash,
+                    status: 'approved', role: 'student', cohort,
+                    tier: 'student', amount_kes: capital,
+                    approved_at: new Date().toISOString(), requested_at: new Date().toISOString()
+                }]).select().single();
+                if (arErr) throw new Error("Access request: " + arErr.message);
+                const { error: pErr } = await db.from('student_portfolios').insert([{
+                    user_id: ar.id, username, name, cohort,
+                    cash_balance: capital, starting_capital: capital,
+                    portfolio_value: capital, return_pct: 0, total_trades: 0,
+                }]);
+                if (pErr) throw new Error("Portfolio: " + pErr.message);
+                toast("success", "Student Enrolled", `${name} · @${username} · Pass: ${rawPass}`);
+                pushFeed("green", "Student enrolled", `${name} → @${username} (${cohort || "no cohort"})`);
+                ["enrolName", "enrolEmail", "enrolUsername", "enrolCohort"].forEach(id =>
+                    document.getElementById(id).value = "");
+                document.getElementById("enrolCapital").value = 100000;
+                loadAll();
+            } catch (err) { toast("error", "Enrol Error", err.message); }
+        }
+
+        /* ══════════════════════════════════════════════
+           ACTIVITY FEED
+        ══════════════════════════════════════════════ */
+        let feedCount = 0;
+        function pushFeed(color, title, detail) {
+            const feed = document.getElementById("activityFeed");
+            const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
+            const el = document.createElement("div");
+            el.className = "feed-item";
+            el.innerHTML = `<div class="feed-dot fd-${color}"></div>
+                <div><div class="feed-text">${escHtml(title)}</div>
+                <div class="feed-time">${now} · ${escHtml(detail)}</div></div>`;
+            const ph = feed.querySelector(".empty"); if (ph) ph.remove();
+            feed.insertBefore(el, feed.firstChild);
+            while (feed.children.length > 25) feed.removeChild(feed.lastChild);
+            feedCount++;
+            document.getElementById("feedCount").textContent =
+                feedCount + " event" + (feedCount !== 1 ? "s" : "");
+        }
+
+        /* ══════════════════════════════════════════════
+           KEYBOARD
+        ══════════════════════════════════════════════ */
+        function bindKeys() {
+            document.addEventListener("keydown", e => {
+                if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+                if (e.key === "r" || e.key === "R") { e.preventDefault(); loadAll(); toast("info", "Refreshed", "All data reloaded."); }
+                if (e.key === "e" || e.key === "E") { e.preventDefault(); document.getElementById("enrolName").focus(); }
+                if (e.key === "b" || e.key === "B") {
+                    e.preventDefault();
+                    document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById("quickBalancePicker").focus();
+                }
+                if (e.key === "Escape") closeStudentModal();
+            });
+        }
+
+        /* ══════════════════════════════════════════════
+           UTILS
+        ══════════════════════════════════════════════ */
+        function generateUsername(fullName) {
+            const parts = fullName.trim().toLowerCase().split(/\s+/);
+            const base = (parts[0] + (parts[1] ? parts[1][0] : '')).replace(/[^a-z0-9]/g, '');
+            return base + Math.floor(Math.random() * 900 + 100);
+        }
+        function generatePassword() {
+            const U = 'ABCDEFGHJKLMNPQRSTUVWXYZ', L = 'abcdefghjkmnpqrstuvwxyz', D = '23456789', S = '@#$!%*', A = U + L + D + S;
+            let pw = U[~~(Math.random() * U.length)] + L[~~(Math.random() * L.length)] + D[~~(Math.random() * D.length)] + S[~~(Math.random() * S.length)];
+            for (let i = 0; i < 8; i++)pw += A[~~(Math.random() * A.length)];
+            return pw.split('').sort(() => Math.random() - .5).join('');
+        }
+        async function hashSHA256(str) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        function escHtml(s) {
+            return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function toast(type, title, body) {
+            const c = { success: "var(--emerald)", error: "var(--red)", warning: "var(--amber)", info: "var(--violet)" };
+            const ic = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
+            const el = document.createElement("div"); el.className = "toast";
+            el.innerHTML = `<div style="color:${c[type]};font-size:12px;flex-shrink:0;margin-top:1px">${ic[type]}</div>
+                <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
+                <div class="toast-bar" style="background:${c[type]}"></div>`;
+            document.getElementById("toast-c").appendChild(el);
+            setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300); }, 3500);
+        }
+    </script>
+</body>
+
+</html>

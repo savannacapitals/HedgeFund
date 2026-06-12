@@ -154,6 +154,12 @@
             text-transform: uppercase;
         }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .nav-link {
             font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
@@ -170,6 +176,18 @@
             color: var(--gold);
             border-color: var(--gold);
             background: var(--gold-dim);
+        }
+
+        .nav-link.terminal {
+            color: var(--sage-lt);
+            border-color: rgba(111, 173, 128, 0.3);
+            background: rgba(77, 122, 90, 0.08);
+        }
+
+        .nav-link.terminal:hover {
+            color: #fff;
+            border-color: var(--sage-lt);
+            background: var(--sage);
         }
 
         .nav-hamburger {
@@ -676,6 +694,103 @@
             background: var(--gold-lt);
         }
 
+        /* TRADING TERMINAL BANNER */
+        .terminal-banner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 52px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .terminal-banner-inner {
+            background: var(--bg2);
+            border: 1px solid rgba(111, 173, 128, 0.25);
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-banner-inner::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--sage-lt);
+        }
+
+        .terminal-banner-inner::after {
+            content: '';
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(77, 122, 90, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .terminal-banner-text .tb-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--sage-lt);
+            margin-bottom: 5px;
+        }
+
+        .terminal-banner-text .tb-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .terminal-banner-text .tb-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--text3);
+            margin-top: 4px;
+            letter-spacing: 0.06em;
+        }
+
+        .btn-terminal {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(77, 122, 90, 0.12);
+            border: 1px solid var(--sage-lt);
+            color: var(--sage-lt);
+            padding: 12px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-terminal:hover {
+            background: var(--sage);
+            border-color: var(--sage);
+            color: #fff;
+        }
+
+        .btn-terminal svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
         /* ACADEMY GATE BANNER */
         .academy-gate-banner {
             max-width: 1100px;
@@ -1129,6 +1244,13 @@
             line-height: 1.6;
         }
 
+        .live-ctas {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
         .live-cta {
             display: inline-flex;
             align-items: center;
@@ -1147,6 +1269,18 @@
 
         .live-cta:hover {
             background: var(--gold-lt);
+        }
+
+        .live-cta.secondary {
+            background: rgba(77, 122, 90, 0.12);
+            border: 1px solid var(--sage-lt);
+            color: var(--sage-lt);
+        }
+
+        .live-cta.secondary:hover {
+            background: var(--sage);
+            border-color: var(--sage);
+            color: #fff;
         }
 
         .live-visual {
@@ -1821,8 +1955,15 @@
                 padding: 12px 20px;
             }
 
-            .nav-link {
+            .nav-links .nav-link {
                 display: none;
+            }
+
+            .nav-links .nav-link.terminal {
+                display: inline-flex;
+                font-size: 8px;
+                padding: 7px 10px;
+                letter-spacing: 0.1em;
             }
 
             .nav-hamburger {
@@ -1859,6 +2000,20 @@
 
             .tier-card {
                 padding: 28px 24px;
+            }
+
+            .terminal-banner {
+                padding: 0 20px;
+            }
+
+            .terminal-banner-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-terminal {
+                width: 100%;
+                justify-content: center;
             }
 
             .academy-gate-banner {
@@ -1920,6 +2075,17 @@
                 flex: none;
             }
 
+            .live-ctas {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .live-cta {
+                justify-content: center;
+                padding: 13px 20px;
+                font-size: 9px;
+            }
+
             footer {
                 padding: 24px 20px;
                 flex-direction: column;
@@ -1966,11 +2132,6 @@
                 letter-spacing: 0.14em;
             }
 
-            .live-cta {
-                padding: 13px 20px;
-                font-size: 9px;
-            }
-
             .tier-price {
                 font-size: 44px;
             }
@@ -1986,7 +2147,6 @@
             }
         }
 
-        /* ⚡ AUTHENTIC WHATSAPP HOVER HOOKS */
         .floating-community-node:hover .community-hover-toast {
             opacity: 1 !important;
             pointer-events: auto !important;
@@ -1995,12 +2155,10 @@
 
         .floating-community-node:hover .community-trigger-sphere {
             background: #128C7E !important;
-            /* Authentic WhatsApp Darker Green for hover feedback */
             box-shadow: 0 8px 24px rgba(18, 140, 126, 0.5) !important;
             transform: translateY(-4px) scale(1.04);
         }
 
-        /* Institutional Telemetry Radar Ring Effect */
         @keyframes telemetry-pulse {
             0% {
                 transform: scale(1);
@@ -2031,10 +2189,16 @@
                 <span>Intelligence Academy</span>
             </div>
         </a>
-        <a href="index.html" class="nav-link">← Terminal Gate</a>
-        <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu" onclick="toggleMobileNav()">
-            <span></span><span></span><span></span>
-        </button>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">← Terminal Gate</a>
+            <!-- ⬡ TRADING TERMINAL NAV BUTTON -->
+            <a href="trading-terminal.html" class="nav-link terminal">
+                ⬡ Trading Terminal
+            </a>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu" onclick="toggleMobileNav()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </nav>
 
     <!-- HERO -->
@@ -2191,6 +2355,24 @@
         </div>
     </section>
 
+    <!-- ⬡ TRADING TERMINAL BANNER — between tiers and academy gate -->
+    <div class="terminal-banner">
+        <div class="terminal-banner-inner">
+            <div class="terminal-banner-text">
+                <div class="tb-eyebrow">// Live Execution Lab · Paper Trading</div>
+                <div class="tb-title">Practice with real Binance prices — margin trading simulator</div>
+                <div class="tb-sub">BTC · ETH · SOL · BNB · XRP · ADA · KES 100,000 starting capital · leaderboard</div>
+            </div>
+            <a href="trading-terminal.html" class="btn-terminal">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="1" y="2" width="14" height="11" rx="1" />
+                    <path d="M4 13v1M12 13v1M4 14h8M4 7l2.5 2.5L10 6" />
+                </svg>
+                Open Trading Terminal →
+            </a>
+        </div>
+    </div>
+
     <!-- ACADEMY GATE BANNER -->
     <div class="academy-gate-banner">
         <div id="academyAuthLoggedOut" class="gate-interface-row">
@@ -2253,8 +2435,12 @@
                         <p>Real-time CBK interest analysis &amp; currency trend sessions.</p>
                     </div>
                 </div>
-                <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
-                    target="_blank" class="live-cta">Unlock Class Schedule →</a>
+                <!-- ⬡ LIVE SECTION CTAs — original + trading terminal -->
+                <div class="live-ctas">
+                    <a href="https://wa.me/254700021380?text=I%20am%20interested%20in%20joining%20the%20live%20online%20classes"
+                        target="_blank" class="live-cta">Unlock Class Schedule →</a>
+                    <a href="trading-terminal.html" class="live-cta secondary">⬡ Paper Trading Terminal →</a>
+                </div>
             </div>
             <div class="live-visual">
                 <div class="stat-box">
@@ -2562,7 +2748,7 @@
                         localStorage.removeItem('savanna_academy_session');
                         activeStudentSession = null;
                     } else {
-                        currentTier = activeStudentSession.tier; /* e.g. "pro" or "elite" */
+                        currentTier = activeStudentSession.tier;
                         if (loggedOutRow) loggedOutRow.style.display = 'none';
                         if (loggedInRow) loggedInRow.style.display = 'flex';
                         if (welcomeText) welcomeText.innerText = `// ACCESS: ${currentTier.toUpperCase()} // OPERATIVE: ${activeStudentSession.username.toUpperCase()}`;
@@ -2580,14 +2766,6 @@
             await buildAcademyCurriculumDirectory(currentTier);
         }
 
-        /* ── CURRICULUM BUILD ENGINE ──
-         *
-         *  FIX: tier values now match exactly what Supabase stores:
-         *    Student tier  → 'free' | 'pro' | 'elite'
-         *    Material tier → 'free' | 'pro' | 'elite'
-         *
-         *  Hierarchy:  elite  ⊇  pro  ⊇  free
-         */
         async function buildAcademyCurriculumDirectory(resolvedTier) {
             const freeContainer = document.getElementById('freeTopicsContainer');
             const premiumContainer = document.getElementById('premiumTopicsContainer');
@@ -2604,9 +2782,8 @@
                     const req = (topic.tier_requirement || 'free').toLowerCase().trim();
                     let hasClearance = false;
 
-                    /* ✅ FIX: compare against 'pro' and 'elite' (not 'pro_trader' / 'elite_institutional') */
                     if (req === 'free') {
-                        hasClearance = true; /* everyone can see free topics */
+                        hasClearance = true;
                     } else if (req === 'pro') {
                         hasClearance = (resolvedTier === 'pro' || resolvedTier === 'elite');
                     } else if (req === 'elite') {
@@ -2627,16 +2804,6 @@
             }
         }
 
-        /* ── TOPIC NODE RENDERER ──
-         *
-         *  Receives resolvedTier directly (no re-reading from activeStudentSession)
-         *  so the value is always consistent with what buildAcademyCurriculumDirectory used.
-         *
-         *  Material access hierarchy:
-         *    elite  → sees free + pro + elite materials
-         *    pro    → sees free + pro materials
-         *    free   → sees free materials only
-         */
         function generateTopicNode(topic, materials, hasClearance) {
             let materialsHTML = '';
 
@@ -2646,7 +2813,6 @@
             }
 
             if (materials && materials.length > 0) {
-                // Sort materials strictly by database ID to enforce progression order
                 const sortedMaterials = [...materials].sort((a, b) => a.id - b.id);
 
                 materialsHTML = sortedMaterials.map((mat, index) => {
@@ -2657,7 +2823,6 @@
                     else if (studentTier === 'pro' && ['pro', 'free', 'pro_trader'].includes(requiredTier)) tierClearance = true;
                     else if (studentTier === 'free' && requiredTier === 'free') tierClearance = true;
 
-                    // Sequential progression rule check
                     let sequenceUnlocked = true;
                     if (index > 0) {
                         const previousMaterialId = sortedMaterials[index - 1].id;
@@ -2666,13 +2831,11 @@
 
                     const isItemCompleted = completedMaterialIds.includes(mat.id);
 
-                    // STATE A: Unlocked and ready for access
                     if (tierClearance && sequenceUnlocked) {
                         const checkBadge = isItemCompleted
                             ? `<span class="completion-status-tag" style="color: #a3e635; margin-right: 8px;">[✓ COMPLETED]</span>`
                             : `<span class="completion-status-tag" style="color: #3b82f6; margin-right: 8px;">[● ACTIVE]</span>`;
 
-                        // ⚡ FIX: Added 'event' and custom handler wrapper to force immediate UI recalculation
                         return `
                 <div class="material-download-row" style="border-left: 3px solid ${isItemCompleted ? '#a3e635' : '#3b82f6'};">
                     <span class="file-icon-badge">${escHtml(mat.file_type || 'FILE')}</span>
@@ -2681,9 +2844,7 @@
                        onclick="handleMaterialAccess(event, ${mat.id}, '${escHtml(mat.resource_url || '#')}')"
                        class="download-action-link">ACCESS NODE →</a>
                 </div>`;
-                    }
-                    // STATE B: Locked by sequence logic
-                    else if (tierClearance && !sequenceUnlocked) {
+                    } else if (tierClearance && !sequenceUnlocked) {
                         return `
                 <div class="material-download-row" style="opacity: 0.4; background: rgba(0,0,0,0.3); cursor: not-allowed;">
                     <span class="file-icon-badge" style="background: #1e293b; color: #475569;">🔒 LINKED</span>
@@ -2692,9 +2853,7 @@
                         [COMPLETE PREVIOUS STEP]
                     </span>
                 </div>`;
-                    }
-                    // STATE C: Gated by Premium Tiers
-                    else {
+                    } else {
                         return `
                 <div class="material-download-row" style="opacity: 0.5; background: rgba(255,255,255,0.01); border-color: #1e293b;">
                     <span class="file-icon-badge" style="background: #334155; color: #94a3b8;">🔒 LOCKED</span>
@@ -2736,7 +2895,6 @@
       </div>
     </div>`;
         }
-
 
         function toggleAccordionTray(headerEl) {
             const tray = headerEl.parentElement.querySelector('.module-materials-tray');
@@ -2792,7 +2950,6 @@
             nameLabel.innerText = printName;
             canvas.className = 'certificate-canvas';
 
-            /* ✅ FIX: certificate themes now check 'elite' and 'pro' (not 'elite_institutional' / 'pro_trader') */
             const userTier = (activeStudentSession.tier || 'free').toLowerCase().trim();
             if (userTier === 'elite') {
                 canvas.classList.add('cert-theme-elite');
@@ -2879,28 +3036,17 @@
         }
 
         /* — BOOT — */
-        // ⚡ Notice the 'async' keyword added right here before () =>
         document.addEventListener('DOMContentLoaded', async () => {
-
-            // 1. Fetch user progression matrix logs from Supabase first
             await fetchStudentProgress();
-
-            // 2. Run your session evaluator and build the UI modules
             evaluateSessionStateAndBuildUI();
-
-            // 3. Fire your background metric tools
             fetchGlobalLiquidityMetrics();
-
-            // 4. Handle your payment window bindings
             document.getElementById('paymentModal').addEventListener('click', function (e) {
                 if (e.target === this) closePaymentModal();
             });
         });
 
-        // Global state holding completed material IDs for the active session
         let completedMaterialIds = [];
 
-        // 📡 1. Fetch completion logs from Supabase on dashboard initialization
         async function fetchStudentProgress() {
             try {
                 const { data: sessionData } = await supabase.auth.getSession();
@@ -2915,41 +3061,35 @@
 
                 if (error) throw error;
 
-                // Map data rows to a clean array of IDs: [12, 13, 14]
                 completedMaterialIds = data.map(record => record.material_id);
             } catch (err) {
                 console.error("Error pulling terminal progress matrix:", err.message);
             }
         }
 
-        // 📡 2. Trigger completion log when a student accesses an active node
         async function markMaterialComplete(materialId) {
             try {
                 const { data: sessionData } = await supabase.auth.getSession();
-                if (!sessionData.session) return; // Skip if guest
+                if (!sessionData.session) return;
 
                 const user = sessionData.session.user;
 
-                // Optimistically update local array immediately for instant UI feedback
                 if (!completedMaterialIds.includes(materialId)) {
                     completedMaterialIds.push(materialId);
                 }
 
-                // Send to backend database log
                 const { error } = await supabase
                     .from('student_progress')
                     .insert([{ student_id: user.id, material_id: materialId }], { upsert: true });
 
-                if (error && error.code !== '23505') throw error; // Ignore duplicate key constraints
+                if (error && error.code !== '23505') throw error;
 
-                // Refresh your UI render loop to unlock the next resource sequence row instantly
                 renderAcademyContent();
             } catch (err) {
                 console.error("Failed to secure milestone completion log:", err.message);
             }
         }
 
-        // ⚡ Interceptor to force immediate local UI updates
         async function handleMaterialAccess(event, materialId, resourceUrl) {
             event.preventDefault();
 
@@ -2957,34 +3097,28 @@
                 completedMaterialIds.push(materialId);
             }
 
-            // Push progression data back to Supabase
             markMaterialComplete(materialId);
 
-            // Re-render local page layout instantly
             if (typeof evaluateSessionStateAndBuildUI === 'function') {
                 evaluateSessionStateAndBuildUI();
             } else if (typeof renderAcademyContent === 'function') {
                 renderAcademyContent();
             }
 
-            // Open up the Google Drive resource asset in a separate window
             window.open(resourceUrl, '_blank', 'noopener,noreferrer');
 
-            // 🎯 TRIGGER INVITE MODAL LATCH
-            // Checks if they haven't been shown the popup yet during this session
             if (!sessionStorage.getItem('hasSeenCommunityInvite')) {
                 setTimeout(() => {
                     openInviteModal();
-                }, 1200); // 1.2 second slight delay so it feels natural after the file opens
+                }, 1200);
             }
         }
 
-        // Helper Modal Control Operations
         function openInviteModal() {
             const modal = document.getElementById('communityInviteModal');
             if (modal) {
                 modal.style.display = 'flex';
-                sessionStorage.setItem('hasSeenCommunityInvite', 'true'); // Flag it as shown
+                sessionStorage.setItem('hasSeenCommunityInvite', 'true');
             }
         }
 
@@ -2995,7 +3129,6 @@
             }
         }
     </script>
-
 
     <div class="floating-community-node"
         style="position: fixed; bottom: 24px; right: 24px; display: flex; align-items: center; gap: 12px; z-index: 9999; font-family: monospace;">

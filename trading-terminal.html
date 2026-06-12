@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Student Trading Terminal | Savanna Academy</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #020409;
+            --bg2: #04060E;
+            --card: #080C18;
+            --card2: #0A0F1E;
+            --card3: #0D1326;
+            --border: rgba(110, 110, 255, 0.08);
+            --border2: rgba(110, 110, 255, 0.04);
+            --border-gold: rgba(200, 169, 110, 0.12);
+            --neural: #6E6EFF;
+            --neural-dim: #3D3D99;
+            --neural-glow: rgba(110, 110, 255, 0.15);
+            --neural-bright: rgba(110, 110, 255, 0.35);
+            --signal: #00FFB2;
+            --signal-dim: #00B37D;
+            --signal-glow: rgba(0, 255, 178, 0.12);
+            --red: #FF4560;
+            --red-glow: rgba(255, 69, 96, 0.12);
+            --amber: #F59E0B;
+            --gold: #C8A96E;
+            --gold-dim: #8B7340;
+            --gold-glow: rgba(200, 169, 110, 0.1);
+            --text: #C8D4E8;
+            --text-dim: #7A8AA8;
+            --muted: #3E4A62;
+            --nav-h: 52px;
+            --orange: #FB923C;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 300;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 2px;
+            height: 2px
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(110, 110, 255, 0.15)
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: linear-gradient(rgba(110, 110, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(110, 110, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse 120% 80% at 50% 20%, black 0%, transparent 80%);
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px);
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: calc(var(--nav-h) + var(--safe-top));
+            padding-top: var(--safe-top);
+            background: rgba(2, 4, 9, 0.96);
+            backdrop-filter: blur(32px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: clamp(12px, 4vw, 28px);
+            padding-right: clamp(12px, 4vw, 28px);
+        }
+
+        nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neural-bright), transparent);
+            animation: scanH 6s ease-in-out infinite
+        }
+
+        @keyframes scanH {
+            0% {
+                background-position: -100% 0
+            }
+
+            100% {
+                background-position: 200% 0
+            }
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1
+        }
+
+        .nav-logo {
+            color: var(--neural);
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(110, 110, 255, 0.5))
+        }
+
+        .nav-wordmark {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0
+        }
+
+        .nav-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(13px, 3vw, 15px);
+            font-weight: 400;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .nav-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--neural);
+            opacity: .7;
+            display: none
+        }
+
+        @media(min-width:480px) {
+            .nav-sub {
+                display: block
+            }
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: clamp(6px, 2vw, 14px);
+            flex-shrink: 0
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--signal);
+            box-shadow: 0 0 0 0 rgba(0, 255, 178, 0.5);
+            animation: pulse 2s infinite;
+            flex-shrink: 0
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 178, 0.5)
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(0, 255, 178, 0)
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 178, 0)
+            }
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .nav-status-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--signal);
+            letter-spacing: .12em;
+            text-transform: uppercase
+        }
+
+        .ai-chip {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            background: rgba(110, 110, 255, 0.08);
+            border: 1px solid rgba(110, 110, 255, 0.18);
+            padding: 3px 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .1em;
+            color: var(--neural);
+            text-transform: uppercase
+        }
+
+        @media(min-width:600px) {
+            .ai-chip {
+                display: inline-flex
+            }
+        }
+
+        .ai-chip-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--neural);
+            animation: pulse 2s infinite
+        }
+
+        .nav-user {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--gold);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            background: rgba(200, 169, 110, 0.06);
+            border: 1px solid var(--border-gold);
+            padding: 3px 8px;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .btn-logout {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 4px 8px;
+            cursor: pointer;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            transition: all .2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 32px
+        }
+
+        .btn-logout:hover,
+        .btn-logout:active {
+            color: var(--red);
+            border-color: rgba(255, 69, 96, 0.3)
+        }
+
+        /* LOGIN */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(16px, 5vw, 24px);
+            padding-top: max(clamp(16px, 5vw, 24px), var(--safe-top));
+            padding-bottom: max(clamp(16px, 5vw, 24px), var(--safe-bottom));
+            background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(110, 110, 255, 0.08) 0%, transparent 70%),
+                linear-gradient(rgba(110, 110, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(110, 110, 255, 0.025) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            overflow-y: auto;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            animation: fadeUp .5s cubic-bezier(.16, 1, .3, 1) both
+        }
+
+        .login-glow {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(110, 110, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none
+        }
+
+        .login-inner {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: clamp(20px, 5vw, 40px);
+            position: relative;
+            overflow: hidden
+        }
+
+        .login-inner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neural), transparent)
+        }
+
+        .login-corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: var(--neural);
+            border-style: solid;
+            opacity: .5
+        }
+
+        .login-corner.tl {
+            top: 0;
+            left: 0;
+            border-width: 1px 0 0 1px
+        }
+
+        .login-corner.tr {
+            top: 0;
+            right: 0;
+            border-width: 1px 1px 0 0
+        }
+
+        .login-corner.bl {
+            bottom: 0;
+            left: 0;
+            border-width: 0 0 1px 1px
+        }
+
+        .login-corner.br {
+            bottom: 0;
+            right: 0;
+            border-width: 0 1px 1px 0
+        }
+
+        .login-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px
+        }
+
+        .login-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(20px, 5vw, 26px);
+            font-weight: 300;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 4px
+        }
+
+        .login-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--neural);
+            opacity: .7;
+            margin-bottom: 24px
+        }
+
+        .field label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 7px
+        }
+
+        .field input {
+            width: 100%;
+            background: rgba(110, 110, 255, 0.03);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(13px, 3.5vw, 14px);
+            padding: clamp(10px, 2.5vw, 12px) 14px;
+            outline: none;
+            transition: all .2s;
+            border-radius: 0;
+            -webkit-appearance: none;
+            appearance: none
+        }
+
+        .field input:focus {
+            border-color: rgba(110, 110, 255, 0.4);
+            background: rgba(110, 110, 255, 0.05)
+        }
+
+        .field {
+            margin-bottom: 14px
+        }
+
+        .btn-login {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid var(--neural);
+            color: var(--neural);
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            padding: clamp(12px, 3vw, 14px);
+            cursor: pointer;
+            transition: all .2s;
+            margin-top: 8px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(110, 110, 255, 0.15), transparent);
+            opacity: 0;
+            transition: opacity .2s
+        }
+
+        .btn-login:hover,
+        .btn-login:active {
+            color: #fff;
+            box-shadow: 0 0 24px rgba(110, 110, 255, 0.2)
+        }
+
+        .btn-login:hover::before,
+        .btn-login:active::before {
+            opacity: 1
+        }
+
+        .login-error {
+            color: var(--red);
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            margin-top: 12px;
+            text-align: center;
+            min-height: 16px;
+            letter-spacing: .06em
+        }
+
+        /* MARGIN CALL BANNER */
+        .mc-banner {
+            display: none;
+            position: fixed;
+            top: calc(var(--nav-h) + var(--safe-top));
+            left: 0;
+            right: 0;
+            z-index: 200;
+            background: linear-gradient(90deg, rgba(255, 69, 96, 0.12), rgba(255, 69, 96, 0.06));
+            border-bottom: 1px solid rgba(255, 69, 96, 0.25);
+            padding: 8px clamp(12px, 4vw, 24px);
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7px, 2vw, 8.5px);
+            letter-spacing: .1em;
+            color: var(--red);
+            text-align: center;
+            line-height: 1.5
+        }
+
+        /* TICKER */
+        .ticker-rail {
+            background: rgba(110, 110, 255, 0.02);
+            border-bottom: 1px solid rgba(110, 110, 255, 0.06);
+            overflow: hidden;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            margin-top: calc(var(--nav-h) + var(--safe-top));
+            position: relative;
+            z-index: 10
+        }
+
+        .ticker-belt {
+            display: flex;
+            width: max-content;
+            animation: belt 40s linear infinite
+        }
+
+        .ticker-belt:hover {
+            animation-play-state: paused
+        }
+
+        @keyframes belt {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        .t-item {
+            padding: 0 14px;
+            white-space: nowrap;
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .1em;
+            color: rgba(200, 169, 110, 0.35);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 26px
+        }
+
+        .t-up {
+            color: var(--signal)
+        }
+
+        .t-dn {
+            color: var(--red)
+        }
+
+        /* MAIN */
+        main {
+            padding-top: calc(var(--nav-h) + var(--safe-top) + 26px + 14px);
+            padding-left: clamp(10px, 3vw, 20px);
+            padding-right: clamp(10px, 3vw, 20px);
+            padding-bottom: calc(24px + var(--safe-bottom));
+            max-width: 1700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        /* AI BANNER */
+        .ai-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, rgba(110, 110, 255, 0.06) 0%, rgba(110, 110, 255, 0.02) 100%);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            margin-bottom: clamp(10px, 2vw, 16px);
+            animation: fadeUp .3s both;
+            position: relative;
+            overflow: hidden
+        }
+
+        .ai-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neural-bright), transparent)
+        }
+
+        .ai-banner-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(110, 110, 255, 0.1);
+            border: 1px solid rgba(110, 110, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .ai-banner-icon svg {
+            width: 13px;
+            height: 13px;
+            color: var(--neural)
+        }
+
+        .ai-banner-text {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7px, 2vw, 8px);
+            letter-spacing: .08em;
+            color: var(--neural);
+            opacity: .8;
+            line-height: 1.6
+        }
+
+        .ai-banner-text b {
+            color: var(--neural);
+            font-weight: 500;
+            opacity: 1
+        }
+
+        .ai-banner-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .ai-stat {
+            text-align: right
+        }
+
+        .ai-stat-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted)
+        }
+
+        .ai-stat-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            color: var(--neural);
+            font-weight: 500
+        }
+
+        /* ACCOUNT BAR */
+        .account-bar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(6px, 1.5vw, 10px);
+            margin-bottom: clamp(10px, 2vw, 16px);
+            animation: fadeUp .4s .05s both
+        }
+
+        @media(min-width:480px) {
+            .account-bar {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        @media(min-width:900px) {
+            .account-bar {
+                grid-template-columns: repeat(6, 1fr)
+            }
+        }
+
+        .ab-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 16px);
+            cursor: default;
+            transition: border-color .4s;
+            position: relative;
+            overflow: hidden
+        }
+
+        .ab-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(110, 110, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity .3s
+        }
+
+        .ab-card:hover::before {
+            opacity: 1
+        }
+
+        .ab-card.flash-up {
+            animation: flashUp .6s ease
+        }
+
+        .ab-card.flash-dn {
+            animation: flashDn .6s ease
+        }
+
+        .ab-card.warning {
+            border-color: rgba(245, 158, 11, 0.3) !important;
+            background: rgba(245, 158, 11, 0.03) !important
+        }
+
+        .ab-card.danger {
+            border-color: rgba(255, 69, 96, 0.4) !important;
+            background: rgba(255, 69, 96, 0.04) !important
+        }
+
+        @keyframes flashUp {
+
+            0%,
+            100% {
+                background: var(--card)
+            }
+
+            50% {
+                background: rgba(0, 255, 178, 0.05)
+            }
+        }
+
+        @keyframes flashDn {
+
+            0%,
+            100% {
+                background: var(--card)
+            }
+
+            50% {
+                background: rgba(255, 69, 96, 0.05)
+            }
+        }
+
+        .ab-label {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(6.5px, 1.8vw, 7px);
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .ab-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(16px, 3.5vw, 22px);
+            font-weight: 300;
+            color: #fff;
+            line-height: 1;
+            transition: color .3s;
+            letter-spacing: .01em;
+            word-break: break-all
+        }
+
+        .ab-value.green {
+            color: var(--signal)
+        }
+
+        .ab-value.gold {
+            color: var(--gold)
+        }
+
+        .ab-value.violet {
+            color: var(--neural)
+        }
+
+        .ab-value.red {
+            color: var(--red)
+        }
+
+        .ab-value.orange {
+            color: var(--orange)
+        }
+
+        .ab-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(6.5px, 1.8vw, 7.5px);
+            margin-top: 5px;
+            color: var(--muted)
+        }
+
+        .ab-sub.up {
+            color: var(--signal)
+        }
+
+        .ab-sub.dn {
+            color: var(--red)
+        }
+
+        .margin-level-bar {
+            height: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            margin-top: 8px;
+            border-radius: 1px;
+            overflow: hidden
+        }
+
+        .margin-level-fill {
+            height: 100%;
+            transition: width .6s ease, background .3s
+        }
+
+        /* TRADE GRID */
+        .trade-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: clamp(10px, 2vw, 14px);
+            animation: fadeUp .5s .15s both
+        }
+
+        @media(min-width:960px) {
+            .trade-grid {
+                grid-template-columns: 1fr minmax(300px, 360px)
+            }
+        }
+
+        @media(min-width:1300px) {
+            .trade-grid {
+                grid-template-columns: 1fr minmax(300px, 360px) minmax(260px, 300px)
+            }
+        }
+
+        /* Column ordering - mobile: market, leaderboard, order form, positions */
+        .col-left {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 2vw, 14px)
+        }
+
+        .col-mid {
+            order: 3
+        }
+
+        .col-right {
+            order: 2
+        }
+
+        @media(min-width:960px) {
+            .col-mid {
+                order: unset
+            }
+
+            .col-right {
+                order: unset
+            }
+        }
+
+        /* PANEL */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(110, 110, 255, 0.25), transparent)
+        }
+
+        .panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            border-right: 1px solid rgba(110, 110, 255, 0.15);
+            border-bottom: 1px solid rgba(110, 110, 255, 0.15);
+            pointer-events: none
+        }
+
+        .panel-head {
+            padding: clamp(12px, 2vw, 16px) clamp(14px, 3vw, 20px);
+            border-bottom: 1px solid var(--border2);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .panel-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(13px, 2.5vw, 16px);
+            font-weight: 400;
+            letter-spacing: .1em;
+            color: #fff;
+            text-transform: uppercase
+        }
+
+        .panel-sub {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(6.5px, 1.8vw, 7.5px);
+            letter-spacing: .14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-top: 3px
+        }
+
+        .panel-body {
+            padding: clamp(12px, 2.5vw, 16px)
+        }
+
+        /* MARKET PANEL */
+        .market-tabs {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 14px
+        }
+
+        .mkt-tab {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7.5px, 2vw, 8px);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: clamp(5px, 1.5vw, 6px) clamp(8px, 2vw, 12px);
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 30px
+        }
+
+        .mkt-tab.active {
+            background: rgba(110, 110, 255, 0.08);
+            border-color: rgba(110, 110, 255, 0.35);
+            color: var(--neural)
+        }
+
+        .mkt-tab:hover:not(.active) {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text)
+        }
+
+        .price-hero {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 4px;
+            flex-wrap: wrap
+        }
+
+        .price-big {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 7vw, 3.6rem);
+            font-weight: 300;
+            color: #fff;
+            line-height: 1;
+            transition: color .3s;
+            letter-spacing: -.01em
+        }
+
+        .price-change {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(10px, 2.5vw, 12px);
+            padding: 3px 8px;
+            border: 1px solid
+        }
+
+        .price-change.up {
+            color: var(--signal);
+            border-color: rgba(0, 255, 178, 0.3);
+            background: rgba(0, 255, 178, 0.06)
+        }
+
+        .price-change.dn {
+            color: var(--red);
+            border-color: rgba(255, 69, 96, 0.3);
+            background: rgba(255, 69, 96, 0.06)
+        }
+
+        .price-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7px, 2vw, 8.5px);
+            color: var(--muted);
+            margin-bottom: 12px;
+            line-height: 1.6;
+            word-break: break-word
+        }
+
+        .mini-chart {
+            height: clamp(50px, 10vw, 60px);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background: rgba(110, 110, 255, 0.02);
+            border: 1px solid rgba(110, 110, 255, 0.06)
+        }
+
+        .mini-chart::after {
+            content: 'LIVE';
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .14em;
+            color: rgba(0, 255, 178, 0.6);
+            background: rgba(0, 255, 178, 0.04);
+            border: 1px solid rgba(0, 255, 178, 0.15);
+            padding: 1px 5px
+        }
+
+        .mini-chart svg {
+            width: 100%;
+            height: 100%
+        }
+
+        /* ORDER FORM */
+        .order-panel-head {
+            background: linear-gradient(135deg, rgba(110, 110, 255, 0.05), transparent)
+        }
+
+        .order-tabs {
+            display: flex;
+            margin-bottom: 14px;
+            gap: 4px
+        }
+
+        .order-tab {
+            flex: 1;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7.5px, 2vw, 8.5px);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: clamp(9px, 2.5vw, 10px);
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 38px
+        }
+
+        .order-tab.buy.active {
+            background: rgba(0, 255, 178, 0.06);
+            border-color: rgba(0, 255, 178, 0.35);
+            color: var(--signal)
+        }
+
+        .order-tab.sell.active {
+            background: rgba(255, 69, 96, 0.06);
+            border-color: rgba(255, 69, 96, 0.35);
+            color: var(--red)
+        }
+
+        .order-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.02)
+        }
+
+        .order-field label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        .order-field {
+            margin-bottom: 10px
+        }
+
+        .order-field input,
+        .order-field select {
+            width: 100%;
+            background: rgba(110, 110, 255, 0.03);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(13px, 3.5vw, 14px);
+            padding: clamp(9px, 2.5vw, 10px) 12px;
+            outline: none;
+            transition: all .2s;
+            border-radius: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 40px
+        }
+
+        .order-field input:focus,
+        .order-field select:focus {
+            border-color: rgba(110, 110, 255, 0.35);
+            background: rgba(110, 110, 255, 0.05)
+        }
+
+        .order-field select option {
+            background: #0A0F1E
+        }
+
+        .leverage-btns {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 10px
+        }
+
+        .lev-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7.5px, 2vw, 8px);
+            padding: clamp(5px, 1.5vw, 6px) clamp(7px, 2vw, 10px);
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+            letter-spacing: .04em;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 30px
+        }
+
+        .lev-btn:hover,
+        .lev-btn:active {
+            border-color: rgba(110, 110, 255, 0.35);
+            color: var(--neural)
+        }
+
+        .lev-btn.active {
+            background: rgba(110, 110, 255, 0.1);
+            border-color: rgba(110, 110, 255, 0.45);
+            color: var(--neural)
+        }
+
+        .lot-quick-btns {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap
+        }
+
+        .lot-q-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(7.5px, 2vw, 8px);
+            padding: 5px 8px;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+            letter-spacing: .04em;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 28px
+        }
+
+        .lot-q-btn:hover,
+        .lot-q-btn:active {
+            border-color: rgba(110, 110, 255, 0.35);
+            color: var(--neural)
+        }
+
+        .order-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border2);
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(8.5px, 2.2vw, 9px);
+            color: var(--muted);
+            line-height: 2.1;
+            position: relative;
+            overflow: hidden
+        }
+
+        .order-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, var(--neural-bright), transparent)
+        }
+
+        .order-preview span {
+            color: var(--text)
+        }
+
+        .order-preview .warn {
+            color: var(--amber)
+        }
+
+        .order-preview .ok {
+            color: var(--signal)
+        }
+
+        .order-preview .bad {
+            color: var(--red)
+        }
+
+        .btn-execute-buy,
+        .btn-execute-sell {
+            width: 100%;
+            background: transparent;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(8px, 2.5vw, 9px);
+            font-weight: 500;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            padding: clamp(12px, 3vw, 14px);
+            cursor: pointer;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 44px
+        }
+
+        .btn-execute-buy {
+            border: 1px solid var(--signal);
+            color: var(--signal)
+        }
+
+        .btn-execute-buy::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 255, 178, 0.08);
+            opacity: 0;
+            transition: opacity .2s
+        }
+
+        .btn-execute-buy:hover:not(:disabled),
+        .btn-execute-buy:active:not(:disabled) {
+            color: #fff;
+            box-shadow: 0 0 24px rgba(0, 255, 178, 0.15)
+        }
+
+        .btn-execute-buy:hover:not(:disabled)::before,
+        .btn-execute-buy:active:not(:disabled)::before {
+            opacity: 1
+        }
+
+        .btn-execute-sell {
+            border: 1px solid var(--red);
+            color: var(--red)
+        }
+
+        .btn-execute-sell::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 69, 96, 0.08);
+            opacity: 0;
+            transition: opacity .2s
+        }
+
+        .btn-execute-sell:hover:not(:disabled),
+        .btn-execute-sell:active:not(:disabled) {
+            color: #fff;
+            box-shadow: 0 0 24px rgba(255, 69, 96, 0.15)
+        }
+
+        .btn-execute-sell:hover:not(:disabled)::before,
+        .btn-execute-sell:active:not(:disabled)::before {
+            opacity: 1
+        }
+
+        .btn-execute-buy:disabled,
+        .btn-execute-sell:disabled {
+            opacity: .35;
+            cursor: not-allowed
+        }
+
+        /* POSITIONS TABLE */
+        .pos-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .pos-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px
+        }
+
+        .pos-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0 8px 10px 0;
+            font-weight: 400;
+            text-align: left;
+            white-space: nowrap
+        }
+
+        .pos-table thead th.right {
+            text-align: right
+        }
+
+        .pos-table tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .pos-table tbody tr:hover {
+            background: rgba(110, 110, 255, 0.02)
+        }
+
+        .pos-table tbody td {
+            padding: 9px 8px 9px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(9px, 2.2vw, 10px);
+            white-space: nowrap
+        }
+
+        .pos-pnl {
+            transition: color .3s
+        }
+
+        .pos-pnl.pos {
+            color: var(--signal)
+        }
+
+        .pos-pnl.neg {
+            color: var(--red)
+        }
+
+        @keyframes rowFlashUp {
+
+            0%,
+            100% {
+                background: transparent
+            }
+
+            40% {
+                background: rgba(0, 255, 178, 0.05)
+            }
+        }
+
+        @keyframes rowFlashDn {
+
+            0%,
+            100% {
+                background: transparent
+            }
+
+            40% {
+                background: rgba(255, 69, 96, 0.05)
+            }
+        }
+
+        .pos-row-up {
+            animation: rowFlashUp .5s ease
+        }
+
+        .pos-row-dn {
+            animation: rowFlashDn .5s ease
+        }
+
+        .btn-close-pos {
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid var(--border2);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: all .2s;
+            touch-action: manipulation;
+            min-height: 28px
+        }
+
+        .btn-close-pos:hover,
+        .btn-close-pos:active {
+            color: var(--red);
+            border-color: rgba(255, 69, 96, 0.3)
+        }
+
+        /* LEADERBOARD */
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border2);
+            transition: background .15s
+        }
+
+        .lb-row:hover {
+            background: rgba(255, 255, 255, 0.008)
+        }
+
+        .lb-rank {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0
+        }
+
+        .lb-rank.r1 {
+            color: var(--gold)
+        }
+
+        .lb-rank.r2 {
+            color: rgba(200, 169, 110, 0.6)
+        }
+
+        .lb-rank.r3 {
+            color: rgba(200, 169, 110, 0.4)
+        }
+
+        .lb-rank.rn {
+            color: var(--muted)
+        }
+
+        .lb-name {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(9px, 2.2vw, 10px);
+            color: #fff;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .lb-return {
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(9px, 2.2vw, 10px);
+            font-weight: 500;
+            flex-shrink: 0
+        }
+
+        .lb-return.pos {
+            color: var(--signal)
+        }
+
+        .lb-return.neg {
+            color: var(--red)
+        }
+
+        .lb-return.flat {
+            color: var(--muted)
+        }
+
+        .lb-bar-wrap {
+            width: 45px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            flex-shrink: 0
+        }
+
+        .lb-bar {
+            height: 100%;
+            background: var(--signal);
+            transition: width 1s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .lb-bar.neg {
+            background: var(--red)
+        }
+
+        .you-badge {
+            font-family: 'DM Mono', monospace;
+            font-size: 6.5px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--neural);
+            background: rgba(110, 110, 255, 0.1);
+            border: 1px solid rgba(110, 110, 255, 0.2);
+            padding: 1px 5px;
+            flex-shrink: 0
+        }
+
+        /* HISTORY TABLE */
+        .hist-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .hist-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 460px
+        }
+
+        .hist-table thead th {
+            font-family: 'DM Mono', monospace;
+            font-size: 7.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0 8px 10px 0;
+            font-weight: 400;
+            text-align: left
+        }
+
+        .hist-table tbody tr {
+            border-bottom: 1px solid var(--border2)
+        }
+
+        .hist-table tbody td {
+            padding: 9px 8px 9px 0;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(9px, 2.2vw, 10px);
+            color: var(--text)
+        }
+
+        .side-buy {
+            color: var(--signal)
+        }
+
+        .side-sell {
+            color: var(--red)
+        }
+
+        /* TABS */
+        .tab-strip {
+            display: flex;
+            border-bottom: 1px solid var(--border2);
+            margin-bottom: 12px;
+            overflow-x: auto;
+            scrollbar-width: none
+        }
+
+        .tab-strip::-webkit-scrollbar {
+            display: none
+        }
+
+        .ts-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            padding: 8px 14px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            margin-bottom: -1px;
+            transition: all .2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            touch-action: manipulation;
+            min-height: 36px
+        }
+
+        .ts-btn.active {
+            color: var(--neural);
+            border-bottom-color: var(--neural)
+        }
+
+        /* INFO TIP */
+        .info-tip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid var(--muted);
+            font-size: 7px;
+            color: var(--muted);
+            cursor: help;
+            position: relative;
+            flex-shrink: 0
+        }
+
+        .info-tip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card2);
+            border: 1px solid var(--border);
+            padding: 5px 9px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--text);
+            letter-spacing: .04em;
+            z-index: 50;
+            pointer-events: none;
+            max-width: min(220px, 80vw);
+            white-space: normal;
+            text-align: center;
+            line-height: 1.5
+        }
+
+        /* TOAST */
+        #toast-c {
+            position: fixed;
+            bottom: calc(16px + var(--safe-bottom));
+            right: clamp(10px, 4vw, 20px);
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: min(300px, calc(100vw - 20px))
+        }
+
+        .toast {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: clamp(9px, 2.5vw, 10px);
+            min-width: min(200px, 70vw);
+            animation: toastIn .3s cubic-bezier(.16, 1, .3, 1) both;
+            position: relative;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neural-bright), transparent)
+        }
+
+        .toast.closing {
+            animation: toastOut .25s ease both
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(14px)
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateX(14px)
+            }
+        }
+
+        .toast-title {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 2px
+        }
+
+        .toast-body {
+            color: var(--muted);
+            word-break: break-word
+        }
+
+        .toast-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 1px;
+            background: var(--neural);
+            animation: toastBar 3.2s linear both
+        }
+
+        @keyframes toastBar {
+            from {
+                width: 100%
+            }
+
+            to {
+                width: 0%
+            }
+        }
+
+        /* SCROLL CONTAINERS */
+        .inner-scroll {
+            overflow-y: auto;
+            max-height: clamp(200px, 38vh, 340px);
+            -webkit-overflow-scrolling: touch
+        }
+
+        .inner-scroll-sm {
+            overflow-y: auto;
+            max-height: clamp(180px, 32vh, 280px);
+            -webkit-overflow-scrolling: touch
+        }
+
+        /* MISC */
+        .margin-info-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap
+        }
+
+        .mi-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border2);
+            padding: 7px 10px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            flex: 1;
+            min-width: 70px
+        }
+
+        .mi-label {
+            color: var(--muted);
+            margin-bottom: 3px
+        }
+
+        .mi-val {
+            color: #fff;
+            font-weight: 500;
+            font-size: 10px
+        }
+
+        .mi-val.green {
+            color: var(--signal)
+        }
+
+        .mi-val.red {
+            color: var(--red)
+        }
+
+        .mi-val.orange {
+            color: var(--orange)
+        }
+
+        .mi-val.gold {
+            color: var(--gold)
+        }
+
+        @keyframes numBump {
+            0% {
+                transform: translateY(0)
+            }
+
+            40% {
+                transform: translateY(-3px)
+            }
+
+            100% {
+                transform: translateY(0)
+            }
+        }
+
+        .num-bump {
+            animation: numBump .3s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .section-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--neural);
+            opacity: .6;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .section-eyebrow::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(110, 110, 255, 0.1)
+        }
+
+        .gold-panel-head {
+            background: linear-gradient(135deg, rgba(200, 169, 110, 0.04), transparent);
+            border-bottom-color: rgba(200, 169, 110, 0.08) !important
+        }
+
+        .neural-panel-head {
+            background: linear-gradient(135deg, rgba(110, 110, 255, 0.05), transparent)
+        }
+
+        /* RADAR SWEEP */
+        .radar-panel {
+            position: relative
+        }
+
+        .radar-sweep {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0
+        }
+
+        .radar-sweep::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            transform: translate(-50%, -50%);
+            background: conic-gradient(from 0deg, transparent 0deg, transparent 340deg, rgba(110, 110, 255, 0.04) 350deg, rgba(110, 110, 255, 0.08) 355deg, transparent 360deg);
+            animation: radarSpin 8s linear infinite
+        }
+
+        @keyframes radarSpin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg)
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg)
+            }
+        }
+
+        .radar-panel>.panel-head,
+        .radar-panel>.panel-body {
+            position: relative;
+            z-index: 1
+        }
+
+        /* AI CHIP inline in order panel header */
+        .order-ai-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(110, 110, 255, 0.08);
+            border: 1px solid rgba(110, 110, 255, 0.18);
+            padding: 2px 7px;
+            font-family: 'DM Mono', monospace;
+            font-size: 7px;
+            letter-spacing: .1em;
+            color: var(--neural);
+            text-transform: uppercase
+        }
+
+        /* REDUCED MOTION */
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <div class="login-glow"></div>
+            <div class="login-inner">
+                <div class="login-corner tl"></div>
+                <div class="login-corner tr"></div>
+                <div class="login-corner bl"></div>
+                <div class="login-corner br"></div>
+                <div class="login-logo-row">
+                    <svg style="color:var(--neural);width:30px;height:30px;filter:drop-shadow(0 0 10px rgba(110,110,255,0.5))"
+                        viewBox="0 0 100 100" fill="currentColor">
+                        <path
+                            d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+                    </svg>
+                    <div>
+                        <div
+                            style="font-family:'Cormorant Garamond',serif;font-size:clamp(15px,4vw,18px);letter-spacing:.16em;text-transform:uppercase;color:#fff">
+                            Savanna Academy</div>
+                        <div
+                            style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--neural);opacity:.7;margin-top:2px">
+                            AI-Powered Margin Terminal v2.0</div>
+                    </div>
+                </div>
+                <div
+                    style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:9px 0;margin-bottom:20px;display:flex;gap:clamp(10px,4vw,20px);flex-wrap:wrap">
+                    <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:var(--muted);letter-spacing:.1em">
+                        <span style="color:var(--signal)">●</span> LIVE MARKETS</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:var(--muted);letter-spacing:.1em">
+                        <span style="color:var(--neural)">◆</span> AI SIGNAL ENGINE</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:var(--muted);letter-spacing:.1em">
+                        <span style="color:var(--gold)">★</span> LEADERBOARD</div>
+                </div>
+                <div class="login-heading">Student Access</div>
+                <div class="login-sub">Enter your academy credentials to continue</div>
+                <div class="field"><label>Username</label><input type="text" id="loginUsername"
+                        placeholder="username123" autocomplete="username" inputmode="text" /></div>
+                <div class="field"><label>Password</label><input type="password" id="loginPassword"
+                        placeholder="••••••••" autocomplete="current-password" /></div>
+                <button class="btn-login" onclick="doLogin()" id="loginBtn">Initialize Session →</button>
+                <div class="login-error" id="loginError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MARGIN CALL BANNER -->
+    <div class="mc-banner" id="mcBanner">⚠ MARGIN CALL — Equity below 50% of used margin. Close positions or your
+        account may be liquidated.</div>
+
+    <!-- TICKER -->
+    <div class="ticker-rail">
+        <div class="ticker-belt" id="tickerBelt"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-brand">
+            <svg class="nav-logo" viewBox="0 0 100 100" fill="currentColor">
+                <path
+                    d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+            </svg>
+            <div class="nav-wordmark">
+                <div class="nav-title">Savanna Academy</div>
+                <div class="nav-sub">Margin Terminal · AI-Enhanced</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="ai-chip">
+                <div class="ai-chip-dot"></div>AI ACTIVE
+            </div>
+            <div class="nav-status">
+                <div class="pulse-dot"></div>
+                <div class="nav-status-text">LIVE</div>
+            </div>
+            <div class="nav-user" id="navUsername">—</div>
+            <button class="btn-logout" onclick="doLogout()">Exit ✕</button>
+        </div>
+    </nav>
+
+    <main id="mainContent" style="display:none">
+
+        <!-- AI SYSTEM BANNER -->
+        <div class="ai-banner">
+            <div class="ai-banner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+            </div>
+            <div style="min-width:0;flex:1">
+                <div class="ai-banner-text"><b>Savanna Intelligence Engine</b> · Paper margin trading on live Binance
+                    data</div>
+                <div class="ai-banner-text" style="opacity:.5;margin-top:2px">USDT/KES 130 · Stop-out at 50% margin
+                    level · Mark-to-market every 3s</div>
+            </div>
+            <div class="ai-banner-right">
+                <div class="ai-stat">
+                    <div class="ai-stat-label">Session</div>
+                    <div class="ai-stat-val" id="sessionTime">00:00</div>
+                </div>
+                <div class="ai-stat">
+                    <div class="ai-stat-label">Feed</div>
+                    <div class="ai-stat-val" style="color:var(--signal)">BINANCE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCOUNT SUMMARY BAR -->
+        <div class="account-bar">
+            <div class="ab-card" id="cardBalance">
+                <div class="ab-label">Balance <span class="info-tip"
+                        data-tip="Starting capital + realised P&L. Cash in account.">i</span></div>
+                <div class="ab-value gold" id="abBalance">KES 100,000</div>
+                <div class="ab-sub">Account cash</div>
+            </div>
+            <div class="ab-card" id="cardEquity">
+                <div class="ab-label">Equity <span class="info-tip"
+                        data-tip="Balance + floating P&L on all open positions.">i</span></div>
+                <div class="ab-value" id="abEquity">KES 100,000</div>
+                <div class="ab-sub" id="abEquitySub">No open trades</div>
+            </div>
+            <div class="ab-card" id="cardMargin">
+                <div class="ab-label">Used Margin <span class="info-tip"
+                        data-tip="Collateral locked for open positions.">i</span></div>
+                <div class="ab-value violet" id="abUsedMargin">KES 0</div>
+                <div class="ab-sub">Locked collateral</div>
+            </div>
+            <div class="ab-card" id="cardFreeMargin">
+                <div class="ab-label">Free Margin <span class="info-tip"
+                        data-tip="Equity - Used Margin. Available to open new trades.">i</span></div>
+                <div class="ab-value green" id="abFreeMargin">KES 100,000</div>
+                <div class="ab-sub">Available to trade</div>
+            </div>
+            <div class="ab-card" id="cardMarginLevel">
+                <div class="ab-label">Margin Level <span class="info-tip"
+                        data-tip="Equity / Used Margin x 100%. Below 100% = margin call.">i</span></div>
+                <div class="ab-value green" id="abMarginLevel">—</div>
+                <div class="margin-level-bar">
+                    <div class="margin-level-fill" id="marginLevelFill" style="width:100%;background:var(--signal)">
+                    </div>
+                </div>
+            </div>
+            <div class="ab-card" id="cardReturn">
+                <div class="ab-label">Total Return <span class="info-tip"
+                        data-tip="(Equity - Starting Capital) / Starting Capital x 100">i</span></div>
+                <div class="ab-value" id="abReturn">+0.00%</div>
+                <div class="ab-sub">vs KES 100,000 start</div>
+            </div>
+        </div>
+
+        <!-- TRADE GRID -->
+        <div class="trade-grid">
+
+            <!-- LEFT -->
+            <div class="col-left">
+                <!-- Market Panel -->
+                <div class="panel radar-panel">
+                    <div class="radar-sweep"></div>
+                    <div class="panel-head neural-panel-head">
+                        <div>
+                            <div class="panel-title" style="color:var(--neural)">Live Market Intelligence</div>
+                            <div class="panel-sub">Binance · Real-time · Paper margin trades</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <div class="pulse-dot" style="width:5px;height:5px"></div>
+                            <span
+                                style="font-family:'DM Mono',monospace;font-size:8px;color:var(--signal);letter-spacing:.12em">STREAMING</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="market-tabs" id="marketTabs">
+                            <button class="mkt-tab active" data-sym="BTCUSDT"
+                                onclick="selectMarket(this)">BTC/USDT</button>
+                            <button class="mkt-tab" data-sym="ETHUSDT" onclick="selectMarket(this)">ETH/USDT</button>
+                            <button class="mkt-tab" data-sym="SOLUSDT" onclick="selectMarket(this)">SOL/USDT</button>
+                            <button class="mkt-tab" data-sym="BNBUSDT" onclick="selectMarket(this)">BNB/USDT</button>
+                            <button class="mkt-tab" data-sym="XRPUSDT" onclick="selectMarket(this)">XRP/USDT</button>
+                            <button class="mkt-tab" data-sym="ADAUSDT" onclick="selectMarket(this)">ADA/USDT</button>
+                        </div>
+                        <div class="price-hero">
+                            <div class="price-big" id="priceDisplay">—</div>
+                            <div class="price-change up" id="priceChange">—</div>
+                        </div>
+                        <div class="price-meta" id="priceMeta">Initializing data feed…</div>
+                        <div class="mini-chart">
+                            <svg id="sparkSvg" viewBox="0 0 600 60" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#6E6EFF" stop-opacity=".25" />
+                                        <stop offset="100%" stop-color="#6E6EFF" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <path id="sparkArea" fill="url(#sparkGrad)" />
+                                <path id="sparkLine" fill="none" stroke="#6E6EFF" stroke-width="1.5"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Positions -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <div class="panel-title">Open Positions</div>
+                            <div class="panel-sub">Floating P&amp;L · Mark-to-market every 3s</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <div id="totalPnlBadge" style="font-family:'DM Mono',monospace;font-size:10px;display:none">
+                            </div>
+                            <div style="font-family:'DM Mono',monospace;font-size:8.5px;color:var(--muted)"
+                                id="posCount">0 positions</div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="padding-top:10px">
+                        <div class="tab-strip">
+                            <button class="ts-btn active" onclick="switchPosTab('open',this)">Open</button>
+                            <button class="ts-btn" onclick="switchPosTab('history',this)">History</button>
+                        </div>
+                        <div class="inner-scroll">
+                            <div id="openPositionsWrap">
+                                <p
+                                    style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center;letter-spacing:.08em">
+                                    No open positions · Place your first trade</p>
+                            </div>
+                            <div id="historyWrap" style="display:none">
+                                <p
+                                    style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center">
+                                    No closed trades yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE: Order Form -->
+            <div class="col-mid">
+                <div class="panel" style="height:fit-content">
+                    <div class="panel-head order-panel-head neural-panel-head">
+                        <div>
+                            <div class="panel-title" style="color:var(--neural)">Place Order</div>
+                            <div class="panel-sub" id="orderSymbolLabel">BTC/USDT</div>
+                        </div>
+                        <div class="order-ai-chip">
+                            <div class="ai-chip-dot"></div>PAPER
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="order-tabs">
+                            <button class="order-tab buy active" id="tabBuy" onclick="setOrderSide('buy')">▲ Buy /
+                                Long</button>
+                            <button class="order-tab sell" id="tabSell" onclick="setOrderSide('sell')">▼ Sell /
+                                Short</button>
+                        </div>
+                        <div class="order-field">
+                            <label>Lot Size <span class="info-tip" style="display:inline-flex"
+                                    data-tip="1 lot = 1 BTC/ETH/etc. Mini = 0.1. Micro = 0.01.">i</span></label>
+                            <input type="number" id="orderLots" placeholder="e.g. 0.1" min="0.01" step="0.01"
+                                oninput="updateOrderPreview()" inputmode="decimal" />
+                        </div>
+                        <div class="order-field" style="margin-top:-4px">
+                            <div class="lot-quick-btns">
+                                <button class="lot-q-btn" onclick="setLots(0.01)">0.01 Micro</button>
+                                <button class="lot-q-btn" onclick="setLots(0.1)">0.1 Mini</button>
+                                <button class="lot-q-btn" onclick="setLots(0.5)">0.5</button>
+                                <button class="lot-q-btn" onclick="setLots(1)">1.0 Std</button>
+                            </div>
+                        </div>
+                        <div class="order-field" style="margin-top:6px">
+                            <label>Leverage <span class="info-tip" style="display:inline-flex"
+                                    data-tip="Higher leverage amplifies both gains and losses.">i</span></label>
+                            <div class="leverage-btns" id="leverageBtns">
+                                <button class="lev-btn" onclick="setLeverage(5)">1:5</button>
+                                <button class="lev-btn active" onclick="setLeverage(10)">1:10</button>
+                                <button class="lev-btn" onclick="setLeverage(25)">1:25</button>
+                                <button class="lev-btn" onclick="setLeverage(50)">1:50</button>
+                                <button class="lev-btn" onclick="setLeverage(100)">1:100</button>
+                            </div>
+                        </div>
+                        <div class="order-preview" id="orderPreview">
+                            <div>Symbol: <span id="prevSym">BTC/USDT</span></div>
+                            <div>Lot size: <span id="prevLots">—</span> lot(s)</div>
+                            <div>Contract qty: <span id="prevQty">—</span></div>
+                            <div>Position value: <span id="prevPosVal">—</span></div>
+                            <div>Leverage: <span id="prevLeverage">1:10</span></div>
+                            <div>Required margin: <span id="prevMargin" class="warn">—</span></div>
+                            <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border2)">Free margin:
+                                <span id="prevFreeMargin" class="ok">—</span></div>
+                            <div id="prevMarginWarn" style="display:none;margin-top:4px;color:var(--red);font-size:8px">
+                                ⚠ Insufficient free margin</div>
+                        </div>
+                        <button class="btn-execute-buy" id="execBtn" onclick="executeOrder()">Execute Buy Order
+                            →</button>
+                        <p
+                            style="font-family:'DM Mono',monospace;font-size:7.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.8;letter-spacing:.06em">
+                            Paper trading · No real funds · Educational use only</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Leaderboard -->
+            <div class="col-right">
+                <div class="panel" style="height:fit-content">
+                    <div class="panel-head gold-panel-head">
+                        <div>
+                            <div class="panel-title" style="color:var(--gold)">Leaderboard</div>
+                            <div class="panel-sub">Ranked by total return</div>
+                        </div>
+                        <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)" id="lbUpdated">—
+                        </div>
+                    </div>
+                    <div class="panel-body" style="padding-top:10px">
+                        <div class="inner-scroll-sm" id="leaderboard">
+                            <p
+                                style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;padding:20px 0;text-align:center">
+                                Loading rankings…</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast-c"></div>
+
+    <script>
+        const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
+        const STARTING_CAPITAL = 100000, USDT_KES = 130, MARGIN_CALL_LEVEL = 100, STOP_OUT_LEVEL = 50, CONTRACT_SIZE = 1;
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null, currentSymbol = "BTCUSDT", currentPrice = 0, currentPriceChange = 0;
+        let priceHistory = [], balance = STARTING_CAPITAL;
+        let openPositions = [], tradeHistory = [], currentOrderSide = 'buy', selectedLeverage = 10;
+        let priceInterval = null, lbInterval = null, livePrices = {}, marginCallActive = false;
+        let sessionStart = Date.now();
+
+        setInterval(() => {
+            const s = Math.floor((Date.now() - sessionStart) / 1000), m = Math.floor(s / 60), sec = s % 60;
+            const el = document.getElementById('sessionTime');
+            if (el) el.textContent = String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        }, 1000);
+
+        function calcFloatingPnL() { let f = 0; openPositions.forEach(p => { const lp = livePrices[p.symbol] || p.entry_price; f += p.side === 'buy' ? (lp - p.entry_price) * p.quantity : (p.entry_price - lp) * p.quantity }); return f * USDT_KES }
+        function getEquity() { return balance + calcFloatingPnL() }
+        function getUsedMargin() { return openPositions.reduce((s, p) => s + (p.margin_kes || 0), 0) }
+        function getFreeMargin() { return getEquity() - getUsedMargin() }
+        function getMarginLevel() { const um = getUsedMargin(); if (um === 0) return null; return (getEquity() / um) * 100 }
+
+        async function doLogin() {
+            const username = document.getElementById("loginUsername").value.trim().toLowerCase();
+            const password = document.getElementById("loginPassword").value;
+            const errEl = document.getElementById("loginError"), btn = document.getElementById("loginBtn");
+            errEl.textContent = "";
+            if (!username || !password) { errEl.textContent = "Enter username and password."; return }
+            btn.textContent = "Authenticating…"; btn.disabled = true;
+            try {
+                const hash = await hashSHA256(password);
+                const { data, error } = await db.from('access_requests').select('*').eq('username', username).eq('password_hash', hash).eq('status', 'approved').single();
+                if (error || !data) { errEl.textContent = "// Invalid credentials or access not approved."; btn.textContent = "Initialize Session →"; btn.disabled = false; return }
+                currentUser = data; await initSession();
+            } catch (err) { errEl.textContent = "// Error: " + err.message; btn.textContent = "Initialize Session →"; btn.disabled = false }
+        }
+
+        async function initSession() {
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("mainContent").style.display = "block";
+            document.getElementById("navUsername").textContent = currentUser.username;
+            sessionStart = Date.now();
+            await ensurePortfolio(); await loadPortfolio(); await loadPositions(); await loadTradeHistory(); await loadLeaderboard();
+            startPriceFeed(); buildTicker();
+            lbInterval = setInterval(loadLeaderboard, 15000);
+            setLeverage(10);
+            document.getElementById("loginBtn").textContent = "Initialize Session →";
+            document.getElementById("loginBtn").disabled = false;
+        }
+
+        function doLogout() {
+            currentUser = null; clearInterval(priceInterval); clearInterval(lbInterval);
+            document.getElementById("loginScreen").style.display = "flex";
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+        }
+
+        async function ensurePortfolio() {
+            const { data } = await db.from('student_portfolios').select('*').eq('user_id', currentUser.id).single();
+            if (!data) { await db.from('student_portfolios').insert([{ user_id: currentUser.id, username: currentUser.username, name: currentUser.name, cash_balance: STARTING_CAPITAL, starting_capital: STARTING_CAPITAL, total_trades: 0, portfolio_value: STARTING_CAPITAL, return_pct: 0 }]) }
+        }
+
+        async function loadPortfolio() {
+            const { data } = await db.from('student_portfolios').select('*').eq('user_id', currentUser.id).single();
+            if (!data) return; balance = data.cash_balance; renderAccountBar();
+        }
+
+        function renderAccountBar() {
+            const equity = getEquity(), floatKES = calcFloatingPnL(), usedM = getUsedMargin(), freeM = getFreeMargin(), ml = getMarginLevel();
+            const returnPct = ((equity - STARTING_CAPITAL) / STARTING_CAPITAL) * 100;
+            anim('abBalance', 'KES ' + fmt(balance));
+            const equityEl = document.getElementById('abEquity'); equityEl.textContent = 'KES ' + fmt(equity);
+            equityEl.className = 'ab-value ' + (equity > balance ? 'green' : equity < balance ? 'red' : '');
+            const equSub = document.getElementById('abEquitySub');
+            if (openPositions.length) { equSub.textContent = (floatKES >= 0 ? '+ ' : '- ') + 'KES ' + fmt(Math.abs(floatKES)) + ' floating'; equSub.className = 'ab-sub ' + (floatKES >= 0 ? 'up' : 'dn') }
+            else { equSub.textContent = 'No open trades'; equSub.className = 'ab-sub' }
+            anim('abUsedMargin', 'KES ' + fmt(usedM));
+            const fmEl = document.getElementById('abFreeMargin');
+            fmEl.textContent = 'KES ' + fmt(Math.max(freeM, 0));
+            fmEl.className = 'ab-value ' + (freeM < 0 ? 'red' : freeM < STARTING_CAPITAL * 0.1 ? 'orange' : 'green');
+            const mlEl = document.getElementById('abMarginLevel'), mlFill = document.getElementById('marginLevelFill'), mlCard = document.getElementById('cardMarginLevel');
+            if (ml === null) { mlEl.textContent = '—'; mlEl.className = 'ab-value green'; mlFill.style.width = '100%'; mlFill.style.background = 'var(--signal)'; mlCard.classList.remove('warning', 'danger') }
+            else {
+                mlEl.textContent = ml.toFixed(1) + '%'; const fillPct = Math.min(ml / 5, 100); mlFill.style.width = fillPct + '%';
+                if (ml <= STOP_OUT_LEVEL) { mlEl.className = 'ab-value red'; mlFill.style.background = 'var(--red)'; mlCard.classList.add('danger'); mlCard.classList.remove('warning') }
+                else if (ml <= MARGIN_CALL_LEVEL) { mlEl.className = 'ab-value orange'; mlFill.style.background = 'var(--orange)'; mlCard.classList.add('warning'); mlCard.classList.remove('danger') }
+                else if (ml <= 150) { mlEl.className = 'ab-value orange'; mlFill.style.background = 'var(--amber)'; mlCard.classList.remove('warning', 'danger') }
+                else { mlEl.className = 'ab-value green'; mlFill.style.background = 'var(--signal)'; mlCard.classList.remove('warning', 'danger') }
+            }
+            const retEl = document.getElementById('abReturn');
+            retEl.textContent = (returnPct >= 0 ? '+' : '') + returnPct.toFixed(2) + '%';
+            retEl.className = 'ab-value ' + (returnPct > 0 ? 'green' : returnPct < 0 ? 'red' : '');
+            checkMarginCall(ml);
+            document.getElementById('prevFreeMargin').textContent = 'KES ' + fmt(Math.max(freeM, 0));
+            document.getElementById('prevFreeMargin').className = freeM < 0 ? 'bad' : freeM < 5000 ? 'warn' : 'ok';
+        }
+
+        function checkMarginCall(ml) {
+            const banner = document.getElementById('mcBanner');
+            if (ml !== null && ml <= STOP_OUT_LEVEL && openPositions.length > 0) {
+                banner.style.display = 'block';
+                if (!marginCallActive) { marginCallActive = true; toast('error', 'Stop-Out Level', 'Margin level ' + ml.toFixed(1) + '% — positions being closed.'); setTimeout(() => autoStopOut(), 1500) }
+            } else if (ml !== null && ml <= MARGIN_CALL_LEVEL && openPositions.length > 0) {
+                banner.style.display = 'block';
+                if (!marginCallActive) { marginCallActive = true; toast('warning', 'Margin Call', 'Margin level ' + ml.toFixed(1) + '% — add funds or close positions.') }
+            } else { banner.style.display = 'none'; marginCallActive = false }
+        }
+
+        async function autoStopOut() {
+            const posToClose = [...openPositions];
+            for (const pos of posToClose) await closePosition(pos.id, true);
+            toast('error', 'Stop-Out Complete', 'All positions closed. Margin restored.');
+        }
+
+        async function fetchPrice(symbol) {
+            try {
+                const [t, s] = await Promise.all([
+                    fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + symbol).then(r => r.json()),
+                    fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=' + symbol).then(r => r.json())
+                ]);
+                currentPrice = parseFloat(t.price); currentPriceChange = parseFloat(s.priceChangePercent);
+                livePrices[symbol] = currentPrice;
+                document.getElementById('priceDisplay').textContent = '$' + currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: currentPrice > 100 ? 2 : 6 });
+                const isUp = currentPriceChange >= 0; const chEl = document.getElementById('priceChange');
+                chEl.textContent = (isUp ? '+' : '') + currentPriceChange.toFixed(2) + '%';
+                chEl.className = 'price-change ' + (isUp ? 'up' : 'dn');
+                document.getElementById('priceMeta').textContent = 'Vol: ' + parseFloat(s.volume).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' ' + symbol.replace('USDT', '') + ' · High: $' + parseFloat(s.highPrice).toLocaleString() + ' · Low: $' + parseFloat(s.lowPrice).toLocaleString() + ' · 24h';
+                priceHistory.push(currentPrice); if (priceHistory.length > 60) priceHistory.shift();
+                drawSparkline(); updateOrderPreview(); refreshPositionPnL(); renderAccountBar(); pushPortfolioToDB();
+            } catch (e) { console.warn('Price error', e) }
+        }
+
+        async function fetchOtherSymbols() {
+            const others = [...new Set(openPositions.map(p => p.symbol).filter(s => s !== currentSymbol))];
+            await Promise.all(others.map(async sym => { try { const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + sym); const d = await r.json(); livePrices[sym] = parseFloat(d.price) } catch (e) { } }));
+        }
+
+        function drawSparkline() {
+            if (priceHistory.length < 2) return;
+            const min = Math.min(...priceHistory), max = Math.max(...priceHistory);
+            const range = max - min || 1; const W = 600, H = 60;
+            const pts = priceHistory.map((p, i) => [(i / (priceHistory.length - 1)) * W, H - ((p - min) / range) * (H - 12) - 6]);
+            const d = pts.map((p, i) => (i === 0 ? 'M' + p[0] + ',' + p[1] : 'L' + p[0] + ',' + p[1])).join(' ');
+            document.getElementById('sparkLine').setAttribute('d', d);
+            document.getElementById('sparkArea').setAttribute('d', d + ' L' + W + ',' + H + ' L0,' + H + ' Z');
+        }
+
+        function startPriceFeed() {
+            fetchPrice(currentSymbol); clearInterval(priceInterval);
+            priceInterval = setInterval(async () => { await fetchPrice(currentSymbol); await fetchOtherSymbols() }, 3000);
+        }
+
+        function selectMarket(el) {
+            document.querySelectorAll('.mkt-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active'); currentSymbol = el.dataset.sym; currentPrice = 0; priceHistory = [];
+            document.getElementById('priceDisplay').textContent = '—';
+            document.getElementById('orderSymbolLabel').textContent = currentSymbol.replace('USDT', '/USDT');
+            document.getElementById('prevSym').textContent = currentSymbol.replace('USDT', '/USDT');
+            startPriceFeed();
+        }
+
+        function setLots(v) { document.getElementById('orderLots').value = v; updateOrderPreview() }
+        function setLeverage(v) {
+            selectedLeverage = v;
+            document.querySelectorAll('.lev-btn').forEach(b => { b.classList.toggle('active', parseInt(b.textContent.replace('1:', '')) === v) });
+            updateOrderPreview();
+        }
+        function setOrderSide(side) {
+            currentOrderSide = side;
+            document.getElementById('tabBuy').classList.toggle('active', side === 'buy');
+            document.getElementById('tabSell').classList.toggle('active', side === 'sell');
+            const btn = document.getElementById('execBtn');
+            btn.className = side === 'buy' ? 'btn-execute-buy' : 'btn-execute-sell';
+            btn.textContent = side === 'buy' ? 'Execute Buy Order →' : 'Execute Sell Order →';
+            updateOrderPreview();
+        }
+
+        function updateOrderPreview() {
+            const lots = parseFloat(document.getElementById('orderLots').value) || 0;
+            const qty = lots * CONTRACT_SIZE, posValueUSD = qty * currentPrice, posValueKES = posValueUSD * USDT_KES;
+            const reqMarginKES = posValueKES / selectedLeverage, freeM = getFreeMargin();
+            document.getElementById('prevLots').textContent = lots > 0 ? lots.toFixed(2) : '—';
+            document.getElementById('prevQty').textContent = qty > 0 ? qty.toFixed(4) + ' ' + currentSymbol.replace('USDT', '') : '—';
+            document.getElementById('prevPosVal').textContent = posValueKES > 0 ? 'KES ' + fmt(posValueKES) + ' ($' + fmt2(posValueUSD) + ')' : '—';
+            document.getElementById('prevLeverage').textContent = '1:' + selectedLeverage;
+            document.getElementById('prevMargin').textContent = reqMarginKES > 0 ? 'KES ' + fmt(reqMarginKES) : '—';
+            document.getElementById('prevFreeMargin').textContent = 'KES ' + fmt(Math.max(freeM, 0));
+            document.getElementById('prevFreeMargin').className = freeM < 0 ? 'bad' : freeM < 5000 ? 'warn' : 'ok';
+            const warn = document.getElementById('prevMarginWarn');
+            warn.style.display = (lots > 0 && reqMarginKES > freeM) ? 'block' : 'none';
+        }
+
+        async function executeOrder() {
+            if (!currentUser) return;
+            const lots = parseFloat(document.getElementById('orderLots').value);
+            if (!lots || lots <= 0) { toast('error', 'Invalid Lot Size', 'Enter a valid lot size (min 0.01).'); return }
+            if (currentPrice <= 0) { toast('error', 'No Price', 'Wait for live price to load.'); return }
+            const qty = lots * CONTRACT_SIZE, posValueUSD = qty * currentPrice, posValueKES = posValueUSD * USDT_KES;
+            const reqMarginKES = posValueKES / selectedLeverage, freeM = getFreeMargin();
+            if (reqMarginKES > freeM) { toast('error', 'Insufficient Free Margin', 'Need KES ' + fmt(reqMarginKES) + ', have KES ' + fmt(Math.max(freeM, 0))); return }
+            const btn = document.getElementById('execBtn'); btn.disabled = true; btn.textContent = 'Executing…';
+            balance -= reqMarginKES;
+            const optPos = { id: 'opt_' + Date.now(), user_id: currentUser.id, username: currentUser.username, symbol: currentSymbol, side: currentOrderSide, entry_price: currentPrice, quantity: qty, lots: lots, leverage: selectedLeverage, position_value_kes: posValueKES, margin_kes: reqMarginKES, status: 'open', created_at: new Date().toISOString() };
+            openPositions.unshift(optPos); renderOpenPositions(); renderAccountBar();
+            try {
+                const { data: trade, error: tErr } = await db.from('student_trades').insert([{ user_id: currentUser.id, username: currentUser.username, symbol: currentSymbol, side: currentOrderSide, entry_price: currentPrice, quantity: qty, lots: lots, leverage: selectedLeverage, position_value_kes: posValueKES, margin_kes: reqMarginKES, amount_usd: posValueUSD, amount_kes: posValueKES, status: 'open', pnl: 0, pnl_pct: 0 }]).select().single();
+                if (tErr) throw tErr;
+                const idx = openPositions.findIndex(p => p.id === optPos.id); if (idx !== -1) openPositions[idx] = trade;
+                await db.from('student_portfolios').update({ cash_balance: balance }).eq('user_id', currentUser.id);
+                livePrices[currentSymbol] = currentPrice;
+                toast('success', currentOrderSide === 'buy' ? 'Long Opened' : 'Short Opened', lots + ' lot(s) ' + qty.toFixed(4) + ' ' + currentSymbol.replace('USDT', '') + ' @ $' + currentPrice.toLocaleString() + ' Margin: KES ' + fmt(reqMarginKES) + ' Lev 1:' + selectedLeverage);
+                document.getElementById('orderLots').value = '';
+                renderOpenPositions(); renderAccountBar(); updateOrderPreview(); await updateLeaderboardEntry(); await loadLeaderboard();
+            } catch (err) {
+                balance += reqMarginKES; openPositions = openPositions.filter(p => p.id !== optPos.id);
+                renderOpenPositions(); renderAccountBar(); toast('error', 'Order Error', err.message);
+            }
+            btn.disabled = false; btn.textContent = currentOrderSide === 'buy' ? 'Execute Buy Order →' : 'Execute Sell Order →';
+        }
+
+        async function loadPositions() {
+            const { data } = await db.from('student_trades').select('*').eq('user_id', currentUser.id).eq('status', 'open').order('created_at', { ascending: false });
+            openPositions = data || [];
+            document.getElementById('posCount').textContent = openPositions.length + ' position' + (openPositions.length !== 1 ? 's' : '');
+            renderOpenPositions();
+        }
+
+        function refreshPositionPnL() {
+            openPositions.forEach(p => {
+                const lp = livePrices[p.symbol] || p.entry_price;
+                const pnlKES = p.side === 'buy' ? (lp - p.entry_price) * p.quantity * USDT_KES : (p.entry_price - lp) * p.quantity * USDT_KES;
+                const pnlPct = (pnlKES / p.margin_kes) * 100;
+                const pnlEl = document.querySelector('[data-pos-pnl="' + p.id + '"]');
+                if (pnlEl) {
+                    const prev = pnlEl.dataset.prevPnl !== undefined ? parseFloat(pnlEl.dataset.prevPnl) : null;
+                    const newTxt = (pnlKES >= 0 ? '+KES ' : '-KES ') + fmt(Math.abs(pnlKES)) + ' (' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%)';
+                    if (pnlEl.textContent !== newTxt) {
+                        pnlEl.textContent = newTxt; pnlEl.className = 'pos-pnl ' + (pnlKES >= 0 ? 'pos' : 'neg');
+                        if (prev !== null) { const row = pnlEl.closest('tr'); if (row) { row.classList.remove('pos-row-up', 'pos-row-dn'); void row.offsetWidth; row.classList.add(pnlKES >= prev ? 'pos-row-up' : 'pos-row-dn') } }
+                        pnlEl.dataset.prevPnl = pnlKES;
+                    }
+                }
+                const lpEl = document.querySelector('[data-pos-live="' + p.id + '"]');
+                if (lpEl) lpEl.textContent = '$' + lp.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: lp > 100 ? 2 : 6 });
+            });
+            const floatKES = calcFloatingPnL(); const badge = document.getElementById('totalPnlBadge');
+            if (openPositions.length > 0) { badge.style.display = 'block'; badge.style.color = floatKES >= 0 ? 'var(--signal)' : 'var(--red)'; badge.textContent = (floatKES >= 0 ? '+ ' : '-  ') + 'KES ' + fmt(Math.abs(floatKES)) + ' float' }
+            else { badge.style.display = 'none' }
+        }
+
+        function renderOpenPositions() {
+            const wrap = document.getElementById('openPositionsWrap');
+            document.getElementById('posCount').textContent = openPositions.length + ' position' + (openPositions.length !== 1 ? 's' : '');
+            if (!openPositions.length) { wrap.innerHTML = '<p style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:10px;padding:20px 0;text-align:center;letter-spacing:.08em">No open positions · Place your first trade</p>'; document.getElementById('totalPnlBadge').style.display = 'none'; return }
+            let rows = '';
+            openPositions.forEach(p => {
+                const lp = livePrices[p.symbol] || p.entry_price;
+                const pnlKES = p.side === 'buy' ? (lp - p.entry_price) * p.quantity * USDT_KES : (p.entry_price - lp) * p.quantity * USDT_KES;
+                const pnlPct = p.margin_kes > 0 ? (pnlKES / p.margin_kes) * 100 : 0;
+                rows += '<tr><td style="color:#fff">' + p.symbol.replace('USDT', '/USDT') + '</td><td class="side-' + p.side + '">' + p.side.toUpperCase() + '</td><td style="color:var(--text)">' + (p.lots || 1).toFixed(2) + '</td><td style="color:var(--neural)">1:' + (p.leverage || 10) + '</td><td>$' + p.entry_price.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td data-pos-live="' + p.id + '" style="color:var(--neural)">$' + lp.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: lp > 100 ? 2 : 6 }) + '</td><td style="color:var(--gold)">' + fmt(p.margin_kes || 0) + '</td><td class="pos-pnl ' + (pnlKES >= 0 ? 'pos' : 'neg') + '" data-pos-pnl="' + p.id + '" style="text-align:right" data-prev-pnl="' + pnlKES + '">' + (pnlKES >= 0 ? '+KES ' : '-KES ') + fmt(Math.abs(pnlKES)) + ' (' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%)</td><td style="text-align:right"><button class="btn-close-pos" onclick="closePosition(\'' + p.id + '\')">Close</button></td></tr>';
+            });
+            wrap.innerHTML = '<div class="pos-table-wrap"><table class="pos-table"><thead><tr><th>Symbol</th><th>Side</th><th>Lots</th><th>Lev</th><th>Entry</th><th>Live</th><th>Margin</th><th class="right">Float P&L</th><th class="right">Action</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+        }
+
+        async function closePosition(id, silent) {
+            silent = silent || false;
+            const pos = openPositions.find(p => String(p.id) === String(id)); if (!pos) return;
+            let closePrice = livePrices[pos.symbol] || currentPrice;
+            if (!livePrices[pos.symbol]) { try { const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + pos.symbol); const d = await r.json(); closePrice = parseFloat(d.price); livePrices[pos.symbol] = closePrice } catch (e) { } }
+            const pnlUSD = pos.side === 'buy' ? (closePrice - pos.entry_price) * pos.quantity : (pos.entry_price - closePrice) * pos.quantity;
+            const pnlKES = pnlUSD * USDT_KES, pnlPct = pos.margin_kes > 0 ? (pnlKES / pos.margin_kes) * 100 : 0;
+            balance += (pos.margin_kes + pnlKES);
+            openPositions = openPositions.filter(p => String(p.id) !== String(id));
+            renderOpenPositions(); renderAccountBar();
+            if (String(id).startsWith('opt_')) { if (!silent) toast('info', 'Position Closed', 'Optimistic position removed.'); return }
+            try {
+                await db.from('student_trades').update({ status: 'closed', close_price: closePrice, pnl: pnlUSD, pnl_pct: pnlPct }).eq('id', id);
+                await db.from('student_portfolios').update({ cash_balance: balance }).eq('user_id', currentUser.id);
+                if (!silent) toast(pnlKES >= 0 ? 'success' : 'warning', 'Position Closed', 'P&L: ' + (pnlKES >= 0 ? '+KES ' : '-KES ') + fmt(Math.abs(pnlKES)) + ' (' + pnlPct.toFixed(1) + '% on margin) 1:' + (pos.leverage || 10) + ' lev');
+                await loadTradeHistory(); await updateLeaderboardEntry(); await loadLeaderboard();
+            } catch (err) { toast('error', 'Close Error', err.message); await loadPositions() }
+        }
+
+        async function loadTradeHistory() {
+            const { data } = await db.from('student_trades').select('*').eq('user_id', currentUser.id).eq('status', 'closed').order('created_at', { ascending: false }).limit(30);
+            tradeHistory = data || []; renderHistory();
+        }
+
+        function renderHistory() {
+            const wrap = document.getElementById('historyWrap');
+            if (!tradeHistory.length) { wrap.innerHTML = '<p style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:10px;padding:16px 0;text-align:center">No closed trades yet.</p>'; return }
+            let rows = '';
+            tradeHistory.forEach(t => {
+                const pnlKES = (t.pnl || 0) * USDT_KES, pnlPct = t.margin_kes > 0 ? (pnlKES / t.margin_kes) * 100 : 0;
+                rows += '<tr><td>' + t.symbol.replace('USDT', '/U') + '</td><td class="side-' + t.side + '">' + t.side.toUpperCase() + '</td><td>' + (t.lots || 1).toFixed(2) + '</td><td style="color:var(--neural)">1:' + (t.leverage || 10) + '</td><td>$' + t.entry_price.toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td>$' + (t.close_price || t.entry_price).toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</td><td class="' + (pnlKES >= 0 ? 'side-buy' : 'side-sell') + '">' + (pnlKES >= 0 ? '+KES ' : '-KES ') + fmt(Math.abs(pnlKES)) + ' (' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%)</td></tr>';
+            });
+            wrap.innerHTML = '<div class="hist-table-wrap"><table class="hist-table"><thead><tr><th>Symbol</th><th>Side</th><th>Lots</th><th>Lev</th><th>Entry</th><th>Close</th><th>P&L</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+        }
+
+        function switchPosTab(tab, el) {
+            document.querySelectorAll('.ts-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
+            document.getElementById('openPositionsWrap').style.display = tab === 'open' ? 'block' : 'none';
+            document.getElementById('historyWrap').style.display = tab === 'history' ? 'block' : 'none';
+        }
+
+        async function updateLeaderboardEntry() {
+            const equity = getEquity(), returnPct = ((equity - STARTING_CAPITAL) / STARTING_CAPITAL) * 100;
+            await db.from('student_portfolios').update({ portfolio_value: equity, return_pct: returnPct, cash_balance: balance }).eq('user_id', currentUser.id);
+        }
+
+        let _lastPushTS = 0;
+        async function pushPortfolioToDB() {
+            if (!currentUser) return; if (Date.now() - _lastPushTS < 30000) return; _lastPushTS = Date.now();
+            const equity = getEquity(), returnPct = ((equity - STARTING_CAPITAL) / STARTING_CAPITAL) * 100;
+            db.from('student_portfolios').update({ portfolio_value: equity, return_pct: returnPct }).eq('user_id', currentUser.id).then(() => { });
+        }
+
+        async function loadLeaderboard() {
+            const { data, error } = await db.from('student_portfolios').select('*').order('return_pct', { ascending: false });
+            if (error || !data || !data.length) { document.getElementById('leaderboard').innerHTML = '<p style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:10px;padding:20px 0;text-align:center">No rankings yet.</p>'; return }
+            const maxAbs = Math.max(...data.map(d => Math.abs(d.return_pct || 0)), 0.01);
+            let html = '', myRank = 0;
+            data.forEach((row, i) => {
+                const rank = i + 1, isMe = currentUser && row.user_id === currentUser.id;
+                if (isMe) myRank = rank;
+                const ret = Number(row.return_pct) || 0;
+                const rClass = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : 'rn';
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                const barW = Math.min(Math.abs(ret) / maxAbs * 100, 100);
+                html += '<div class="lb-row"><div class="lb-rank ' + rClass + '">' + (medal || '#' + rank) + '</div><div class="lb-name">' + escHtml(row.name || row.username || '—') + '</div>' + (isMe ? '<div class="you-badge">YOU</div>' : '') + '<div class="lb-bar-wrap"><div class="lb-bar ' + (ret < 0 ? 'neg' : '') + '" style="width:' + barW + '%"></div></div><div class="lb-return ' + (ret > 0 ? 'pos' : ret < 0 ? 'neg' : 'flat') + '">' + (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%</div></div>';
+            });
+            document.getElementById('leaderboard').innerHTML = html;
+            if (myRank) { const sub = document.getElementById('abReturn').closest('.ab-card').querySelector('.ab-sub'); if (sub) sub.textContent = 'Rank #' + myRank + ' of ' + data.length }
+            document.getElementById('lbUpdated').textContent = new Date().toLocaleTimeString('en-GB', { hour12: false });
+        }
+
+        function buildTicker() {
+            const SYMS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT", "DOTUSDT", "LINKUSDT"];
+            const belt = document.getElementById('tickerBelt');
+            const fetchAll = () => {
+                Promise.all(SYMS.map(s => fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=' + s).then(r => r.json()).catch(() => null)))
+                    .then(res => { const items = res.filter(Boolean).map(d => { const ch = parseFloat(d.priceChangePercent); return '<div class="t-item"><span style="color:rgba(255,255,255,.28)">' + d.symbol.replace('USDT', '/USDT') + '</span><span class="' + (ch >= 0 ? 't-up' : 't-dn') + '">' + (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%</span></div>' }).join(''); belt.innerHTML = items + items; });
+            };
+            fetchAll(); setInterval(fetchAll, 15000);
+        }
+
+        function fmt(n) { return Math.abs(n).toLocaleString('en-KE', { maximumFractionDigits: n > 1000 ? 0 : 2 }) }
+        function fmt2(n) { return Math.abs(n).toLocaleString('en-US', { maximumFractionDigits: 2 }) }
+        function anim(id, txt) { const el = document.getElementById(id); if (!el || el.textContent === txt) return; el.classList.remove('num-bump'); void el.offsetWidth; el.classList.add('num-bump'); el.textContent = txt }
+        async function hashSHA256(str) { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('') }
+        function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
+        function toast(type, title, body) {
+            const colors = { success: 'var(--signal)', error: 'var(--red)', warning: 'var(--amber)', info: 'var(--neural)' };
+            const icons = { success: '✦', error: '✕', warning: '⚠', info: '◈' };
+            const el = document.createElement('div'); el.className = 'toast';
+            el.innerHTML = '<div style="color:' + colors[type] + ';font-size:12px;flex-shrink:0;margin-top:1px">' + icons[type] + '</div><div style="min-width:0;flex:1"><div class="toast-title">' + title + '</div><div class="toast-body">' + body + '</div></div><div class="toast-bar" style="background:' + colors[type] + '"></div>';
+            document.getElementById('toast-c').appendChild(el);
+            setTimeout(() => { el.classList.add('closing'); setTimeout(() => el.remove(), 300) }, 3200);
+        }
+        document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() });
+        document.getElementById('loginUsername').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPassword').focus() });
+    </script>
+</body>
+
+</html>
