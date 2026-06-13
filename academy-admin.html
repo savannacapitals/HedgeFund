@@ -265,7 +265,6 @@
             }
         }
 
-        /* ── STATS ROW ── */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -399,7 +398,6 @@
             color: var(--red)
         }
 
-        /* ── PANEL ── */
         .panel {
             background: var(--card);
             border: 1px solid var(--border);
@@ -446,7 +444,6 @@
             flex-wrap: wrap
         }
 
-        /* ── GRIDS ── */
         .top-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -480,7 +477,6 @@
             }
         }
 
-        /* ── Balance Edit Panel (new dedicated section) ── */
         .balance-panel-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -501,7 +497,6 @@
             }
         }
 
-        /* Student quick-select for balance edit */
         .student-picker {
             width: 100%;
             background: rgba(255, 255, 255, .02);
@@ -617,7 +612,6 @@
             font-size: 14px
         }
 
-        /* ── INPUTS / BUTTONS ── */
         .search-inp {
             background: rgba(255, 255, 255, .02);
             border: 1px solid var(--border);
@@ -705,7 +699,6 @@
             background: rgba(34, 211, 238, .08)
         }
 
-        /* ── TABLES ── */
         .lb-table {
             width: 100%;
             border-collapse: collapse;
@@ -915,7 +908,6 @@
             -webkit-overflow-scrolling: touch
         }
 
-        /* ── TABS ── */
         .tab-strip {
             display: flex;
             overflow-x: auto;
@@ -950,7 +942,6 @@
             border-bottom-color: var(--violet)
         }
 
-        /* ── FEED ── */
         .feed-item {
             display: flex;
             gap: 10px;
@@ -1002,7 +993,6 @@
             color: var(--muted)
         }
 
-        /* ── HOTKEY BAR ── */
         .hkbar {
             position: fixed;
             bottom: 0;
@@ -1060,7 +1050,6 @@
             }
         }
 
-        /* ── TOAST ── */
         #toast-c {
             position: fixed;
             bottom: clamp(50px, 8vh, 60px);
@@ -1132,7 +1121,6 @@
             }
         }
 
-        /* ── MISC ── */
         .empty {
             color: var(--muted);
             font-family: 'DM Mono', monospace;
@@ -1180,7 +1168,6 @@
             margin-right: 6px
         }
 
-        /* ── MODALS ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1313,24 +1300,6 @@
             border-bottom: 1px solid var(--border2)
         }
 
-        .modal-box.danger {
-            border-color: rgba(248, 113, 113, .25)
-        }
-
-        .modal-head.danger {
-            background: linear-gradient(135deg, rgba(248, 113, 113, .06), transparent)
-        }
-
-        .modal-box.balance {
-            border-color: rgba(34, 211, 238, .2);
-            max-width: 420px
-        }
-
-        .modal-head.balance {
-            background: linear-gradient(135deg, rgba(34, 211, 238, .06), transparent)
-        }
-
-        /* ── FORM ── */
         .form-field {
             margin-bottom: 14px
         }
@@ -1451,31 +1420,6 @@
             line-height: 1.6
         }
 
-        .balance-current {
-            background: rgba(255, 255, 255, .02);
-            border: 1px solid var(--border2);
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center
-        }
-
-        .balance-current .bc-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            color: var(--muted);
-            letter-spacing: .14em;
-            text-transform: uppercase
-        }
-
-        .balance-current .bc-val {
-            font-family: 'DM Mono', monospace;
-            font-size: 14px;
-            color: var(--cyan)
-        }
-
-        /* Section divider label */
         .section-divider {
             display: flex;
             align-items: center;
@@ -1500,6 +1444,23 @@
             height: 1px;
             background: var(--border)
         }
+
+        /* DB error banner */
+        .db-error-banner {
+            background: rgba(248, 113, 113, .06);
+            border: 1px solid rgba(248, 113, 113, .25);
+            padding: 10px 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            color: var(--red);
+            line-height: 1.7;
+            margin-bottom: 14px;
+            display: none
+        }
+
+        .db-error-banner.visible {
+            display: block
+        }
     </style>
 </head>
 
@@ -1507,7 +1468,6 @@
     <div class="glow g1"></div>
     <div class="glow g2"></div>
 
-    <!-- NAV -->
     <nav>
         <div class="nav-brand">
             <div class="nav-logo">
@@ -1536,7 +1496,9 @@
             <div class="header-rule"></div>
         </div>
 
-        <!-- STATS (counters fixed) -->
+        <!-- DB connectivity banner (shown on load error) -->
+        <div class="db-error-banner" id="dbErrorBanner"></div>
+
         <div class="stats-row">
             <div class="scard v">
                 <div class="sc-label">Enrolled Students</div>
@@ -1551,7 +1513,7 @@
             <div class="scard go">
                 <div class="sc-label">Avg Portfolio Return</div>
                 <div class="sc-val go" id="statAvgReturn">—</div>
-                <div class="sc-delta" id="statAvgReturnDelta">vs starting capital</div>
+                <div class="sc-delta">vs starting capital</div>
             </div>
             <div class="scard a">
                 <div class="sc-label">Open Positions</div>
@@ -1570,7 +1532,6 @@
             </div>
         </div>
 
-        <!-- TOP GRID: Leaderboard + Activity Feed -->
         <div class="top-grid">
             <div class="panel">
                 <div class="panel-head"
@@ -1611,11 +1572,10 @@
             </div>
         </div>
 
-        <!-- BALANCE MANAGEMENT SECTION -->
+        <!-- BALANCE MANAGEMENT -->
         <div class="section-divider"><span>Balance Management</span></div>
         <div class="balance-panel-grid">
 
-            <!-- Quick Balance Editor -->
             <div class="panel">
                 <div class="panel-head"
                     style="background:linear-gradient(135deg,rgba(34,211,238,.05),transparent);border-bottom-color:rgba(34,211,238,.1)">
@@ -1627,7 +1587,6 @@
                         id="balancePanelStatus">No student selected</div>
                 </div>
                 <div class="panel-body">
-                    <!-- Student selector -->
                     <div
                         style="margin-bottom:4px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
                         Select Student</div>
@@ -1635,7 +1594,6 @@
                         <option value="">— Choose a student —</option>
                     </select>
 
-                    <!-- Live stats display -->
                     <div class="balance-display" id="quickBalanceDisplay" style="display:none">
                         <div class="bd-item">
                             <div class="bd-label">Cash Balance</div>
@@ -1651,7 +1609,6 @@
                         </div>
                     </div>
 
-                    <!-- Mode: Set / Increase / Decrease -->
                     <div
                         style="margin-bottom:6px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
                         Adjustment Mode</div>
@@ -1675,7 +1632,6 @@
                         </div>
                     </div>
 
-                    <!-- Preview -->
                     <div class="diff-preview" id="quickDiffPreview">
                         <span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview
                             the change.</span>
@@ -1688,7 +1644,6 @@
                 </div>
             </div>
 
-            <!-- Bulk Reset Panel -->
             <div class="panel" style="height:fit-content">
                 <div class="panel-head"
                     style="background:linear-gradient(135deg,rgba(245,158,11,.04),transparent);border-bottom-color:rgba(245,158,11,.08)">
@@ -1722,7 +1677,7 @@
             </div>
         </div>
 
-        <!-- BOT GRID: Trades + Positions + Enrol -->
+        <!-- TRADES & POSITIONS -->
         <div class="section-divider"><span>Trades & Positions</span></div>
         <div class="bot-grid">
             <div class="panel">
@@ -1763,7 +1718,6 @@
                 </div>
             </div>
 
-            <!-- Enrol Student -->
             <div class="panel" style="height:fit-content">
                 <div class="panel-head"
                     style="background:linear-gradient(135deg,rgba(52,211,153,.04),transparent);border-bottom-color:rgba(52,211,153,.08)">
@@ -1791,7 +1745,6 @@
         </div>
     </main>
 
-    <!-- HOTKEY BAR -->
     <div class="hkbar">
         <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh</span></div>
         <div class="hk"><span class="hk-key">E</span><span class="hk-label">Enrol</span></div>
@@ -1807,7 +1760,7 @@
 
     <div id="toast-c"></div>
 
-    <!-- ══ STUDENT DETAIL MODAL ══ -->
+    <!-- STUDENT DETAIL MODAL -->
     <div id="studentModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-head">
@@ -1843,17 +1796,28 @@
         let allPortfolios = [];
         let allTrades = [];
         let openTrades = [];
-        let totalTradeCount = 0;   // true count from separate query
+        let totalTradeCount = 0;
         let currentTradeTab = 'all';
         let currentStudentId = null;
 
         // balance panel state
         let adjMode = 'set';
-        let quickTargetId = null;
+        let quickTargetId = null; // stored as STRING (from HTML select value)
 
         // reset panel state
-        let resetPanelTargetId = null;
+        let resetPanelTargetId = null; // STRING
         let resetPanelTargetUsername = null;
+
+        /* ─────────────────────────────────────────
+           FIX 1 — Safe portfolio lookup by id
+           HTML option values are always strings; Supabase
+           ids may be integers. Use loose == OR convert both
+           to String for reliable matching.
+        ───────────────────────────────────────── */
+        function findPortfolio(id) {
+            if (id === null || id === undefined || id === '') return null;
+            return allPortfolios.find(x => String(x.id) === String(id)) || null;
+        }
 
         /* ── Init ── */
         document.addEventListener("DOMContentLoaded", () => {
@@ -1867,9 +1831,7 @@
             await Promise.all([loadPortfolios(), loadTrades(), loadOpenPositions(), loadTotalTradeCount()]);
         }
 
-        /* ══════════════════════════════════════════════
-           TRADE COUNT — separate query for accurate total
-        ══════════════════════════════════════════════ */
+        /* ── Trade count ── */
         async function loadTotalTradeCount() {
             try {
                 const { count, error } = await db.from('student_trades')
@@ -1880,15 +1842,14 @@
                 document.getElementById("statTradesDelta").textContent =
                     totalTradeCount === 1 ? "1 trade all time" : `${totalTradeCount.toLocaleString('en-KE')} trades all time`;
             } catch (err) {
-                // fallback: use allTrades.length
+                console.warn("Trade count fallback:", err.message);
             }
         }
 
-        /* ══════════════════════════════════════════════
-           PORTFOLIOS / LEADERBOARD
-        ══════════════════════════════════════════════ */
+        /* ── Portfolios / Leaderboard ── */
         async function loadPortfolios() {
             try {
+                hideBanner();
                 const { data, error } = await db.from('student_portfolios')
                     .select('*').order('return_pct', { ascending: false });
                 if (error) throw error;
@@ -1899,9 +1860,19 @@
                 calcStats();
                 pushFeed("violet", "Leaderboard synced", `${allPortfolios.length} portfolio(s) loaded.`);
             } catch (err) {
+                showBanner(`Leaderboard error: ${err.message} — Check your Supabase RLS policies allow SELECT on student_portfolios for the anon role.`);
                 document.getElementById("leaderboardWrap").innerHTML =
-                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+                    `<div class="empty" style="color:var(--red)">// DB error: ${escHtml(err.message)}</div>`;
             }
+        }
+
+        function showBanner(msg) {
+            const b = document.getElementById("dbErrorBanner");
+            b.textContent = "⚠ " + msg;
+            b.classList.add("visible");
+        }
+        function hideBanner() {
+            document.getElementById("dbErrorBanner").classList.remove("visible");
         }
 
         function buildCohortFilter() {
@@ -1909,16 +1880,26 @@
             const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
             const current = sel.value;
             sel.innerHTML = '<option value="all">All Cohorts</option>' +
-                cohorts.map(c => `<option value="${escHtml(c)}" ${current === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('');
+                cohorts.map(c => `<option value="${escHtml(c)}"${current === c ? ' selected' : ''}>${escHtml(c)}</option>`).join('');
         }
 
+        /* FIX 2 — option values always stringified so picker.value comparisons work */
         function buildStudentPickers() {
             const opts = '<option value="">— Choose a student —</option>' +
                 allPortfolios.map(p =>
-                    `<option value="${p.id}">${escHtml(p.name || p.username || p.id)} · @${escHtml(p.username || '')} (KES ${(Number(p.cash_balance) || 0).toLocaleString('en-KE', { maximumFractionDigits: 0 })})</option>`
+                    `<option value="${String(p.id)}">${escHtml(p.name || p.username || p.id)} · @${escHtml(p.username || '')} (KES ${(Number(p.cash_balance) || 0).toLocaleString('en-KE', { maximumFractionDigits: 0 })})</option>`
                 ).join('');
             document.getElementById("quickBalancePicker").innerHTML = opts;
             document.getElementById("resetPicker").innerHTML = opts;
+
+            // Re-apply selection if a student was already chosen
+            if (quickTargetId) {
+                document.getElementById("quickBalancePicker").value = quickTargetId;
+                onPickerChange(quickTargetId);
+            }
+            if (resetPanelTargetId) {
+                document.getElementById("resetPicker").value = resetPanelTargetId;
+            }
         }
 
         function calcStats() {
@@ -1927,12 +1908,11 @@
             const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
             document.getElementById("statEnrolledDelta").textContent =
                 cohorts.length ? cohorts.join(', ') : 'No cohorts yet';
-
             if (!total) return;
 
             const returns = allPortfolios.map(p => Number(p.return_pct) || 0);
             const avg = returns.reduce((a, b) => a + b, 0) / total;
-            // best is index 0 — already sorted desc by return_pct from Supabase
+            // allPortfolios is sorted DESC by return_pct — index 0 is the best
             const best = allPortfolios[0];
             const drawdown = allPortfolios.filter(p => (Number(p.return_pct) || 0) < 0).length;
 
@@ -1949,53 +1929,49 @@
         function renderLeaderboard(portfolios) {
             const wrap = document.getElementById("leaderboardWrap");
             if (!portfolios.length) {
-                wrap.innerHTML = `<div class="empty">No student portfolios found.</div>`;
+                wrap.innerHTML = `<div class="empty">No student portfolios found. Enrol a student below or check Supabase RLS.</div>`;
                 return;
             }
-            // Sort by return_pct descending for correct rank assignment
             const sorted = [...portfolios].sort((a, b) => (Number(b.return_pct) || 0) - (Number(a.return_pct) || 0));
             const maxAbs = Math.max(...sorted.map(p => Math.abs(Number(p.return_pct) || 0)), 1);
 
             const rows = sorted.map((p, i) => {
                 const rank = i + 1;
-                const ret = Number(p.return_pct) || 0;
                 const rankCls = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-n";
                 const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "";
-                const barW = Math.abs(ret) / maxAbs * 100;
-                const retCls = ret > 0 ? "pos" : ret < 0 ? "neg" : "flat";
                 const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
                 const bal = Number(p.cash_balance) || 0;
                 const startCap = Number(p.starting_capital) || 100000;
-                // Recalculate return % live from actual values for display accuracy
-                const calcRet = startCap > 0 ? ((pv - startCap) / startCap * 100) : ret;
-                const displayRet = calcRet;
+                /* FIX 3 — compute display return from live values, not stale DB field */
+                const displayRet = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
                 const displayRetCls = displayRet > 0 ? "pos" : displayRet < 0 ? "neg" : "flat";
-                const displayBarW = Math.abs(displayRet) / maxAbs * 100;
-
-                return `<tr style="cursor:pointer" onclick="openStudentModal('${p.id}')">
-                    <td><span class="rank-badge ${rankCls}">${medal || "#" + rank}</span></td>
-                    <td style="color:#fff;font-weight:500">${escHtml(p.name || p.username || "—")}</td>
-                    <td style="color:var(--muted);font-size:10px">${escHtml(p.username || "—")}</td>
-                    <td style="color:var(--muted);font-size:10px">${escHtml(p.cohort || "—")}</td>
-                    <td style="color:var(--gold)">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                    <td style="color:var(--cyan);font-size:10px">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                    <td><div class="ret-bar-wrap"><div class="ret-bar ${displayRetCls}" style="width:${displayBarW}%"></div></div></td>
-                    <td class="right ${displayRetCls}" style="font-weight:500">${displayRet >= 0 ? "+" : ""}${displayRet.toFixed(2)}%</td>
-                    <td style="text-align:right;white-space:nowrap">
-                        <button class="btn-sm btn-cyan" style="font-size:7px;padding:3px 7px" onclick="event.stopPropagation();jumpToBalanceEditor('${p.id}')">✎</button>
-                        <button class="btn-sm btn-amber" style="font-size:7px;padding:3px 7px;margin-left:3px" onclick="event.stopPropagation();jumpToResetPanel('${p.id}')">↺</button>
-                    </td>
-                </tr>`;
+                const barW = Math.abs(displayRet) / maxAbs * 100;
+                /* FIX 4 — use String(p.id) in onclick so the id is always a string */
+                const sid = String(p.id);
+                return `<tr style="cursor:pointer" onclick="openStudentModal('${sid}')">
+                <td><span class="rank-badge ${rankCls}">${medal || "#" + rank}</span></td>
+                <td style="color:#fff;font-weight:500">${escHtml(p.name || p.username || "—")}</td>
+                <td style="color:var(--muted);font-size:10px">${escHtml(p.username || "—")}</td>
+                <td style="color:var(--muted);font-size:10px">${escHtml(p.cohort || "—")}</td>
+                <td style="color:var(--gold)">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                <td style="color:var(--cyan);font-size:10px">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                <td><div class="ret-bar-wrap"><div class="ret-bar ${displayRetCls}" style="width:${barW}%"></div></div></td>
+                <td class="right ${displayRetCls}" style="font-weight:500">${displayRet >= 0 ? "+" : ""}${displayRet.toFixed(2)}%</td>
+                <td style="text-align:right;white-space:nowrap">
+                    <button class="btn-sm btn-cyan" style="font-size:7px;padding:3px 7px" onclick="event.stopPropagation();jumpToBalanceEditor('${sid}')">✎</button>
+                    <button class="btn-sm btn-amber" style="font-size:7px;padding:3px 7px;margin-left:3px" onclick="event.stopPropagation();jumpToResetPanel('${sid}')">↺</button>
+                </td>
+            </tr>`;
             }).join('');
 
             wrap.innerHTML = `<table class="lb-table">
-                <thead><tr>
-                    <th style="width:28px">#</th><th>Name</th><th>Username</th><th>Cohort</th>
-                    <th>Portfolio</th><th>Cash Balance</th><th style="width:80px">Return</th>
-                    <th class="right">%</th><th class="right">Actions</th>
-                </tr></thead>
-                <tbody>${rows}</tbody>
-            </table>`;
+            <thead><tr>
+                <th style="width:28px">#</th><th>Name</th><th>Username</th><th>Cohort</th>
+                <th>Portfolio</th><th>Cash Balance</th><th style="width:80px">Return</th>
+                <th class="right">%</th><th class="right">Actions</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
         }
 
         function filterLeaderboard(q) {
@@ -2017,16 +1993,13 @@
             renderLeaderboard(filtered);
         }
 
-        /* ══════════════════════════════════════════════
-           TRADES
-        ══════════════════════════════════════════════ */
+        /* ── Trades ── */
         async function loadTrades() {
             try {
                 const { data, error } = await db.from('student_trades').select('*')
                     .order('created_at', { ascending: false }).limit(200);
                 if (error) throw error;
                 allTrades = data || [];
-                // update trade count label with note about 200 cap
                 const tradeLabel = document.getElementById("tradeCountLabel");
                 if (tradeLabel) tradeLabel.textContent = allTrades.length >= 200 ? "200+ (latest)" : allTrades.length;
                 renderTrades(currentTradeTab);
@@ -2056,26 +2029,24 @@
                 const pnlKES = (t.pnl || 0) * 130;
                 const pnlCls = pnlKES >= 0 ? "pos" : "neg";
                 return `<tr>
-                    <td style="color:#fff;font-size:10px">${escHtml(t.username || "—")}</td>
-                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                    <td style="color:var(--muted)">${(t.quantity || 0).toFixed(4)}</td>
-                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                    <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status || "—"}</span></td>
-                    <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
-                    <td style="color:var(--muted);font-size:9px">${dt}</td>
-                </tr>`;
+                <td style="color:#fff;font-size:10px">${escHtml(t.username || "—")}</td>
+                <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td style="color:var(--muted)">${(t.quantity || 0).toFixed(4)}</td>
+                <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status || "—"}</span></td>
+                <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+                <td style="color:var(--muted);font-size:9px">${dt}</td>
+            </tr>`;
             }).join('');
             wrap.innerHTML = `<table class="tr-table">
-                <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Qty</th><th>Lev</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
-                <tbody>${rows}</tbody>
-            </table>`;
+            <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Qty</th><th>Lev</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
         }
 
-        /* ══════════════════════════════════════════════
-           OPEN POSITIONS
-        ══════════════════════════════════════════════ */
+        /* ── Open Positions ── */
         async function loadOpenPositions() {
             try {
                 const { data, error } = await db.from('student_trades').select('*')
@@ -2086,7 +2057,6 @@
                 document.getElementById("openPosCount").textContent =
                     openTrades.length + " position" + (openTrades.length !== 1 ? "s" : "");
                 renderOpenPositions();
-                pushFeed("amber", "Open positions loaded", `${openTrades.length} active.`);
             } catch (err) {
                 document.getElementById("openPosWrap").innerHTML =
                     `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
@@ -2095,35 +2065,27 @@
 
         function renderOpenPositions() {
             const wrap = document.getElementById("openPosWrap");
-            if (!openTrades.length) {
-                wrap.innerHTML = `<div class="empty">No open positions across any student.</div>`;
-                return;
-            }
+            if (!openTrades.length) { wrap.innerHTML = `<div class="empty">No open positions across any student.</div>`; return; }
             const rows = openTrades.map(t => {
                 const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
                 const marginKES = Number(t.margin_kes) || 0;
                 return `<tr>
-                    <td style="color:#fff">${escHtml(t.username || "—")}</td>
-                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                    <td style="color:var(--gold)">KES ${marginKES.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                    <td style="color:var(--muted);font-size:9px">${dt}</td>
-                </tr>`;
+                <td style="color:#fff">${escHtml(t.username || "—")}</td>
+                <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td style="color:var(--gold)">KES ${marginKES.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+                <td style="color:var(--muted);font-size:9px">${dt}</td>
+            </tr>`;
             }).join('');
             wrap.innerHTML = `<table class="op-table">
-                <thead><tr>
-                    <th>Student</th><th>Symbol</th><th>Side</th><th>Lev</th>
-                    <th>Entry</th><th>Margin (KES)</th><th>Opened</th>
-                </tr></thead>
-                <tbody>${rows}</tbody>
-            </table>`;
+            <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Margin (KES)</th><th>Opened</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
         }
 
-        /* ══════════════════════════════════════════════
-           QUICK BALANCE EDITOR (inline panel)
-        ══════════════════════════════════════════════ */
+        /* ── Quick Balance Editor ── */
         function setAdjMode(mode, el) {
             adjMode = mode;
             document.querySelectorAll(".adj-mode-btn").forEach(b => b.classList.remove("active"));
@@ -2134,9 +2096,10 @@
             updateQuickDiff();
         }
 
+        /* FIX 5 — store id as string; use findPortfolio() for lookup */
         function onPickerChange(portfolioId) {
             quickTargetId = portfolioId || null;
-            const p = allPortfolios.find(x => x.id === portfolioId);
+            const p = findPortfolio(portfolioId);
             const display = document.getElementById("quickBalanceDisplay");
             const status = document.getElementById("balancePanelStatus");
             const btn = document.getElementById("quickSaveBtn");
@@ -2152,7 +2115,8 @@
 
             const bal = Number(p.cash_balance) || 0;
             const pv = Number(p.portfolio_value) || bal;
-            const ret = Number(p.return_pct) || 0;
+            const startCap = Number(p.starting_capital) || 100000;
+            const ret = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
 
             display.style.display = "grid";
             status.textContent = p.name || p.username || "Student";
@@ -2167,7 +2131,7 @@
         }
 
         function updateQuickDiff() {
-            const p = allPortfolios.find(x => x.id === quickTargetId);
+            const p = findPortfolio(quickTargetId);
             const el = document.getElementById("quickDiffPreview");
             const btn = document.getElementById("quickSaveBtn");
 
@@ -2185,71 +2149,80 @@
             }
 
             const oldBal = Number(p.cash_balance) || 0;
-            let newBal;
-            if (adjMode === 'set') newBal = inputVal;
-            else if (adjMode === 'add') newBal = oldBal + inputVal;
-            else newBal = Math.max(0, oldBal - inputVal);
+            /* FIX 6 — keep open-position equity separate; only adjust cash */
+            const openMargin = openTrades
+                .filter(t => String(t.user_id) === String(p.user_id))
+                .reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
 
-            const diff = newBal - oldBal;
+            let newCash;
+            if (adjMode === 'set') newCash = inputVal;
+            else if (adjMode === 'add') newCash = oldBal + inputVal;
+            else newCash = Math.max(0, oldBal - inputVal);
+
+            /* FIX 7 — portfolio_value = new cash + locked margin in open positions */
+            const newPortfolioValue = newCash + openMargin;
             const startCap = Number(p.starting_capital) || 100000;
-            const newReturn = startCap > 0 ? ((newBal - startCap) / startCap * 100) : 0;
+            const newReturn = startCap > 0 ? ((newPortfolioValue - startCap) / startCap * 100) : 0;
 
+            const diff = newCash - oldBal;
             const diffStr = diff === 0 ? "No change"
-                : (diff > 0 ? `<span style="color:var(--emerald)">▲ +KES ${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`
-                    : `<span style="color:var(--red)">▼ -KES ${Math.abs(diff).toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`);
+                : diff > 0
+                    ? `<span style="color:var(--emerald)">▲ +KES ${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`
+                    : `<span style="color:var(--red)">▼ -KES ${Math.abs(diff).toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`;
 
             el.innerHTML = `
-                <span style="color:var(--muted);font-size:10px">KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
-                <span class="diff-arrow">→</span>
-                <span style="color:#fff;font-size:12px">KES ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
-                <span style="margin-left:8px;font-size:10px">${diffStr}</span>
-                <span style="margin-left:auto;font-size:9px;color:var(--muted)">Return: <span style="color:${newReturn >= 0 ? 'var(--emerald)' : 'var(--red)'}">${newReturn >= 0 ? '+' : ''}${newReturn.toFixed(2)}%</span></span>`;
+            <span style="color:var(--muted);font-size:10px">KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+            <span class="diff-arrow">→</span>
+            <span style="color:#fff;font-size:12px">KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+            <span style="margin-left:8px;font-size:10px">${diffStr}</span>
+            <span style="margin-left:auto;font-size:9px;color:var(--muted)">Return: <span style="color:${newReturn >= 0 ? 'var(--emerald)' : 'var(--red)'}">${newReturn >= 0 ? '+' : ''}${newReturn.toFixed(2)}%</span></span>`;
 
             btn.disabled = (diff === 0);
         }
 
         async function saveQuickBalance() {
             if (!quickTargetId) return;
-            const p = allPortfolios.find(x => x.id === quickTargetId);
+            const p = findPortfolio(quickTargetId);
             if (!p) return;
 
             const inputVal = parseFloat(document.getElementById("adjAmount").value);
-            if (isNaN(inputVal) || inputVal < 0) {
-                toast("error", "Invalid Amount", "Enter a valid non-negative number.");
-                return;
-            }
+            if (isNaN(inputVal) || inputVal < 0) { toast("error", "Invalid Amount", "Enter a valid non-negative number."); return; }
 
             const oldBal = Number(p.cash_balance) || 0;
-            let newBal;
-            if (adjMode === 'set') newBal = inputVal;
-            else if (adjMode === 'add') newBal = oldBal + inputVal;
-            else newBal = Math.max(0, oldBal - inputVal);
+            let newCash;
+            if (adjMode === 'set') newCash = inputVal;
+            else if (adjMode === 'add') newCash = oldBal + inputVal;
+            else newCash = Math.max(0, oldBal - inputVal);
+
+            /* FIX 8 — recalculate portfolio_value preserving open-position margin */
+            const openMargin = openTrades
+                .filter(t => String(t.user_id) === String(p.user_id))
+                .reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
+            const newPortfolioValue = newCash + openMargin;
+            const startCap = Number(p.starting_capital) || 100000;
+            const newReturn = startCap > 0 ? ((newPortfolioValue - startCap) / startCap * 100) : 0;
 
             const note = document.getElementById("adjNote").value.trim() || "Admin balance adjustment";
             const btn = document.getElementById("quickSaveBtn");
             btn.textContent = "Saving…"; btn.disabled = true;
 
             try {
-                const startCap = Number(p.starting_capital) || 100000;
-                const newReturn = startCap > 0 ? ((newBal - startCap) / startCap * 100) : 0;
-
                 const { error } = await db.from('student_portfolios').update({
-                    cash_balance: newBal,
-                    portfolio_value: newBal,
+                    cash_balance: newCash,
+                    portfolio_value: newPortfolioValue,
                     return_pct: newReturn
-                }).eq('id', quickTargetId);
+                }).eq('id', p.id);          // use original p.id (correct type)
                 if (error) throw error;
 
-                const diff = newBal - oldBal;
+                const diff = newCash - oldBal;
                 const modeLabel = adjMode === 'add' ? 'Funds added' : adjMode === 'sub' ? 'Funds deducted' : 'Balance set';
                 toast("success", "Balance Updated",
-                    `${p.name || p.username} → KES ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} (${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })})`);
+                    `${p.name || p.username} → KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} (${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })})`);
                 pushFeed("cyan", modeLabel,
-                    `${p.name || p.username}: KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} → ${newBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} · ${note}`);
+                    `${p.name || p.username}: KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} → ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} · ${note}`);
 
                 document.getElementById("adjAmount").value = "";
                 await loadPortfolios();
-                // Re-select same student so display refreshes
                 onPickerChange(quickTargetId);
 
             } catch (err) {
@@ -2258,13 +2231,12 @@
             btn.textContent = "Apply Balance Change →"; btn.disabled = false;
         }
 
-        /* ══════════════════════════════════════════════
-           RESET PANEL (inline, no modal)
-        ══════════════════════════════════════════════ */
+        /* ── Capital Reset Panel ── */
+        /* FIX 9 — store id as string consistently */
         function onResetPickerChange(portfolioId) {
             resetPanelTargetId = portfolioId || null;
-            const p = allPortfolios.find(x => x.id === portfolioId);
-            resetPanelTargetUsername = p ? p.username : null;
+            const p = findPortfolio(portfolioId);
+            resetPanelTargetUsername = p ? (p.username || null) : null;
             document.getElementById("resetConfirmPanel").value = "";
             document.getElementById("resetPanelBtn").disabled = true;
         }
@@ -2272,71 +2244,85 @@
         function checkResetPanelConfirm() {
             const val = document.getElementById("resetConfirmPanel").value;
             document.getElementById("resetPanelBtn").disabled =
-                (!resetPanelTargetId || val !== resetPanelTargetUsername);
+                (!resetPanelTargetId || !resetPanelTargetUsername || val !== resetPanelTargetUsername);
         }
 
         async function confirmPanelReset() {
             if (!resetPanelTargetId) return;
             const newCapital = parseFloat(document.getElementById("resetCapitalPanel").value);
             if (!newCapital || newCapital < 1000) { toast("error", "Invalid Capital", "Minimum KES 1,000."); return; }
+
+            const p = findPortfolio(resetPanelTargetId);
+            if (!p) { toast("error", "Error", "Student not found."); return; }
+
             const btn = document.getElementById("resetPanelBtn");
             btn.textContent = "Resetting…"; btn.disabled = true;
+
             try {
-                const p = allPortfolios.find(x => x.id === resetPanelTargetId);
-                await db.from('student_trades')
-                    .update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 })
-                    .eq('user_id', p.user_id).eq('status', 'open');
-                await db.from('student_portfolios').update({
-                    cash_balance: newCapital, starting_capital: newCapital,
-                    portfolio_value: newCapital, return_pct: 0, total_trades: 0,
-                }).eq('id', resetPanelTargetId);
+                /* FIX 10 — close open trades using username as fallback if user_id is absent */
+                const tradeFilter = p.user_id
+                    ? db.from('student_trades').update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 }).eq('user_id', p.user_id).eq('status', 'open')
+                    : db.from('student_trades').update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 }).eq('username', p.username).eq('status', 'open');
+                const { error: tradeErr } = await tradeFilter;
+                if (tradeErr) console.warn("Closing trades:", tradeErr.message); // non-fatal
+
+                /* FIX 11 — also reset total_trades count */
+                const { error: portErr } = await db.from('student_portfolios').update({
+                    cash_balance: newCapital,
+                    starting_capital: newCapital,
+                    portfolio_value: newCapital,
+                    return_pct: 0,
+                    total_trades: 0,
+                }).eq('id', p.id);
+                if (portErr) throw portErr;
+
                 toast("success", "Capital Reset", `${p.name || p.username} reset to KES ${newCapital.toLocaleString('en-KE')}.`);
                 pushFeed("amber", "Capital reset", `${p.name || p.username} → KES ${newCapital.toLocaleString('en-KE')}`);
+
                 // Clear panel
                 document.getElementById("resetPicker").value = "";
                 document.getElementById("resetConfirmPanel").value = "";
                 resetPanelTargetId = null; resetPanelTargetUsername = null;
                 btn.disabled = true;
                 loadAll();
+
             } catch (err) {
                 toast("error", "Reset Error", err.message);
                 btn.textContent = "Confirm Capital Reset →"; btn.disabled = false;
             }
         }
 
-        /* ══════════════════════════════════════════════
-           JUMP-TO helpers (from leaderboard row actions)
-        ══════════════════════════════════════════════ */
+        /* ── Jump-to helpers ── */
         function jumpToBalanceEditor(portfolioId) {
-            // Close modal if open
+            const sid = String(portfolioId);
             document.getElementById("studentModal").classList.remove("open");
             currentStudentId = null;
-            // Pre-select student in balance panel
             const picker = document.getElementById("quickBalancePicker");
-            picker.value = portfolioId;
-            onPickerChange(portfolioId);
-            // Scroll to balance panel
+            picker.value = sid;
+            onPickerChange(sid);
             document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
             toast("info", "Balance Editor", "Student loaded into balance editor.");
         }
 
         function jumpToResetPanel(portfolioId) {
+            const sid = String(portfolioId);
             document.getElementById("studentModal").classList.remove("open");
             currentStudentId = null;
             const picker = document.getElementById("resetPicker");
-            picker.value = portfolioId;
-            onResetPickerChange(portfolioId);
+            picker.value = sid;
+            onResetPickerChange(sid);
             document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
             toast("info", "Reset Panel", "Student loaded into reset panel.");
         }
 
-        /* ══════════════════════════════════════════════
-           STUDENT DETAIL MODAL
-        ══════════════════════════════════════════════ */
+        /* ── Student Detail Modal ── */
+        /* FIX 12 — accept id as string, use findPortfolio() */
         async function openStudentModal(portfolioId) {
-            currentStudentId = portfolioId;
-            const p = allPortfolios.find(x => x.id === portfolioId);
+            const sid = String(portfolioId);
+            currentStudentId = sid;
+            const p = findPortfolio(sid);
             if (!p) return;
+
             document.getElementById("modalStudentName").textContent = p.name || p.username || "Student";
             document.getElementById("modalStudentMeta").textContent =
                 (p.cohort || "No cohort") + " · @" + (p.username || "—");
@@ -2344,22 +2330,29 @@
             const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
             const bal = Number(p.cash_balance) || 0;
             const startCap = Number(p.starting_capital) || 100000;
-            // Recalculate return from live values
             const ret = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
 
             document.getElementById("modalStats").innerHTML = `
-                <div class="m-stat"><div class="ms-label">Portfolio Value</div><div class="ms-val green">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-                <div class="m-stat"><div class="ms-label">Cash Balance</div><div class="ms-val gold">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-                <div class="m-stat"><div class="ms-label">Total Return</div><div class="ms-val ${ret > 0 ? 'green' : ret < 0 ? 'red' : ''}">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</div></div>
-                <div class="m-stat"><div class="ms-label">Starting Capital</div><div class="ms-val violet">KES ${startCap.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-            `;
+            <div class="m-stat"><div class="ms-label">Portfolio Value</div><div class="ms-val green">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+            <div class="m-stat"><div class="ms-label">Cash Balance</div><div class="ms-val gold">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+            <div class="m-stat"><div class="ms-label">Total Return</div><div class="ms-val ${ret > 0 ? 'green' : ret < 0 ? 'red' : ''}">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</div></div>
+            <div class="m-stat"><div class="ms-label">Starting Capital</div><div class="ms-val violet">KES ${startCap.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+        `;
             document.getElementById("studentModal").classList.add("open");
 
             const modalWrap = document.getElementById("modalTradesWrap");
             modalWrap.innerHTML = `<div class="empty"><span class="spinner"></span>Loading…</div>`;
+
             try {
-                const { data } = await db.from('student_trades').select('*')
-                    .eq('user_id', p.user_id).order('created_at', { ascending: false }).limit(50);
+                /* FIX 13 — try user_id first, fall back to username if user_id missing */
+                let query;
+                if (p.user_id) {
+                    query = db.from('student_trades').select('*').eq('user_id', p.user_id);
+                } else {
+                    query = db.from('student_trades').select('*').eq('username', p.username);
+                }
+                const { data, error } = await query.order('created_at', { ascending: false }).limit(50);
+                if (error) throw error;
                 const trades = data || [];
                 if (!trades.length) { modalWrap.innerHTML = `<div class="empty">No trades yet.</div>`; return; }
                 const rows = trades.map(t => {
@@ -2367,20 +2360,20 @@
                     const pnlKES = (t.pnl || 0) * 130;
                     const pnlCls = pnlKES >= 0 ? "pos" : "neg";
                     return `<tr>
-                        <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                        <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                        <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                        <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                        <td>${(t.quantity || 0).toFixed(4)}</td>
-                        <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status}</span></td>
-                        <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
-                        <td style="color:var(--muted);font-size:9px">${dt}</td>
-                    </tr>`;
+                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                    <td>${(t.quantity || 0).toFixed(4)}</td>
+                    <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status}</span></td>
+                    <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+                    <td style="color:var(--muted);font-size:9px">${dt}</td>
+                </tr>`;
                 }).join('');
                 modalWrap.innerHTML = `<table class="tr-table">
-                    <thead><tr><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Qty</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>`;
+                <thead><tr><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Qty</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
             } catch (err) {
                 modalWrap.innerHTML = `<div class="empty" style="color:var(--red)">Error: ${escHtml(err.message)}</div>`;
             }
@@ -2391,9 +2384,7 @@
             currentStudentId = null;
         }
 
-        /* ══════════════════════════════════════════════
-           ENROL STUDENT
-        ══════════════════════════════════════════════ */
+        /* ── Enrol Student ── */
         async function enrolStudent() {
             const name = document.getElementById("enrolName").value.trim();
             const email = document.getElementById("enrolEmail").value.trim().toLowerCase();
@@ -2413,12 +2404,14 @@
                     approved_at: new Date().toISOString(), requested_at: new Date().toISOString()
                 }]).select().single();
                 if (arErr) throw new Error("Access request: " + arErr.message);
+
                 const { error: pErr } = await db.from('student_portfolios').insert([{
                     user_id: ar.id, username, name, cohort,
                     cash_balance: capital, starting_capital: capital,
                     portfolio_value: capital, return_pct: 0, total_trades: 0,
                 }]);
                 if (pErr) throw new Error("Portfolio: " + pErr.message);
+
                 toast("success", "Student Enrolled", `${name} · @${username} · Pass: ${rawPass}`);
                 pushFeed("green", "Student enrolled", `${name} → @${username} (${cohort || "no cohort"})`);
                 ["enrolName", "enrolEmail", "enrolUsername", "enrolCohort"].forEach(id =>
@@ -2428,9 +2421,7 @@
             } catch (err) { toast("error", "Enrol Error", err.message); }
         }
 
-        /* ══════════════════════════════════════════════
-           ACTIVITY FEED
-        ══════════════════════════════════════════════ */
+        /* ── Activity Feed ── */
         let feedCount = 0;
         function pushFeed(color, title, detail) {
             const feed = document.getElementById("activityFeed");
@@ -2438,8 +2429,8 @@
             const el = document.createElement("div");
             el.className = "feed-item";
             el.innerHTML = `<div class="feed-dot fd-${color}"></div>
-                <div><div class="feed-text">${escHtml(title)}</div>
-                <div class="feed-time">${now} · ${escHtml(detail)}</div></div>`;
+            <div><div class="feed-text">${escHtml(title)}</div>
+            <div class="feed-time">${now} · ${escHtml(detail)}</div></div>`;
             const ph = feed.querySelector(".empty"); if (ph) ph.remove();
             feed.insertBefore(el, feed.firstChild);
             while (feed.children.length > 25) feed.removeChild(feed.lastChild);
@@ -2448,9 +2439,7 @@
                 feedCount + " event" + (feedCount !== 1 ? "s" : "");
         }
 
-        /* ══════════════════════════════════════════════
-           KEYBOARD
-        ══════════════════════════════════════════════ */
+        /* ── Keyboard ── */
         function bindKeys() {
             document.addEventListener("keydown", e => {
                 if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
@@ -2465,9 +2454,7 @@
             });
         }
 
-        /* ══════════════════════════════════════════════
-           UTILS
-        ══════════════════════════════════════════════ */
+        /* ── Utils ── */
         function generateUsername(fullName) {
             const parts = fullName.trim().toLowerCase().split(/\s+/);
             const base = (parts[0] + (parts[1] ? parts[1][0] : '')).replace(/[^a-z0-9]/g, '');
@@ -2491,8 +2478,8 @@
             const ic = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
             const el = document.createElement("div"); el.className = "toast";
             el.innerHTML = `<div style="color:${c[type]};font-size:12px;flex-shrink:0;margin-top:1px">${ic[type]}</div>
-                <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
-                <div class="toast-bar" style="background:${c[type]}"></div>`;
+            <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
+            <div class="toast-bar" style="background:${c[type]}"></div>`;
             document.getElementById("toast-c").appendChild(el);
             setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300); }, 3500);
         }
