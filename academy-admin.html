@@ -99,6 +99,7 @@
             background: rgba(34, 211, 238, .025)
         }
 
+        /* ── NAV ── */
         nav {
             position: fixed;
             top: 0;
@@ -209,6 +210,7 @@
             text-transform: uppercase
         }
 
+        /* ── MAIN ── */
         main {
             padding: calc(var(--nav-h) + 22px) var(--px) calc(var(--hk-h) + 22px);
             max-width: 1700px;
@@ -265,6 +267,7 @@
             }
         }
 
+        /* ── STATS ── */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -306,7 +309,12 @@
         }
 
         .scard:hover {
-            transform: translateY(-2px)
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, .1)
+        }
+
+        .scard:hover::after {
+            opacity: 1
         }
 
         .scard.v::after {
@@ -331,14 +339,6 @@
 
         .scard.r::after {
             background: linear-gradient(90deg, transparent, var(--red), transparent)
-        }
-
-        .scard:hover {
-            border-color: rgba(255, 255, 255, .1)
-        }
-
-        .scard:hover::after {
-            opacity: 1
         }
 
         .sc-label {
@@ -398,6 +398,7 @@
             color: var(--red)
         }
 
+        /* ── PANELS ── */
         .panel {
             background: var(--card);
             border: 1px solid var(--border);
@@ -444,6 +445,7 @@
             flex-wrap: wrap
         }
 
+        /* ── GRIDS ── */
         .top-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -497,6 +499,7 @@
             }
         }
 
+        /* ── BALANCE EDITOR ── */
         .student-picker {
             width: 100%;
             background: rgba(255, 255, 255, .02);
@@ -612,6 +615,7 @@
             font-size: 14px
         }
 
+        /* ── INPUTS / BUTTONS ── */
         .search-inp {
             background: rgba(255, 255, 255, .02);
             border: 1px solid var(--border);
@@ -699,6 +703,7 @@
             background: rgba(34, 211, 238, .08)
         }
 
+        /* ── TABLES ── */
         .lb-table {
             width: 100%;
             border-collapse: collapse;
@@ -893,6 +898,7 @@
             font-size: 10px
         }
 
+        /* ── SCROLL / TABS ── */
         .scroll-area {
             overflow-y: auto;
             max-height: clamp(280px, 42vh, 420px)
@@ -942,6 +948,7 @@
             border-bottom-color: var(--violet)
         }
 
+        /* ── FEED ── */
         .feed-item {
             display: flex;
             gap: 10px;
@@ -993,6 +1000,7 @@
             color: var(--muted)
         }
 
+        /* ── HOTKEY BAR ── */
         .hkbar {
             position: fixed;
             bottom: 0;
@@ -1050,6 +1058,7 @@
             }
         }
 
+        /* ── TOAST ── */
         #toast-c {
             position: fixed;
             bottom: clamp(50px, 8vh, 60px);
@@ -1121,6 +1130,7 @@
             }
         }
 
+        /* ── MISC ── */
         .empty {
             color: var(--muted);
             font-family: 'DM Mono', monospace;
@@ -1168,6 +1178,7 @@
             margin-right: 6px
         }
 
+        /* ── MODAL BASE ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1208,7 +1219,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px
+            gap: 12px;
+            flex-wrap: wrap
         }
 
         .modal-title {
@@ -1300,6 +1312,7 @@
             border-bottom: 1px solid var(--border2)
         }
 
+        /* ── FORMS ── */
         .form-field {
             margin-bottom: 14px
         }
@@ -1420,6 +1433,7 @@
             line-height: 1.6
         }
 
+        /* ── SECTION DIVIDER ── */
         .section-divider {
             display: flex;
             align-items: center;
@@ -1445,7 +1459,7 @@
             background: var(--border)
         }
 
-        /* DB error banner */
+        /* ── DB ERROR BANNER ── */
         .db-error-banner {
             background: rgba(248, 113, 113, .06);
             border: 1px solid rgba(248, 113, 113, .25);
@@ -1460,6 +1474,61 @@
 
         .db-error-banner.visible {
             display: block
+        }
+
+        /* ══ POSTER MODAL ══ */
+        #posterModal {
+            z-index: 300
+        }
+
+        #posterModal .modal-box {
+            max-width: 960px;
+            border-color: rgba(200, 169, 110, .22)
+        }
+
+        #posterModal .modal-head {
+            background: linear-gradient(135deg, rgba(200, 169, 110, .07), transparent);
+            border-bottom-color: rgba(200, 169, 110, .14)
+        }
+
+        .poster-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .poster-preview-wrap {
+            background: rgba(0, 0, 0, .45);
+            border: 1px solid var(--border);
+            padding: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            overflow: auto
+        }
+
+        #posterCanvas {
+            max-width: 100%;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, .04)
+        }
+
+        .poster-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .poster-spec {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            color: var(--muted);
+            letter-spacing: .12em
         }
     </style>
 </head>
@@ -1496,9 +1565,9 @@
             <div class="header-rule"></div>
         </div>
 
-        <!-- DB connectivity banner (shown on load error) -->
         <div class="db-error-banner" id="dbErrorBanner"></div>
 
+        <!-- STATS -->
         <div class="stats-row">
             <div class="scard v">
                 <div class="sc-label">Enrolled Students</div>
@@ -1532,6 +1601,7 @@
             </div>
         </div>
 
+        <!-- LEADERBOARD + FEED -->
         <div class="top-grid">
             <div class="panel">
                 <div class="panel-head"
@@ -1547,6 +1617,8 @@
                         <input type="text" class="search-inp" id="lbSearch" placeholder="Search…"
                             oninput="filterLeaderboard(this.value)" />
                         <button class="btn-sm btn-violet" onclick="loadAll()">↻ Refresh</button>
+                        <button class="btn-sm btn-gold" onclick="openPosterModal()"
+                            style="display:flex;align-items:center;gap:5px">⬡ Poster</button>
                     </div>
                 </div>
                 <div class="panel-body" style="padding-top:12px">
@@ -1575,7 +1647,6 @@
         <!-- BALANCE MANAGEMENT -->
         <div class="section-divider"><span>Balance Management</span></div>
         <div class="balance-panel-grid">
-
             <div class="panel">
                 <div class="panel-head"
                     style="background:linear-gradient(135deg,rgba(34,211,238,.05),transparent);border-bottom-color:rgba(34,211,238,.1)">
@@ -1593,7 +1664,6 @@
                     <select class="student-picker" id="quickBalancePicker" onchange="onPickerChange(this.value)">
                         <option value="">— Choose a student —</option>
                     </select>
-
                     <div class="balance-display" id="quickBalanceDisplay" style="display:none">
                         <div class="bd-item">
                             <div class="bd-label">Cash Balance</div>
@@ -1608,35 +1678,27 @@
                             <div class="bd-val" id="qb_return">—</div>
                         </div>
                     </div>
-
                     <div
                         style="margin-bottom:6px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">
                         Adjustment Mode</div>
-                    <div class="adj-mode-btns" id="adjModeBtns">
+                    <div class="adj-mode-btns">
                         <button class="adj-mode-btn active" data-mode="set" onclick="setAdjMode('set',this)">Set
                             Exact</button>
                         <button class="adj-mode-btn" data-mode="add" onclick="setAdjMode('add',this)">Add Funds</button>
                         <button class="adj-mode-btn" data-mode="sub" onclick="setAdjMode('sub',this)">Deduct
                             Funds</button>
                     </div>
-
                     <div class="adjustment-row">
-                        <div class="form-field" style="margin-bottom:0">
-                            <label id="adjAmountLabel">New Cash Balance (KES)</label>
-                            <input type="number" id="adjAmount" placeholder="e.g. 120000" min="0" step="1000"
-                                oninput="updateQuickDiff()" />
-                        </div>
-                        <div class="form-field" style="margin-bottom:0">
-                            <label>Reason / Note</label>
-                            <input type="text" id="adjNote" placeholder="e.g. bonus, correction…" />
-                        </div>
+                        <div class="form-field" style="margin-bottom:0"><label id="adjAmountLabel">New Cash Balance
+                                (KES)</label><input type="number" id="adjAmount" placeholder="e.g. 120000" min="0"
+                                step="1000" oninput="updateQuickDiff()" /></div>
+                        <div class="form-field" style="margin-bottom:0"><label>Reason / Note</label><input type="text"
+                                id="adjNote" placeholder="e.g. bonus, correction…" /></div>
                     </div>
-
                     <div class="diff-preview" id="quickDiffPreview">
                         <span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview
                             the change.</span>
                     </div>
-
                     <button class="btn-full cyan" id="quickSaveBtn" onclick="saveQuickBalance()" disabled>Apply Balance
                         Change →</button>
                     <p class="hint">Changes are reflected immediately in the leaderboard and logged to the activity
@@ -1660,15 +1722,10 @@
                         style="border-color:rgba(245,158,11,.2)">
                         <option value="">— Choose a student —</option>
                     </select>
-                    <div class="form-field">
-                        <label>New Starting Capital (KES)</label>
-                        <input type="number" id="resetCapitalPanel" value="100000" min="1000" step="1000" />
-                    </div>
-                    <div class="form-field">
-                        <label>Confirm by typing student username</label>
-                        <input type="text" id="resetConfirmPanel" placeholder="username"
-                            oninput="checkResetPanelConfirm()" />
-                    </div>
+                    <div class="form-field"><label>New Starting Capital (KES)</label><input type="number"
+                            id="resetCapitalPanel" value="100000" min="1000" step="1000" /></div>
+                    <div class="form-field"><label>Confirm by typing student username</label><input type="text"
+                            id="resetConfirmPanel" placeholder="username" oninput="checkResetPanelConfirm()" /></div>
                     <div class="warn-box" style="margin-bottom:12px">⚠ Closes all open positions and wipes trade
                         history. Cannot be undone.</div>
                     <button class="btn-full red" id="resetPanelBtn" onclick="confirmPanelReset()" disabled>Confirm
@@ -1745,10 +1802,12 @@
         </div>
     </main>
 
+    <!-- HOTKEY BAR -->
     <div class="hkbar">
         <div class="hk"><span class="hk-key">R</span><span class="hk-label">Refresh</span></div>
         <div class="hk"><span class="hk-key">E</span><span class="hk-label">Enrol</span></div>
         <div class="hk"><span class="hk-key">B</span><span class="hk-label">Balance Editor</span></div>
+        <div class="hk"><span class="hk-key">P</span><span class="hk-label">Poster</span></div>
         <div class="hk"><span class="hk-key">Esc</span><span class="hk-label">Close modal</span></div>
         <div class="hk d-only"><span class="hk-key">← Back</span><span class="hk-label">Command Centre</span></div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0">
@@ -1760,7 +1819,9 @@
 
     <div id="toast-c"></div>
 
-    <!-- STUDENT DETAIL MODAL -->
+    <!-- ═══════════════════════════════════════
+     STUDENT DETAIL MODAL
+═══════════════════════════════════════ -->
     <div id="studentModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-head">
@@ -1787,8 +1848,63 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════
+     POSTER GENERATOR MODAL
+═══════════════════════════════════════ -->
+    <div id="posterModal" class="modal-overlay">
+        <div class="modal-box" style="max-width:960px;border-color:rgba(200,169,110,.22)">
+            <div class="modal-head"
+                style="background:linear-gradient(135deg,rgba(200,169,110,.07),transparent);border-bottom-color:rgba(200,169,110,.14)">
+                <div>
+                    <div class="modal-title" style="color:var(--gold)">⬡ Leaderboard Poster</div>
+                    <div
+                        style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:3px">
+                        Savanna Capital branded · shareable on social</div>
+                </div>
+                <div class="poster-controls">
+                    <select id="posterCohortSelect" class="cohort-select" onchange="renderPoster()"
+                        style="border-color:rgba(200,169,110,.25);font-size:9px">
+                        <option value="all">All Cohorts</option>
+                    </select>
+                    <select id="posterTopN" class="cohort-select" onchange="renderPoster()"
+                        style="border-color:rgba(200,169,110,.25);font-size:9px">
+                        <option value="5">Top 5</option>
+                        <option value="10" selected>Top 10</option>
+                        <option value="15">Top 15</option>
+                        <option value="20">Top 20</option>
+                    </select>
+                    <select id="posterTheme" class="cohort-select" onchange="renderPoster()"
+                        style="border-color:rgba(200,169,110,.25);font-size:9px">
+                        <option value="dark">Dark</option>
+                        <option value="gold">Gold Edition</option>
+                        <option value="midnight">Midnight</option>
+                    </select>
+                    <button class="btn-sm btn-gold" onclick="downloadPoster()">↓ Download PNG</button>
+                    <button class="modal-close" onclick="closePosterModal()">✕</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="poster-preview-wrap">
+                    <canvas id="posterCanvas"></canvas>
+                </div>
+                <div class="poster-footer">
+                    <div class="poster-spec">1080 × 1350 px · Portrait · Instagram / LinkedIn / X</div>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn-sm btn-violet" onclick="renderPoster()">↻ Regenerate</button>
+                        <button class="btn-sm btn-gold" onclick="downloadPoster()">↓ Download PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════════════════ -->
     <script>
-        /* ── Config ── */
+        /* ───────────────────────────────────────────
+           CONFIG
+        ─────────────────────────────────────────── */
         const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1799,27 +1915,20 @@
         let totalTradeCount = 0;
         let currentTradeTab = 'all';
         let currentStudentId = null;
-
-        // balance panel state
         let adjMode = 'set';
-        let quickTargetId = null; // stored as STRING (from HTML select value)
-
-        // reset panel state
-        let resetPanelTargetId = null; // STRING
+        let quickTargetId = null;
+        let resetPanelTargetId = null;
         let resetPanelTargetUsername = null;
 
-        /* ─────────────────────────────────────────
-           FIX 1 — Safe portfolio lookup by id
-           HTML option values are always strings; Supabase
-           ids may be integers. Use loose == OR convert both
-           to String for reliable matching.
-        ───────────────────────────────────────── */
+        /* ── Safe portfolio lookup ── */
         function findPortfolio(id) {
             if (id === null || id === undefined || id === '') return null;
             return allPortfolios.find(x => String(x.id) === String(id)) || null;
         }
 
-        /* ── Init ── */
+        /* ───────────────────────────────────────────
+           INIT
+        ─────────────────────────────────────────── */
         document.addEventListener("DOMContentLoaded", () => {
             loadAll();
             bindKeys();
@@ -1834,24 +1943,20 @@
         /* ── Trade count ── */
         async function loadTotalTradeCount() {
             try {
-                const { count, error } = await db.from('student_trades')
-                    .select('*', { count: 'exact', head: true });
+                const { count, error } = await db.from('student_trades').select('*', { count: 'exact', head: true });
                 if (error) throw error;
                 totalTradeCount = count || 0;
                 document.getElementById("statTrades").textContent = totalTradeCount.toLocaleString('en-KE');
                 document.getElementById("statTradesDelta").textContent =
                     totalTradeCount === 1 ? "1 trade all time" : `${totalTradeCount.toLocaleString('en-KE')} trades all time`;
-            } catch (err) {
-                console.warn("Trade count fallback:", err.message);
-            }
+            } catch (err) { console.warn("Trade count fallback:", err.message); }
         }
 
         /* ── Portfolios / Leaderboard ── */
         async function loadPortfolios() {
             try {
                 hideBanner();
-                const { data, error } = await db.from('student_portfolios')
-                    .select('*').order('return_pct', { ascending: false });
+                const { data, error } = await db.from('student_portfolios').select('*').order('return_pct', { ascending: false });
                 if (error) throw error;
                 allPortfolios = data || [];
                 buildCohortFilter();
@@ -1861,19 +1966,12 @@
                 pushFeed("violet", "Leaderboard synced", `${allPortfolios.length} portfolio(s) loaded.`);
             } catch (err) {
                 showBanner(`Leaderboard error: ${err.message} — Check your Supabase RLS policies allow SELECT on student_portfolios for the anon role.`);
-                document.getElementById("leaderboardWrap").innerHTML =
-                    `<div class="empty" style="color:var(--red)">// DB error: ${escHtml(err.message)}</div>`;
+                document.getElementById("leaderboardWrap").innerHTML = `<div class="empty" style="color:var(--red)">// DB error: ${escHtml(err.message)}</div>`;
             }
         }
 
-        function showBanner(msg) {
-            const b = document.getElementById("dbErrorBanner");
-            b.textContent = "⚠ " + msg;
-            b.classList.add("visible");
-        }
-        function hideBanner() {
-            document.getElementById("dbErrorBanner").classList.remove("visible");
-        }
+        function showBanner(msg) { const b = document.getElementById("dbErrorBanner"); b.textContent = "⚠ " + msg; b.classList.add("visible"); }
+        function hideBanner() { document.getElementById("dbErrorBanner").classList.remove("visible"); }
 
         function buildCohortFilter() {
             const sel = document.getElementById("cohortFilter");
@@ -1883,7 +1981,6 @@
                 cohorts.map(c => `<option value="${escHtml(c)}"${current === c ? ' selected' : ''}>${escHtml(c)}</option>`).join('');
         }
 
-        /* FIX 2 — option values always stringified so picker.value comparisons work */
         function buildStudentPickers() {
             const opts = '<option value="">— Choose a student —</option>' +
                 allPortfolios.map(p =>
@@ -1891,35 +1988,23 @@
                 ).join('');
             document.getElementById("quickBalancePicker").innerHTML = opts;
             document.getElementById("resetPicker").innerHTML = opts;
-
-            // Re-apply selection if a student was already chosen
-            if (quickTargetId) {
-                document.getElementById("quickBalancePicker").value = quickTargetId;
-                onPickerChange(quickTargetId);
-            }
-            if (resetPanelTargetId) {
-                document.getElementById("resetPicker").value = resetPanelTargetId;
-            }
+            if (quickTargetId) { document.getElementById("quickBalancePicker").value = quickTargetId; onPickerChange(quickTargetId); }
+            if (resetPanelTargetId) { document.getElementById("resetPicker").value = resetPanelTargetId; }
         }
 
         function calcStats() {
             const total = allPortfolios.length;
             document.getElementById("statEnrolled").textContent = total;
             const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
-            document.getElementById("statEnrolledDelta").textContent =
-                cohorts.length ? cohorts.join(', ') : 'No cohorts yet';
+            document.getElementById("statEnrolledDelta").textContent = cohorts.length ? cohorts.join(', ') : 'No cohorts yet';
             if (!total) return;
-
             const returns = allPortfolios.map(p => Number(p.return_pct) || 0);
             const avg = returns.reduce((a, b) => a + b, 0) / total;
-            // allPortfolios is sorted DESC by return_pct — index 0 is the best
             const best = allPortfolios[0];
             const drawdown = allPortfolios.filter(p => (Number(p.return_pct) || 0) < 0).length;
-
             const avgEl = document.getElementById("statAvgReturn");
             avgEl.textContent = (avg >= 0 ? "+" : "") + avg.toFixed(2) + "%";
             avgEl.className = "sc-val " + (avg > 0 ? "g" : avg < 0 ? "r" : "go");
-
             const topRet = Number(best.return_pct) || 0;
             document.getElementById("statTopReturn").textContent = (topRet >= 0 ? "+" : "") + topRet.toFixed(2) + "%";
             document.getElementById("statTopName").textContent = best.name || best.username || "—";
@@ -1928,13 +2013,9 @@
 
         function renderLeaderboard(portfolios) {
             const wrap = document.getElementById("leaderboardWrap");
-            if (!portfolios.length) {
-                wrap.innerHTML = `<div class="empty">No student portfolios found. Enrol a student below or check Supabase RLS.</div>`;
-                return;
-            }
+            if (!portfolios.length) { wrap.innerHTML = `<div class="empty">No student portfolios found. Enrol a student below or check Supabase RLS.</div>`; return; }
             const sorted = [...portfolios].sort((a, b) => (Number(b.return_pct) || 0) - (Number(a.return_pct) || 0));
             const maxAbs = Math.max(...sorted.map(p => Math.abs(Number(p.return_pct) || 0)), 1);
-
             const rows = sorted.map((p, i) => {
                 const rank = i + 1;
                 const rankCls = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-n";
@@ -1942,36 +2023,29 @@
                 const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
                 const bal = Number(p.cash_balance) || 0;
                 const startCap = Number(p.starting_capital) || 100000;
-                /* FIX 3 — compute display return from live values, not stale DB field */
                 const displayRet = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
                 const displayRetCls = displayRet > 0 ? "pos" : displayRet < 0 ? "neg" : "flat";
                 const barW = Math.abs(displayRet) / maxAbs * 100;
-                /* FIX 4 — use String(p.id) in onclick so the id is always a string */
                 const sid = String(p.id);
                 return `<tr style="cursor:pointer" onclick="openStudentModal('${sid}')">
-                <td><span class="rank-badge ${rankCls}">${medal || "#" + rank}</span></td>
-                <td style="color:#fff;font-weight:500">${escHtml(p.name || p.username || "—")}</td>
-                <td style="color:var(--muted);font-size:10px">${escHtml(p.username || "—")}</td>
-                <td style="color:var(--muted);font-size:10px">${escHtml(p.cohort || "—")}</td>
-                <td style="color:var(--gold)">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                <td style="color:var(--cyan);font-size:10px">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                <td><div class="ret-bar-wrap"><div class="ret-bar ${displayRetCls}" style="width:${barW}%"></div></div></td>
-                <td class="right ${displayRetCls}" style="font-weight:500">${displayRet >= 0 ? "+" : ""}${displayRet.toFixed(2)}%</td>
-                <td style="text-align:right;white-space:nowrap">
-                    <button class="btn-sm btn-cyan" style="font-size:7px;padding:3px 7px" onclick="event.stopPropagation();jumpToBalanceEditor('${sid}')">✎</button>
-                    <button class="btn-sm btn-amber" style="font-size:7px;padding:3px 7px;margin-left:3px" onclick="event.stopPropagation();jumpToResetPanel('${sid}')">↺</button>
-                </td>
-            </tr>`;
+            <td><span class="rank-badge ${rankCls}">${medal || "#" + rank}</span></td>
+            <td style="color:#fff;font-weight:500">${escHtml(p.name || p.username || "—")}</td>
+            <td style="color:var(--muted);font-size:10px">${escHtml(p.username || "—")}</td>
+            <td style="color:var(--muted);font-size:10px">${escHtml(p.cohort || "—")}</td>
+            <td style="color:var(--gold)">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+            <td style="color:var(--cyan);font-size:10px">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+            <td><div class="ret-bar-wrap"><div class="ret-bar ${displayRetCls}" style="width:${barW}%"></div></div></td>
+            <td class="right ${displayRetCls}" style="font-weight:500">${displayRet >= 0 ? "+" : ""}${displayRet.toFixed(2)}%</td>
+            <td style="text-align:right;white-space:nowrap">
+                <button class="btn-sm btn-cyan" style="font-size:7px;padding:3px 7px" onclick="event.stopPropagation();jumpToBalanceEditor('${sid}')">✎</button>
+                <button class="btn-sm btn-amber" style="font-size:7px;padding:3px 7px;margin-left:3px" onclick="event.stopPropagation();jumpToResetPanel('${sid}')">↺</button>
+            </td>
+        </tr>`;
             }).join('');
-
             wrap.innerHTML = `<table class="lb-table">
-            <thead><tr>
-                <th style="width:28px">#</th><th>Name</th><th>Username</th><th>Cohort</th>
-                <th>Portfolio</th><th>Cash Balance</th><th style="width:80px">Return</th>
-                <th class="right">%</th><th class="right">Actions</th>
-            </tr></thead>
-            <tbody>${rows}</tbody>
-        </table>`;
+        <thead><tr><th style="width:28px">#</th><th>Name</th><th>Username</th><th>Cohort</th><th>Portfolio</th><th>Cash Balance</th><th style="width:80px">Return</th><th class="right">%</th><th class="right">Actions</th></tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
         }
 
         function filterLeaderboard(q) {
@@ -1979,8 +2053,7 @@
             const cohort = document.getElementById("cohortFilter").value;
             let filtered = allPortfolios;
             if (cohort !== 'all') filtered = filtered.filter(p => p.cohort === cohort);
-            if (q) filtered = filtered.filter(p =>
-                (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
+            if (q) filtered = filtered.filter(p => (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
             renderLeaderboard(filtered);
         }
 
@@ -1988,16 +2061,14 @@
             const q = document.getElementById("lbSearch").value.toLowerCase();
             let filtered = allPortfolios;
             if (cohort !== 'all') filtered = filtered.filter(p => p.cohort === cohort);
-            if (q) filtered = filtered.filter(p =>
-                (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
+            if (q) filtered = filtered.filter(p => (p.name || "").toLowerCase().includes(q) || (p.username || "").toLowerCase().includes(q));
             renderLeaderboard(filtered);
         }
 
         /* ── Trades ── */
         async function loadTrades() {
             try {
-                const { data, error } = await db.from('student_trades').select('*')
-                    .order('created_at', { ascending: false }).limit(200);
+                const { data, error } = await db.from('student_trades').select('*').order('created_at', { ascending: false }).limit(200);
                 if (error) throw error;
                 allTrades = data || [];
                 const tradeLabel = document.getElementById("tradeCountLabel");
@@ -2005,8 +2076,7 @@
                 renderTrades(currentTradeTab);
                 pushFeed("green", "Trade log synced", `${allTrades.length} trade(s) in view.`);
             } catch (err) {
-                document.getElementById("tradesWrap").innerHTML =
-                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+                document.getElementById("tradesWrap").innerHTML = `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
             }
         }
 
@@ -2020,46 +2090,37 @@
         function renderTrades(filter) {
             const wrap = document.getElementById("tradesWrap");
             const trades = filter === 'all' ? allTrades : allTrades.filter(t => t.status === filter);
-            if (!trades.length) {
-                wrap.innerHTML = `<div class="empty">No ${filter === 'all' ? '' : filter + ' '}trades found.</div>`;
-                return;
-            }
+            if (!trades.length) { wrap.innerHTML = `<div class="empty">No ${filter === 'all' ? '' : filter + ' '}trades found.</div>`; return; }
             const rows = trades.slice(0, 100).map(t => {
                 const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
                 const pnlKES = (t.pnl || 0) * 130;
                 const pnlCls = pnlKES >= 0 ? "pos" : "neg";
                 return `<tr>
-                <td style="color:#fff;font-size:10px">${escHtml(t.username || "—")}</td>
-                <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                <td style="color:var(--muted)">${(t.quantity || 0).toFixed(4)}</td>
-                <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status || "—"}</span></td>
-                <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
-                <td style="color:var(--muted);font-size:9px">${dt}</td>
-            </tr>`;
+            <td style="color:#fff;font-size:10px">${escHtml(t.username || "—")}</td>
+            <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+            <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+            <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+            <td style="color:var(--muted)">${(t.quantity || 0).toFixed(4)}</td>
+            <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+            <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status || "—"}</span></td>
+            <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+            <td style="color:var(--muted);font-size:9px">${dt}</td>
+        </tr>`;
             }).join('');
-            wrap.innerHTML = `<table class="tr-table">
-            <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Qty</th><th>Lev</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
-            <tbody>${rows}</tbody>
-        </table>`;
+            wrap.innerHTML = `<table class="tr-table"><thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Qty</th><th>Lev</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead><tbody>${rows}</tbody></table>`;
         }
 
         /* ── Open Positions ── */
         async function loadOpenPositions() {
             try {
-                const { data, error } = await db.from('student_trades').select('*')
-                    .eq('status', 'open').order('created_at', { ascending: false });
+                const { data, error } = await db.from('student_trades').select('*').eq('status', 'open').order('created_at', { ascending: false });
                 if (error) throw error;
                 openTrades = data || [];
                 document.getElementById("statOpenPos").textContent = openTrades.length;
-                document.getElementById("openPosCount").textContent =
-                    openTrades.length + " position" + (openTrades.length !== 1 ? "s" : "");
+                document.getElementById("openPosCount").textContent = openTrades.length + " position" + (openTrades.length !== 1 ? "s" : "");
                 renderOpenPositions();
             } catch (err) {
-                document.getElementById("openPosWrap").innerHTML =
-                    `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
+                document.getElementById("openPosWrap").innerHTML = `<div class="empty" style="color:var(--red)">// Error: ${escHtml(err.message)}</div>`;
             }
         }
 
@@ -2070,19 +2131,16 @@
                 const dt = new Date(t.created_at).toLocaleString('en-KE', { dateStyle: 'short', timeStyle: 'short' });
                 const marginKES = Number(t.margin_kes) || 0;
                 return `<tr>
-                <td style="color:#fff">${escHtml(t.username || "—")}</td>
-                <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                <td style="color:var(--gold)">KES ${marginKES.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
-                <td style="color:var(--muted);font-size:9px">${dt}</td>
-            </tr>`;
+            <td style="color:#fff">${escHtml(t.username || "—")}</td>
+            <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+            <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+            <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+            <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+            <td style="color:var(--gold)">KES ${marginKES.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</td>
+            <td style="color:var(--muted);font-size:9px">${dt}</td>
+        </tr>`;
             }).join('');
-            wrap.innerHTML = `<table class="op-table">
-            <thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Margin (KES)</th><th>Opened</th></tr></thead>
-            <tbody>${rows}</tbody>
-        </table>`;
+            wrap.innerHTML = `<table class="op-table"><thead><tr><th>Student</th><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Margin (KES)</th><th>Opened</th></tr></thead><tbody>${rows}</tbody></table>`;
         }
 
         /* ── Quick Balance Editor ── */
@@ -2096,36 +2154,27 @@
             updateQuickDiff();
         }
 
-        /* FIX 5 — store id as string; use findPortfolio() for lookup */
         function onPickerChange(portfolioId) {
             quickTargetId = portfolioId || null;
             const p = findPortfolio(portfolioId);
             const display = document.getElementById("quickBalanceDisplay");
             const status = document.getElementById("balancePanelStatus");
             const btn = document.getElementById("quickSaveBtn");
-
             if (!p) {
-                display.style.display = "none";
-                status.textContent = "No student selected";
-                btn.disabled = true;
-                document.getElementById("quickDiffPreview").innerHTML =
-                    `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`;
+                display.style.display = "none"; status.textContent = "No student selected"; btn.disabled = true;
+                document.getElementById("quickDiffPreview").innerHTML = `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`;
                 return;
             }
-
             const bal = Number(p.cash_balance) || 0;
             const pv = Number(p.portfolio_value) || bal;
             const startCap = Number(p.starting_capital) || 100000;
             const ret = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
-
-            display.style.display = "grid";
-            status.textContent = p.name || p.username || "Student";
+            display.style.display = "grid"; status.textContent = p.name || p.username || "Student";
             document.getElementById("qb_cash").textContent = "KES " + bal.toLocaleString('en-KE', { maximumFractionDigits: 0 });
             document.getElementById("qb_portfolio").textContent = "KES " + pv.toLocaleString('en-KE', { maximumFractionDigits: 0 });
             const retEl = document.getElementById("qb_return");
             retEl.textContent = (ret >= 0 ? "+" : "") + ret.toFixed(2) + "%";
             retEl.className = "bd-val " + (ret > 0 ? "pos" : ret < 0 ? "neg" : "");
-
             document.getElementById("adjAmount").value = "";
             updateQuickDiff();
         }
@@ -2134,49 +2183,28 @@
             const p = findPortfolio(quickTargetId);
             const el = document.getElementById("quickDiffPreview");
             const btn = document.getElementById("quickSaveBtn");
-
-            if (!p) {
-                el.innerHTML = `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`;
-                btn.disabled = true;
-                return;
-            }
-
+            if (!p) { el.innerHTML = `<span style="color:var(--muted);font-size:9px">Select a student and enter an amount to preview the change.</span>`; btn.disabled = true; return; }
             const inputVal = parseFloat(document.getElementById("adjAmount").value);
-            if (isNaN(inputVal) || inputVal < 0) {
-                el.innerHTML = `<span style="color:var(--muted);font-size:9px">Enter a valid amount above.</span>`;
-                btn.disabled = true;
-                return;
-            }
-
+            if (isNaN(inputVal) || inputVal < 0) { el.innerHTML = `<span style="color:var(--muted);font-size:9px">Enter a valid amount above.</span>`; btn.disabled = true; return; }
             const oldBal = Number(p.cash_balance) || 0;
-            /* FIX 6 — keep open-position equity separate; only adjust cash */
-            const openMargin = openTrades
-                .filter(t => String(t.user_id) === String(p.user_id))
-                .reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
-
+            const openMargin = openTrades.filter(t => String(t.user_id) === String(p.user_id)).reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
             let newCash;
             if (adjMode === 'set') newCash = inputVal;
             else if (adjMode === 'add') newCash = oldBal + inputVal;
             else newCash = Math.max(0, oldBal - inputVal);
-
-            /* FIX 7 — portfolio_value = new cash + locked margin in open positions */
             const newPortfolioValue = newCash + openMargin;
             const startCap = Number(p.starting_capital) || 100000;
             const newReturn = startCap > 0 ? ((newPortfolioValue - startCap) / startCap * 100) : 0;
-
             const diff = newCash - oldBal;
             const diffStr = diff === 0 ? "No change"
-                : diff > 0
-                    ? `<span style="color:var(--emerald)">▲ +KES ${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`
+                : diff > 0 ? `<span style="color:var(--emerald)">▲ +KES ${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`
                     : `<span style="color:var(--red)">▼ -KES ${Math.abs(diff).toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>`;
-
             el.innerHTML = `
-            <span style="color:var(--muted);font-size:10px">KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
-            <span class="diff-arrow">→</span>
-            <span style="color:#fff;font-size:12px">KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
-            <span style="margin-left:8px;font-size:10px">${diffStr}</span>
-            <span style="margin-left:auto;font-size:9px;color:var(--muted)">Return: <span style="color:${newReturn >= 0 ? 'var(--emerald)' : 'var(--red)'}">${newReturn >= 0 ? '+' : ''}${newReturn.toFixed(2)}%</span></span>`;
-
+        <span style="color:var(--muted);font-size:10px">KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+        <span class="diff-arrow">→</span>
+        <span style="color:#fff;font-size:12px">KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</span>
+        <span style="margin-left:8px;font-size:10px">${diffStr}</span>
+        <span style="margin-left:auto;font-size:9px;color:var(--muted)">Return: <span style="color:${newReturn >= 0 ? 'var(--emerald)' : 'var(--red)'}">${newReturn >= 0 ? '+' : ''}${newReturn.toFixed(2)}%</span></span>`;
             btn.disabled = (diff === 0);
         }
 
@@ -2184,55 +2212,35 @@
             if (!quickTargetId) return;
             const p = findPortfolio(quickTargetId);
             if (!p) return;
-
             const inputVal = parseFloat(document.getElementById("adjAmount").value);
             if (isNaN(inputVal) || inputVal < 0) { toast("error", "Invalid Amount", "Enter a valid non-negative number."); return; }
-
             const oldBal = Number(p.cash_balance) || 0;
             let newCash;
             if (adjMode === 'set') newCash = inputVal;
             else if (adjMode === 'add') newCash = oldBal + inputVal;
             else newCash = Math.max(0, oldBal - inputVal);
-
-            /* FIX 8 — recalculate portfolio_value preserving open-position margin */
-            const openMargin = openTrades
-                .filter(t => String(t.user_id) === String(p.user_id))
-                .reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
+            const openMargin = openTrades.filter(t => String(t.user_id) === String(p.user_id)).reduce((sum, t) => sum + (Number(t.margin_kes) || 0), 0);
             const newPortfolioValue = newCash + openMargin;
             const startCap = Number(p.starting_capital) || 100000;
             const newReturn = startCap > 0 ? ((newPortfolioValue - startCap) / startCap * 100) : 0;
-
             const note = document.getElementById("adjNote").value.trim() || "Admin balance adjustment";
             const btn = document.getElementById("quickSaveBtn");
             btn.textContent = "Saving…"; btn.disabled = true;
-
             try {
-                const { error } = await db.from('student_portfolios').update({
-                    cash_balance: newCash,
-                    portfolio_value: newPortfolioValue,
-                    return_pct: newReturn
-                }).eq('id', p.id);          // use original p.id (correct type)
+                const { error } = await db.from('student_portfolios').update({ cash_balance: newCash, portfolio_value: newPortfolioValue, return_pct: newReturn }).eq('id', p.id);
                 if (error) throw error;
-
                 const diff = newCash - oldBal;
                 const modeLabel = adjMode === 'add' ? 'Funds added' : adjMode === 'sub' ? 'Funds deducted' : 'Balance set';
-                toast("success", "Balance Updated",
-                    `${p.name || p.username} → KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} (${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })})`);
-                pushFeed("cyan", modeLabel,
-                    `${p.name || p.username}: KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} → ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} · ${note}`);
-
+                toast("success", "Balance Updated", `${p.name || p.username} → KES ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} (${diff >= 0 ? '+' : ''}${diff.toLocaleString('en-KE', { maximumFractionDigits: 0 })})`);
+                pushFeed("cyan", modeLabel, `${p.name || p.username}: KES ${oldBal.toLocaleString('en-KE', { maximumFractionDigits: 0 })} → ${newCash.toLocaleString('en-KE', { maximumFractionDigits: 0 })} · ${note}`);
                 document.getElementById("adjAmount").value = "";
                 await loadPortfolios();
                 onPickerChange(quickTargetId);
-
-            } catch (err) {
-                toast("error", "Save Error", err.message);
-            }
+            } catch (err) { toast("error", "Save Error", err.message); }
             btn.textContent = "Apply Balance Change →"; btn.disabled = false;
         }
 
         /* ── Capital Reset Panel ── */
-        /* FIX 9 — store id as string consistently */
         function onResetPickerChange(portfolioId) {
             resetPanelTargetId = portfolioId || null;
             const p = findPortfolio(portfolioId);
@@ -2243,62 +2251,40 @@
 
         function checkResetPanelConfirm() {
             const val = document.getElementById("resetConfirmPanel").value;
-            document.getElementById("resetPanelBtn").disabled =
-                (!resetPanelTargetId || !resetPanelTargetUsername || val !== resetPanelTargetUsername);
+            document.getElementById("resetPanelBtn").disabled = (!resetPanelTargetId || !resetPanelTargetUsername || val !== resetPanelTargetUsername);
         }
 
         async function confirmPanelReset() {
             if (!resetPanelTargetId) return;
             const newCapital = parseFloat(document.getElementById("resetCapitalPanel").value);
             if (!newCapital || newCapital < 1000) { toast("error", "Invalid Capital", "Minimum KES 1,000."); return; }
-
             const p = findPortfolio(resetPanelTargetId);
             if (!p) { toast("error", "Error", "Student not found."); return; }
-
             const btn = document.getElementById("resetPanelBtn");
             btn.textContent = "Resetting…"; btn.disabled = true;
-
             try {
-                /* FIX 10 — close open trades using username as fallback if user_id is absent */
                 const tradeFilter = p.user_id
                     ? db.from('student_trades').update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 }).eq('user_id', p.user_id).eq('status', 'open')
                     : db.from('student_trades').update({ status: 'closed', close_price: 0, pnl: 0, pnl_pct: 0 }).eq('username', p.username).eq('status', 'open');
                 const { error: tradeErr } = await tradeFilter;
-                if (tradeErr) console.warn("Closing trades:", tradeErr.message); // non-fatal
-
-                /* FIX 11 — also reset total_trades count */
-                const { error: portErr } = await db.from('student_portfolios').update({
-                    cash_balance: newCapital,
-                    starting_capital: newCapital,
-                    portfolio_value: newCapital,
-                    return_pct: 0,
-                    total_trades: 0,
-                }).eq('id', p.id);
+                if (tradeErr) console.warn("Closing trades:", tradeErr.message);
+                const { error: portErr } = await db.from('student_portfolios').update({ cash_balance: newCapital, starting_capital: newCapital, portfolio_value: newCapital, return_pct: 0, total_trades: 0 }).eq('id', p.id);
                 if (portErr) throw portErr;
-
                 toast("success", "Capital Reset", `${p.name || p.username} reset to KES ${newCapital.toLocaleString('en-KE')}.`);
                 pushFeed("amber", "Capital reset", `${p.name || p.username} → KES ${newCapital.toLocaleString('en-KE')}`);
-
-                // Clear panel
                 document.getElementById("resetPicker").value = "";
                 document.getElementById("resetConfirmPanel").value = "";
                 resetPanelTargetId = null; resetPanelTargetUsername = null;
                 btn.disabled = true;
                 loadAll();
-
-            } catch (err) {
-                toast("error", "Reset Error", err.message);
-                btn.textContent = "Confirm Capital Reset →"; btn.disabled = false;
-            }
+            } catch (err) { toast("error", "Reset Error", err.message); btn.textContent = "Confirm Capital Reset →"; btn.disabled = false; }
         }
 
         /* ── Jump-to helpers ── */
         function jumpToBalanceEditor(portfolioId) {
             const sid = String(portfolioId);
-            document.getElementById("studentModal").classList.remove("open");
-            currentStudentId = null;
-            const picker = document.getElementById("quickBalancePicker");
-            picker.value = sid;
+            document.getElementById("studentModal").classList.remove("open"); currentStudentId = null;
+            document.getElementById("quickBalancePicker").value = sid;
             onPickerChange(sid);
             document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
             toast("info", "Balance Editor", "Student loaded into balance editor.");
@@ -2306,51 +2292,35 @@
 
         function jumpToResetPanel(portfolioId) {
             const sid = String(portfolioId);
-            document.getElementById("studentModal").classList.remove("open");
-            currentStudentId = null;
-            const picker = document.getElementById("resetPicker");
-            picker.value = sid;
+            document.getElementById("studentModal").classList.remove("open"); currentStudentId = null;
+            document.getElementById("resetPicker").value = sid;
             onResetPickerChange(sid);
             document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
             toast("info", "Reset Panel", "Student loaded into reset panel.");
         }
 
         /* ── Student Detail Modal ── */
-        /* FIX 12 — accept id as string, use findPortfolio() */
         async function openStudentModal(portfolioId) {
-            const sid = String(portfolioId);
-            currentStudentId = sid;
-            const p = findPortfolio(sid);
-            if (!p) return;
-
+            const sid = String(portfolioId); currentStudentId = sid;
+            const p = findPortfolio(sid); if (!p) return;
             document.getElementById("modalStudentName").textContent = p.name || p.username || "Student";
-            document.getElementById("modalStudentMeta").textContent =
-                (p.cohort || "No cohort") + " · @" + (p.username || "—");
-
+            document.getElementById("modalStudentMeta").textContent = (p.cohort || "No cohort") + " · @" + (p.username || "—");
             const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
             const bal = Number(p.cash_balance) || 0;
             const startCap = Number(p.starting_capital) || 100000;
             const ret = startCap > 0 ? ((pv - startCap) / startCap * 100) : (Number(p.return_pct) || 0);
-
             document.getElementById("modalStats").innerHTML = `
-            <div class="m-stat"><div class="ms-label">Portfolio Value</div><div class="ms-val green">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-            <div class="m-stat"><div class="ms-label">Cash Balance</div><div class="ms-val gold">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-            <div class="m-stat"><div class="ms-label">Total Return</div><div class="ms-val ${ret > 0 ? 'green' : ret < 0 ? 'red' : ''}">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</div></div>
-            <div class="m-stat"><div class="ms-label">Starting Capital</div><div class="ms-val violet">KES ${startCap.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
-        `;
+        <div class="m-stat"><div class="ms-label">Portfolio Value</div><div class="ms-val green">KES ${pv.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+        <div class="m-stat"><div class="ms-label">Cash Balance</div><div class="ms-val gold">KES ${bal.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>
+        <div class="m-stat"><div class="ms-label">Total Return</div><div class="ms-val ${ret > 0 ? 'green' : ret < 0 ? 'red' : ''}">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</div></div>
+        <div class="m-stat"><div class="ms-label">Starting Capital</div><div class="ms-val violet">KES ${startCap.toLocaleString('en-KE', { maximumFractionDigits: 0 })}</div></div>`;
             document.getElementById("studentModal").classList.add("open");
-
             const modalWrap = document.getElementById("modalTradesWrap");
             modalWrap.innerHTML = `<div class="empty"><span class="spinner"></span>Loading…</div>`;
-
             try {
-                /* FIX 13 — try user_id first, fall back to username if user_id missing */
-                let query;
-                if (p.user_id) {
-                    query = db.from('student_trades').select('*').eq('user_id', p.user_id);
-                } else {
-                    query = db.from('student_trades').select('*').eq('username', p.username);
-                }
+                let query = p.user_id
+                    ? db.from('student_trades').select('*').eq('user_id', p.user_id)
+                    : db.from('student_trades').select('*').eq('username', p.username);
                 const { data, error } = await query.order('created_at', { ascending: false }).limit(50);
                 if (error) throw error;
                 const trades = data || [];
@@ -2360,28 +2330,22 @@
                     const pnlKES = (t.pnl || 0) * 130;
                     const pnlCls = pnlKES >= 0 ? "pos" : "neg";
                     return `<tr>
-                    <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
-                    <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
-                    <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
-                    <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                    <td>${(t.quantity || 0).toFixed(4)}</td>
-                    <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status}</span></td>
-                    <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
-                    <td style="color:var(--muted);font-size:9px">${dt}</td>
-                </tr>`;
+                <td>${escHtml(t.symbol?.replace("USDT", "/USDT") || "—")}</td>
+                <td class="side-${t.side}">${(t.side || "").toUpperCase()}</td>
+                <td style="color:var(--violet)">${t.leverage ? '1:' + t.leverage : '—'}</td>
+                <td>$${(t.entry_price || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${(t.quantity || 0).toFixed(4)}</td>
+                <td><span class="${t.status === 'open' ? 'badge-open' : 'badge-closed'}">${t.status}</span></td>
+                <td class="${pnlCls}">${t.status === 'closed' ? ((pnlKES >= 0 ? '+KES ' : '-KES ') + Math.abs(pnlKES).toLocaleString('en-KE', { maximumFractionDigits: 0 })) : "—"}</td>
+                <td style="color:var(--muted);font-size:9px">${dt}</td>
+            </tr>`;
                 }).join('');
-                modalWrap.innerHTML = `<table class="tr-table">
-                <thead><tr><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Qty</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead>
-                <tbody>${rows}</tbody>
-            </table>`;
-            } catch (err) {
-                modalWrap.innerHTML = `<div class="empty" style="color:var(--red)">Error: ${escHtml(err.message)}</div>`;
-            }
+                modalWrap.innerHTML = `<table class="tr-table"><thead><tr><th>Symbol</th><th>Side</th><th>Lev</th><th>Entry</th><th>Qty</th><th>Status</th><th>P&L (KES)</th><th>Time</th></tr></thead><tbody>${rows}</tbody></table>`;
+            } catch (err) { modalWrap.innerHTML = `<div class="empty" style="color:var(--red)">Error: ${escHtml(err.message)}</div>`; }
         }
 
         function closeStudentModal() {
-            document.getElementById("studentModal").classList.remove("open");
-            currentStudentId = null;
+            document.getElementById("studentModal").classList.remove("open"); currentStudentId = null;
         }
 
         /* ── Enrol Student ── */
@@ -2404,18 +2368,15 @@
                     approved_at: new Date().toISOString(), requested_at: new Date().toISOString()
                 }]).select().single();
                 if (arErr) throw new Error("Access request: " + arErr.message);
-
                 const { error: pErr } = await db.from('student_portfolios').insert([{
                     user_id: ar.id, username, name, cohort,
                     cash_balance: capital, starting_capital: capital,
                     portfolio_value: capital, return_pct: 0, total_trades: 0,
                 }]);
                 if (pErr) throw new Error("Portfolio: " + pErr.message);
-
                 toast("success", "Student Enrolled", `${name} · @${username} · Pass: ${rawPass}`);
                 pushFeed("green", "Student enrolled", `${name} → @${username} (${cohort || "no cohort"})`);
-                ["enrolName", "enrolEmail", "enrolUsername", "enrolCohort"].forEach(id =>
-                    document.getElementById(id).value = "");
+                ["enrolName", "enrolEmail", "enrolUsername", "enrolCohort"].forEach(id => document.getElementById(id).value = "");
                 document.getElementById("enrolCapital").value = 100000;
                 loadAll();
             } catch (err) { toast("error", "Enrol Error", err.message); }
@@ -2426,20 +2387,16 @@
         function pushFeed(color, title, detail) {
             const feed = document.getElementById("activityFeed");
             const now = new Date().toLocaleTimeString("en-GB", { hour12: false });
-            const el = document.createElement("div");
-            el.className = "feed-item";
-            el.innerHTML = `<div class="feed-dot fd-${color}"></div>
-            <div><div class="feed-text">${escHtml(title)}</div>
-            <div class="feed-time">${now} · ${escHtml(detail)}</div></div>`;
+            const el = document.createElement("div"); el.className = "feed-item";
+            el.innerHTML = `<div class="feed-dot fd-${color}"></div><div><div class="feed-text">${escHtml(title)}</div><div class="feed-time">${now} · ${escHtml(detail)}</div></div>`;
             const ph = feed.querySelector(".empty"); if (ph) ph.remove();
             feed.insertBefore(el, feed.firstChild);
             while (feed.children.length > 25) feed.removeChild(feed.lastChild);
             feedCount++;
-            document.getElementById("feedCount").textContent =
-                feedCount + " event" + (feedCount !== 1 ? "s" : "");
+            document.getElementById("feedCount").textContent = feedCount + " event" + (feedCount !== 1 ? "s" : "");
         }
 
-        /* ── Keyboard ── */
+        /* ── Keyboard shortcuts ── */
         function bindKeys() {
             document.addEventListener("keydown", e => {
                 if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
@@ -2450,7 +2407,10 @@
                     document.querySelector(".balance-panel-grid").scrollIntoView({ behavior: 'smooth', block: 'start' });
                     document.getElementById("quickBalancePicker").focus();
                 }
-                if (e.key === "Escape") closeStudentModal();
+                if ((e.key === "p" || e.key === "P") && !document.getElementById("posterModal").classList.contains("open")) {
+                    e.preventDefault(); openPosterModal();
+                }
+                if (e.key === "Escape") { closeStudentModal(); closePosterModal(); }
             });
         }
 
@@ -2478,10 +2438,377 @@
             const ic = { success: "✦", error: "✕", warning: "⚠", info: "◈" };
             const el = document.createElement("div"); el.className = "toast";
             el.innerHTML = `<div style="color:${c[type]};font-size:12px;flex-shrink:0;margin-top:1px">${ic[type]}</div>
-            <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
-            <div class="toast-bar" style="background:${c[type]}"></div>`;
+        <div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>
+        <div class="toast-bar" style="background:${c[type]}"></div>`;
             document.getElementById("toast-c").appendChild(el);
             setTimeout(() => { el.classList.add("closing"); setTimeout(() => el.remove(), 300); }, 3500);
+        }
+
+
+        /* ═══════════════════════════════════════════════════════════
+           POSTER GENERATOR
+        ═══════════════════════════════════════════════════════════ */
+
+        const POSTER_THEMES = {
+            dark: {
+                bgTop: '#03050A', bgBot: '#08091F',
+                glowColor: 'rgba(167,139,250,0.18)',
+                accentBar: '#C8A96E',
+                logoColor: '#A78BFA',
+                headlineColor: '#FFFFFF',
+                italicColor: '#A78BFA',
+                tagBg: 'rgba(167,139,250,0.12)', tagText: '#A78BFA',
+                divider: 'rgba(200,169,110,0.25)',
+                colHead: 'rgba(90,96,112,0.9)',
+                rankColors: ['#C8A96E', '#8B9EB7', '#A0785A'],
+                rowHl: ['rgba(200,169,110,0.07)', 'rgba(200,169,110,0.04)', 'rgba(200,169,110,0.02)'],
+                nameFill: '#FFFFFF',
+                subFill: 'rgba(90,96,112,0.9)',
+                barTrack: 'rgba(255,255,255,0.05)',
+                barPos: '#34D399', barNeg: '#F87171',
+                retPos: '#34D399', retNeg: '#F87171',
+                valFill: '#C8A96E',
+                rowBorder: 'rgba(255,255,255,0.045)',
+                footerText: 'rgba(90,96,112,0.8)',
+                footerAccent: 'rgba(200,169,110,0.6)',
+                watermark: 'rgba(200,169,110,0.18)',
+                shine: 'rgba(167,139,250,0.04)',
+            },
+            gold: {
+                bgTop: '#080500', bgBot: '#130E00',
+                glowColor: 'rgba(200,169,110,0.22)',
+                accentBar: '#C8A96E',
+                logoColor: '#C8A96E',
+                headlineColor: '#F5E6C8',
+                italicColor: '#C8A96E',
+                tagBg: 'rgba(200,169,110,0.14)', tagText: '#C8A96E',
+                divider: 'rgba(200,169,110,0.3)',
+                colHead: 'rgba(139,115,64,0.9)',
+                rankColors: ['#FFD700', '#C8A96E', '#8B6E3A'],
+                rowHl: ['rgba(255,215,0,0.07)', 'rgba(200,169,110,0.04)', 'rgba(200,169,110,0.02)'],
+                nameFill: '#F5E6C8',
+                subFill: 'rgba(139,115,64,0.9)',
+                barTrack: 'rgba(255,255,255,0.05)',
+                barPos: '#C8A96E', barNeg: '#F87171',
+                retPos: '#C8A96E', retNeg: '#F87171',
+                valFill: '#FFD700',
+                rowBorder: 'rgba(200,169,110,0.1)',
+                footerText: 'rgba(139,115,64,0.8)',
+                footerAccent: 'rgba(200,169,110,0.7)',
+                watermark: 'rgba(200,169,110,0.22)',
+                shine: 'rgba(255,215,0,0.05)',
+            },
+            midnight: {
+                bgTop: '#020408', bgBot: '#03080F',
+                glowColor: 'rgba(34,211,238,0.16)',
+                accentBar: '#22D3EE',
+                logoColor: '#22D3EE',
+                headlineColor: '#E8F4F8',
+                italicColor: '#22D3EE',
+                tagBg: 'rgba(34,211,238,0.1)', tagText: '#22D3EE',
+                divider: 'rgba(34,211,238,0.2)',
+                colHead: 'rgba(74,96,112,0.9)',
+                rankColors: ['#22D3EE', '#67B8C8', '#3D7A8A'],
+                rowHl: ['rgba(34,211,238,0.07)', 'rgba(34,211,238,0.04)', 'rgba(34,211,238,0.02)'],
+                nameFill: '#E8F4F8',
+                subFill: 'rgba(74,96,112,0.9)',
+                barTrack: 'rgba(255,255,255,0.04)',
+                barPos: '#22D3EE', barNeg: '#F87171',
+                retPos: '#22D3EE', retNeg: '#F87171',
+                valFill: '#22D3EE',
+                rowBorder: 'rgba(34,211,238,0.06)',
+                footerText: 'rgba(74,96,112,0.8)',
+                footerAccent: 'rgba(34,211,238,0.6)',
+                watermark: 'rgba(34,211,238,0.15)',
+                shine: 'rgba(34,211,238,0.04)',
+            }
+        };
+
+        function openPosterModal() {
+            // Sync cohort options
+            const sel = document.getElementById('posterCohortSelect');
+            const cohorts = [...new Set(allPortfolios.map(p => p.cohort).filter(Boolean))];
+            sel.innerHTML = '<option value="all">All Cohorts</option>' +
+                cohorts.map(c => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
+            document.getElementById('posterModal').classList.add('open');
+            // Small delay so modal is visible before canvas renders
+            setTimeout(renderPoster, 80);
+        }
+
+        function closePosterModal() {
+            document.getElementById('posterModal').classList.remove('open');
+        }
+
+        /* ─── Canvas render ─── */
+        function renderPoster() {
+            const canvas = document.getElementById('posterCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = 1080, H = 1350;
+            canvas.width = W; canvas.height = H;
+
+            const themeKey = document.getElementById('posterTheme').value;
+            const T = POSTER_THEMES[themeKey];
+            const cohortVal = document.getElementById('posterCohortSelect').value;
+            const topN = parseInt(document.getElementById('posterTopN').value) || 10;
+
+            let students = [...allPortfolios].sort((a, b) => (Number(b.return_pct) || 0) - (Number(a.return_pct) || 0));
+            if (cohortVal !== 'all') students = students.filter(p => p.cohort === cohortVal);
+            students = students.slice(0, topN);
+
+            // ── Background gradient ──
+            const bg = ctx.createLinearGradient(0, 0, 0, H);
+            bg.addColorStop(0, T.bgTop);
+            bg.addColorStop(1, T.bgBot);
+            ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+            // Glow top-left
+            const glow = ctx.createRadialGradient(120, 100, 0, 120, 100, 600);
+            glow.addColorStop(0, T.glowColor);
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+            // Diagonal shine
+            const shine = ctx.createLinearGradient(0, 0, W, H * 0.55);
+            shine.addColorStop(0, T.shine);
+            shine.addColorStop(1, 'transparent');
+            ctx.fillStyle = shine; ctx.fillRect(0, 0, W, H);
+
+            // Grain
+            ctx.save(); ctx.globalAlpha = 0.016;
+            for (let y = 0; y < H; y += 4)
+                for (let x = 0; x < W; x += 4)
+                    if (Math.random() > 0.5) { ctx.fillStyle = '#fff'; ctx.fillRect(x, y, 1, 1); }
+            ctx.restore();
+
+            // ── Left accent bar ──
+            ctx.fillStyle = T.accentBar;
+            ctx.fillRect(58, 58, 3, 90);
+
+            // ── Logo ──
+            drawSavannaLogo(ctx, 80, 64, 42, T.logoColor);
+
+            // ── Wordmark ──
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#fff';
+            ctx.font = '300 30px Outfit, sans-serif';
+            ctx.fillText('SAVANNA', 138, 96);
+            ctx.fillStyle = T.accentBar;
+            ctx.fillText('CAPITAL', 138, 128);
+            ctx.fillStyle = T.subFill;
+            ctx.font = '400 10.5px "DM Mono", monospace';
+            ctx.fillText('ACADEMY  ·  PAPER TRADING', 139, 150);
+
+            // ── Headline ──
+            ctx.fillStyle = T.headlineColor;
+            ctx.font = '300 70px "Cormorant Garamond", Georgia, serif';
+            ctx.fillText('Student', 60, 252);
+            ctx.fillStyle = T.italicColor;
+            ctx.font = 'italic 300 70px "Cormorant Garamond", Georgia, serif';
+            ctx.fillText('Leaderboard', 60, 326);
+
+            // ── Date / cohort tag ──
+            const now = new Date();
+            const dtStr = now.toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            const cLabel = cohortVal === 'all' ? 'ALL COHORTS' : cohortVal.toUpperCase();
+            const tagTxt = `${cLabel}  ·  ${dtStr}`;
+            ctx.font = '400 10px "DM Mono", monospace';
+            const tagW = ctx.measureText(tagTxt).width + 34;
+            posterRoundRect(ctx, 60, 346, tagW, 28, 2, T.tagBg);
+            ctx.fillStyle = T.tagText;
+            ctx.fillText(tagTxt, 77, 365);
+
+            // ── Divider ──
+            ctx.strokeStyle = T.divider;
+            ctx.lineWidth = 1; ctx.globalAlpha = 1;
+            ctx.beginPath(); ctx.moveTo(60, 398); ctx.lineTo(W - 60, 398); ctx.stroke();
+
+            // ── TABLE LAYOUT ──
+            const TABLE_TOP = 422;
+            const TABLE_BOT = H - 100;
+            const AVAIL_H = TABLE_BOT - TABLE_TOP;
+            const ROW_H = Math.min(Math.floor(AVAIL_H / Math.max(students.length, 1)), 96);
+
+            // Column x anchors
+            const CX = {
+                rank: 60,
+                name: 126,
+                bar: 500,
+                ret: 730,
+                val: W - 60,
+            };
+            const BAR_MAX = 200;
+
+            // Column headers
+            ctx.fillStyle = T.colHead;
+            ctx.font = '400 9px "DM Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('RANK', CX.rank, TABLE_TOP - 12);
+            ctx.fillText('STUDENT', CX.name, TABLE_TOP - 12);
+            ctx.fillText('RETURN', CX.bar, TABLE_TOP - 12);
+            ctx.textAlign = 'right';
+            ctx.fillText('RETURN %', CX.ret + 90, TABLE_TOP - 12);
+            ctx.fillText('PORTFOLIO (KES)', CX.val, TABLE_TOP - 12);
+            ctx.textAlign = 'left';
+
+            // Thin column header rule
+            ctx.strokeStyle = T.rowBorder;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(60, TABLE_TOP - 4); ctx.lineTo(W - 60, TABLE_TOP - 4); ctx.stroke();
+
+            const maxAbs = Math.max(...students.map(p => Math.abs(Number(p.return_pct) || 0)), 0.01);
+
+            students.forEach((p, i) => {
+                const y = TABLE_TOP + i * ROW_H;
+                const rank = i + 1;
+                const ret = Number(p.return_pct) || 0;
+                const pv = Number(p.portfolio_value) || Number(p.cash_balance) || 0;
+                const isPos = ret >= 0;
+                const retColor = isPos ? T.retPos : T.retNeg;
+
+                // Row highlight for top 3
+                if (rank <= 3) {
+                    posterRoundRect(ctx, 42, y + 2, W - 84, ROW_H - 4, 2, T.rowHl[rank - 1]);
+                }
+
+                // Rank
+                if (rank <= 3) {
+                    const medals = ['🥇', '🥈', '🥉'];
+                    ctx.font = `${Math.round(ROW_H * 0.32)}px serif`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(medals[rank - 1], CX.rank + 18, y + ROW_H * 0.55);
+                } else {
+                    ctx.fillStyle = T.colHead;
+                    ctx.font = `400 ${Math.round(ROW_H * 0.24)}px "DM Mono", monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('#' + rank, CX.rank + 18, y + ROW_H * 0.54);
+                }
+                ctx.textAlign = 'left';
+
+                // Name
+                const nameSz = rank <= 3
+                    ? Math.round(ROW_H * 0.28)
+                    : Math.round(ROW_H * 0.24);
+                ctx.fillStyle = T.nameFill;
+                ctx.font = `${rank <= 3 ? '500' : '300'} ${nameSz}px Outfit, sans-serif`;
+                ctx.fillText(posterTrunc(p.name || p.username || '—', 24), CX.name, y + ROW_H * 0.44);
+
+                // Username
+                const subSz = Math.round(ROW_H * 0.19);
+                ctx.fillStyle = T.subFill;
+                ctx.font = `400 ${subSz}px "DM Mono", monospace`;
+                ctx.fillText(('@' + (p.username || '—')).slice(0, 20), CX.name, y + ROW_H * 0.72);
+
+                // Bar track
+                const barY = y + ROW_H * 0.44;
+                const barH = Math.max(4, Math.round(ROW_H * 0.07));
+                posterRoundRect(ctx, CX.bar, barY - barH * 0.5, BAR_MAX, barH, barH / 2, T.barTrack);
+                const bw = Math.abs(ret) / maxAbs * BAR_MAX;
+                if (bw > 0) posterRoundRect(ctx, CX.bar, barY - barH * 0.5, bw, barH, barH / 2, isPos ? T.barPos : T.barNeg);
+
+                // Return %
+                const retSz = rank <= 3
+                    ? Math.round(ROW_H * 0.27)
+                    : Math.round(ROW_H * 0.23);
+                ctx.fillStyle = retColor;
+                ctx.font = `${rank <= 3 ? '500' : '400'} ${retSz}px "DM Mono", monospace`;
+                ctx.textAlign = 'right';
+                ctx.fillText((isPos ? '+' : '') + ret.toFixed(2) + '%', CX.ret + 90, y + ROW_H * 0.5);
+
+                // Portfolio value
+                const valSz = Math.round(ROW_H * 0.21);
+                ctx.fillStyle = T.valFill;
+                ctx.font = `400 ${valSz}px "DM Mono", monospace`;
+                ctx.textAlign = 'right';
+                ctx.fillText(pv.toLocaleString('en-KE', { maximumFractionDigits: 0 }), CX.val, y + ROW_H * 0.5);
+                ctx.textAlign = 'left';
+
+                // Row divider
+                if (i < students.length - 1) {
+                    ctx.strokeStyle = T.rowBorder;
+                    ctx.lineWidth = 0.8; ctx.globalAlpha = 0.9;
+                    ctx.beginPath(); ctx.moveTo(60, y + ROW_H); ctx.lineTo(W - 60, y + ROW_H); ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+            });
+
+            // ── Footer ──
+            const FY = H - 58;
+            ctx.strokeStyle = T.divider;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(60, FY - 20); ctx.lineTo(W - 60, FY - 20); ctx.stroke();
+
+            ctx.fillStyle = T.footerText;
+            ctx.font = '400 10px "DM Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('SAVANNA CAPITAL  ·  NAIROBI  ·  DUBAI  ·  NEW YORK', 60, FY);
+
+            ctx.fillStyle = T.footerAccent;
+            ctx.textAlign = 'right';
+            ctx.fillText('PAPER TRADING  ·  EDUCATIONAL', W - 60, FY);
+
+            // Watermark
+            ctx.save();
+            ctx.globalAlpha = 0.22;
+            ctx.fillStyle = T.watermark;
+            ctx.font = '400 9px "DM Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('SAVANNA ACADEMY', W - 60, H - 24);
+            ctx.restore();
+        }
+
+        /* ─── Draw Savanna Capital tree logo onto canvas ─── */
+        function drawSavannaLogo(ctx, x, y, size, color) {
+            const sc = size / 100;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(sc, sc);
+            ctx.fillStyle = color;
+            const path = new Path2D(
+                'M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8' +
+                '-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5' +
+                ' 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22' +
+                'c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6' +
+                '-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5' +
+                '-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3' +
+                'c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5' +
+                ' 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5' +
+                '-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20' +
+                'c0 .6.4 1 1 1s1-.4 1-1z'
+            );
+            ctx.fill(path);
+            ctx.restore();
+        }
+
+        /* ─── Canvas helpers ─── */
+        function posterRoundRect(ctx, x, y, w, h, r, fill) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fillStyle = fill; ctx.fill();
+        }
+        function posterTrunc(str, max) {
+            if (!str) return '—';
+            return str.length > max ? str.slice(0, max - 1) + '…' : str;
+        }
+
+        /* ─── Download ─── */
+        function downloadPoster() {
+            renderPoster();
+            const canvas = document.getElementById('posterCanvas');
+            const link = document.createElement('a');
+            const cohort = document.getElementById('posterCohortSelect').value;
+            const date = new Date().toISOString().slice(0, 10);
+            link.download = `savanna-academy-leaderboard-${cohort}-${date}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            toast('success', 'Poster Downloaded', 'PNG saved — ready to share on social.');
         }
     </script>
 </body>

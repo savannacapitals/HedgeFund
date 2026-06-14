@@ -44,7 +44,6 @@
             --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ── RESET ──────────────────────────────── */
         *,
         *::before,
         *::after {
@@ -65,7 +64,6 @@
             overflow-x: hidden;
         }
 
-        /* ── BACKGROUND TEXTURE ─────────────────── */
         body::before {
             content: '';
             position: fixed;
@@ -78,7 +76,7 @@
             z-index: 0;
         }
 
-        /* ── NAVIGATION ─────────────────────────── */
+        /* NAV */
         .nav {
             position: sticky;
             top: 0;
@@ -185,7 +183,7 @@
             color: var(--text-muted);
         }
 
-        /* ── MAIN LAYOUT ────────────────────────── */
+        /* MAIN */
         .hub {
             position: relative;
             z-index: 1;
@@ -194,7 +192,7 @@
             padding: 0 40px 80px;
         }
 
-        /* ── HERO ───────────────────────────────── */
+        /* HERO */
         .hero {
             padding: 64px 0 52px;
             border-bottom: 1px solid var(--border);
@@ -277,7 +275,7 @@
             letter-spacing: 0;
         }
 
-        /* ── FEATURED WHITEPAPER ────────────────── */
+        /* FEATURED */
         .featured {
             position: relative;
             background: var(--bg-surface);
@@ -431,7 +429,7 @@
             color: var(--gold-primary);
         }
 
-        /* ── TOOLBAR ────────────────────────────── */
+        /* TOOLBAR */
         .toolbar {
             display: flex;
             align-items: center;
@@ -512,7 +510,7 @@
             letter-spacing: 0.06em;
         }
 
-        /* ── RESULTS COUNT ──────────────────────── */
+        /* RESULTS */
         .results-line {
             font-family: var(--font-mono);
             font-size: 0.68rem;
@@ -531,7 +529,7 @@
             background: var(--border-subtle);
         }
 
-        /* ── RESEARCH GRID ──────────────────────── */
+        /* GRID */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
@@ -648,7 +646,34 @@
             font-size: 0.6rem;
         }
 
-        /* ── LOADING / EMPTY STATES ─────────────── */
+        .card-poster-btn {
+            font-family: var(--font-mono);
+            font-size: 0.63rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-poster-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold-primary);
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* STATE BOX */
         .state-box {
             grid-column: 1 / -1;
             padding: 64px 40px;
@@ -667,7 +692,7 @@
             color: var(--gold-dim);
         }
 
-        /* ── FOOTER LINE ────────────────────────── */
+        /* FOOTER */
         .hub-footer {
             margin-top: 60px;
             padding-top: 28px;
@@ -687,7 +712,6 @@
             color: var(--gold-dim);
         }
 
-        /* ── SCROLLBAR ──────────────────────────── */
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -701,7 +725,6 @@
             border-radius: 2px;
         }
 
-        /* ── ENTRY ANIMATION ────────────────────── */
         @keyframes fade-up {
             from {
                 opacity: 0;
@@ -730,7 +753,293 @@
             animation: fade-up 0.6s 0.28s ease both;
         }
 
-        /* ── RESPONSIVE ─────────────────────────── */
+        /* ═══════════════════════════════════════
+           POSTER MODAL
+        ═══════════════════════════════════════ */
+        .poster-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(6, 7, 10, 0.92);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease;
+        }
+
+        .poster-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .poster-modal {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-bright);
+            max-width: 980px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(16px);
+            transition: transform 0.28s ease;
+        }
+
+        .poster-modal-overlay.open .poster-modal {
+            transform: translateY(0);
+        }
+
+        .poster-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+        }
+
+        .modal-header {
+            padding: 28px 36px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title-block {}
+
+        .modal-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--text-prime);
+        }
+
+        .modal-close {
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold-primary);
+        }
+
+        .modal-body {
+            padding: 32px 36px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+        }
+
+        /* CONTROLS PANEL */
+        .controls-panel {}
+
+        .controls-section-label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .control-input {
+            width: 100%;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-prime);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            padding: 9px 12px;
+            outline: none;
+            transition: var(--transition);
+            resize: vertical;
+        }
+
+        .control-input:focus {
+            border-color: var(--gold-dim);
+        }
+
+        .control-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .style-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .style-opt {
+            padding: 10px 12px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .style-opt.selected {
+            border-color: var(--gold-primary);
+            background: var(--gold-glow);
+        }
+
+        .style-opt-name {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .style-opt.selected .style-opt-name {
+            color: var(--gold-primary);
+        }
+
+        .style-opt-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .ratio-grid {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ratio-opt {
+            flex: 1;
+            padding: 8px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .ratio-opt.selected {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            background: var(--gold-glow);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        /* PREVIEW PANEL */
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .preview-label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .preview-stage {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            min-height: 360px;
+            position: relative;
+        }
+
+        #poster-canvas {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+        }
+
+        .preview-generating {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--bg-raised);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .preview-generating i {
+            color: var(--gold-dim);
+            font-size: 1.1rem;
+        }
+
+        .preview-meta {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 900px) {
             .nav {
                 padding: 0 24px;
@@ -755,6 +1064,10 @@
 
             .hero-metric {
                 border-right: 1px solid var(--border);
+            }
+
+            .modal-body {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -781,13 +1094,25 @@
             .nav-time {
                 display: none;
             }
+
+            .poster-modal {
+                max-height: 98vh;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ── NAVIGATION ── -->
+    <!-- NAV -->
     <nav class="nav">
         <div class="nav-brand">
             <span class="brand-mark">SAVANNA CAPITAL</span>
@@ -803,39 +1128,24 @@
         </div>
     </nav>
 
-    <!-- ── MAIN ── -->
+    <!-- MAIN -->
     <main class="hub">
 
         <!-- HERO -->
         <section class="hero">
             <div class="hero-eyebrow">Macroeconomic Infrastructure &amp; Quantitative Research</div>
-            <h1 class="hero-title">
-                Financial <em>Intelligence</em><br>for Africa's Capital Frontier
-            </h1>
+            <h1 class="hero-title">Financial <em>Intelligence</em><br>for Africa's Capital Frontier</h1>
             <p class="hero-sub">Asymmetric intelligence tracking regional trade liquidity, digital asset vectors, and
                 Sub-Saharan capital deployments — from Nairobi to the global market.</p>
-
             <div class="hero-metrics">
-                <div class="hero-metric">
-                    <span class="metric-val" id="report-count">—</span>
-                    Intelligence Reports
-                </div>
-                <div class="hero-metric">
-                    <span class="metric-val">Q2 2026</span>
-                    Current Quarter
-                </div>
-                <div class="hero-metric">
-                    <span class="metric-val">3</span>
-                    Active Coverage Areas
-                </div>
-                <div class="hero-metric">
-                    <span class="metric-val">EAT</span>
-                    Timezone
-                </div>
+                <div class="hero-metric"><span class="metric-val" id="report-count">—</span>Intelligence Reports</div>
+                <div class="hero-metric"><span class="metric-val">Q2 2026</span>Current Quarter</div>
+                <div class="hero-metric"><span class="metric-val">3</span>Active Coverage Areas</div>
+                <div class="hero-metric"><span class="metric-val">EAT</span>Timezone</div>
             </div>
         </section>
 
-        <!-- FEATURED WHITEPAPER -->
+        <!-- FEATURED -->
         <section class="featured">
             <div class="featured-inner">
                 <div class="featured-content">
@@ -855,11 +1165,17 @@
                 </div>
                 <div class="featured-cta">
                     <button class="btn-primary"
-                        onclick="window.open('https://drive.google.com/file/d/1EVa2mvzJgVNATbIp7anP6hXp9WBazFPT/view?usp=drive_link', '_blank')">
+                        onclick="window.open('https://drive.google.com/file/d/1EVa2mvzJgVNATbIp7anP6hXp9WBazFPT/view?usp=drive_link','_blank')">
                         <i class="fa-solid fa-file-lines"></i> ACCESS PAPER
                     </button>
-                    <button class="btn-ghost">
-                        <i class="fa-regular fa-bookmark"></i> SAVE
+                    <button class="btn-ghost" onclick="openPosterModal({
+                    title: 'Quantitative Asset Architecture &amp; Liquidity Engineering in Sub-Saharan Capital Markets',
+                    summary: 'An exhaustive architectural deep-dive addressing alternative cross-border settlement pathways, algorithmic yield strategies, and tokenized real-world infrastructure vectors within East Africa.',
+                    category: 'Flagship Whitepaper',
+                    author: 'B. Angwenyi',
+                    date: 'June 2026'
+                })">
+                        <i class="fa-solid fa-share-nodes"></i> CREATE POSTER
                     </button>
                 </div>
             </div>
@@ -879,7 +1195,7 @@
             </div>
         </div>
 
-        <!-- RESULTS META LINE -->
+        <!-- RESULTS LINE -->
         <div class="results-line" id="results-meta">LOADING ARCHIVE…</div>
 
         <!-- RESEARCH GRID -->
@@ -899,18 +1215,119 @@
 
     </main>
 
-    <!-- ── SUPABASE ── -->
+    <!-- ═══════════════════════════════════════
+     POSTER MODAL
+═══════════════════════════════════════ -->
+    <div class="poster-modal-overlay" id="poster-overlay" onclick="handleOverlayClick(event)">
+        <div class="poster-modal">
+            <div class="modal-header">
+                <div class="modal-title-block">
+                    <div class="modal-eyebrow">◈ Savanna Capital · Social Poster Generator</div>
+                    <div class="modal-title">Export Intelligence as Visual</div>
+                </div>
+                <button class="modal-close" onclick="closePosterModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- LEFT: CONTROLS -->
+                <div class="controls-panel">
+
+                    <div class="controls-section-label">Content</div>
+
+                    <div class="control-group">
+                        <label class="control-label" for="p-title">Report Title</label>
+                        <textarea class="control-input" id="p-title" rows="3" placeholder="Report title…"></textarea>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="p-summary">Key Insight / Tagline</label>
+                        <textarea class="control-input" id="p-summary" rows="3"
+                            placeholder="One-line distillation of the research…"></textarea>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="p-category">Category</label>
+                        <input class="control-input" id="p-category" type="text" placeholder="e.g. Macro Analysis">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="p-author">Author</label>
+                        <input class="control-input" id="p-author" type="text" placeholder="e.g. B. Angwenyi">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="p-date">Date / Quarter</label>
+                        <input class="control-input" id="p-date" type="text" placeholder="e.g. Q2 2026">
+                    </div>
+
+                    <div class="controls-section-label" style="margin-top:8px;">Layout Style</div>
+                    <div class="style-grid" id="style-grid">
+                        <div class="style-opt selected" data-style="editorial" onclick="selectStyle(this)">
+                            <span class="style-opt-name">Editorial</span>
+                            <span class="style-opt-desc">Gold accent bar, vertical type hierarchy</span>
+                        </div>
+                        <div class="style-opt" data-style="macro" onclick="selectStyle(this)">
+                            <span class="style-opt-name">Macro Grid</span>
+                            <span class="style-opt-desc">Data-dense with grid lines overlay</span>
+                        </div>
+                        <div class="style-opt" data-style="minimal" onclick="selectStyle(this)">
+                            <span class="style-opt-name">Minimal</span>
+                            <span class="style-opt-desc">Clean, white space forward</span>
+                        </div>
+                        <div class="style-opt" data-style="cinematic" onclick="selectStyle(this)">
+                            <span class="style-opt-name">Cinematic</span>
+                            <span class="style-opt-desc">Bold title, full-bleed gradient drama</span>
+                        </div>
+                    </div>
+
+                    <div class="controls-section-label">Format</div>
+                    <div class="ratio-grid" id="ratio-grid">
+                        <div class="ratio-opt selected" data-ratio="square" onclick="selectRatio(this)">Square<br><span
+                                style="font-size:0.55rem;opacity:0.6;">1080×1080</span></div>
+                        <div class="ratio-opt" data-ratio="portrait" onclick="selectRatio(this)">Story<br><span
+                                style="font-size:0.55rem;opacity:0.6;">1080×1920</span></div>
+                        <div class="ratio-opt" data-ratio="landscape" onclick="selectRatio(this)">Banner<br><span
+                                style="font-size:0.55rem;opacity:0.6;">1920×1080</span></div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-primary" id="generate-btn" onclick="generatePoster()" style="flex:1;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> GENERATE POSTER
+                        </button>
+                        <button class="btn-ghost" id="download-btn" onclick="downloadPoster()" style="display:none;">
+                            <i class="fa-solid fa-download"></i> DOWNLOAD
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: PREVIEW -->
+                <div class="preview-panel">
+                    <div class="preview-label">Live Preview</div>
+                    <div class="preview-stage" id="preview-stage">
+                        <div class="preview-generating" id="preview-placeholder">
+                            <i class="fa-regular fa-image"></i>
+                            <span>Configure and generate your poster</span>
+                        </div>
+                        <canvas id="poster-canvas" style="display:none;"></canvas>
+                    </div>
+                    <div class="preview-meta" id="preview-meta">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        /* ── CONFIG ──────────────────────────── */
+        /* ════════════════════════════════════════════
+           CONFIG
+        ════════════════════════════════════════════ */
         const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
-
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let cache = [];
 
-        /* ── LIVE CLOCK ──────────────────────── */
+        /* ════════════════════════════════════════════
+           CLOCK
+        ════════════════════════════════════════════ */
         function tickClock() {
             const el = document.getElementById('live-clock');
             if (!el) return;
@@ -920,32 +1337,26 @@
             const ss = String(now.getUTCSeconds()).padStart(2, '0');
             el.textContent = `EAT ${hh}:${mm}:${ss}`;
         }
-        setInterval(tickClock, 1000);
-        tickClock();
+        setInterval(tickClock, 1000); tickClock();
 
-        /* ── DATA LOAD ───────────────────────── */
+        /* ════════════════════════════════════════════
+           DATA
+        ════════════════════════════════════════════ */
         async function loadHub() {
             try {
-                const { data, error } = await db
-                    .from('research_hub')
-                    .select('*')
-                    .order('published_at', { ascending: false });
-
+                const { data, error } = await db.from('research_hub').select('*').order('published_at', { ascending: false });
                 if (error) throw error;
                 cache = data;
             } catch (err) {
-                console.warn('Supabase offline — loading mock data:', err.message);
-                loadMock();
-                return;
+                console.warn('Supabase offline — loading mock:', err.message);
+                loadMock(); return;
             }
             renderCards(cache);
         }
 
-        /* ── RENDER ──────────────────────────── */
         function renderCards(data) {
             const grid = document.getElementById('research-grid');
             const meta = document.getElementById('results-meta');
-
             meta.textContent = `${data.length} DOCUMENT${data.length !== 1 ? 'S' : ''} IN CURRENT VIEW`;
             document.getElementById('report-count').textContent = cache.length || data.length;
 
@@ -956,38 +1367,51 @@
 
             grid.innerHTML = data.map(r => {
                 const date = new Date(r.published_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+                const escapedR = JSON.stringify(r).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 return `
-                <article class="card">
-                    <div class="card-header">
-                        <span class="card-category">${r.category.toUpperCase()}</span>
-                        <span class="card-date">${date}</span>
-                    </div>
-                    <h3 class="card-title">${r.title}</h3>
-                    <p class="card-summary">${r.summary || 'No summary provided.'}</p>
-                    <div class="card-footer">
-                        <span class="card-author">By ${r.author || 'Savanna Capital'}</span>
-                        <a class="card-link" href="${r.document_url}" target="_blank" rel="noopener">
-                            OPEN REPORT <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
-                </article>`;
+        <article class="card">
+            <div class="card-header">
+                <span class="card-category">${r.category.toUpperCase()}</span>
+                <span class="card-date">${date}</span>
+            </div>
+            <h3 class="card-title">${r.title}</h3>
+            <p class="card-summary">${r.summary || 'No summary provided.'}</p>
+            <div class="card-footer">
+                <span class="card-author">By ${r.author || 'Savanna Capital'}</span>
+                <div class="card-actions">
+                    <button class="card-poster-btn" onclick='triggerPosterFromCard(${JSON.stringify(r)})'>
+                        <i class="fa-solid fa-share-nodes"></i> POSTER
+                    </button>
+                    <a class="card-link" href="${r.document_url}" target="_blank" rel="noopener">
+                        OPEN <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+        </article>`;
             }).join('');
         }
 
-        /* ── FILTER + SEARCH ─────────────────── */
+        function triggerPosterFromCard(r) {
+            const date = new Date(r.published_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+            openPosterModal({
+                title: r.title,
+                summary: r.summary || '',
+                category: r.category,
+                author: r.author || 'Savanna Capital',
+                date: date
+            });
+        }
+
         function applyFilters(category, query) {
             let res = [...cache];
-            if (category !== 'all')
-                res = res.filter(r => r.category === category);
-            if (query.trim())
-                res = res.filter(r =>
-                    r.title.toLowerCase().includes(query.toLowerCase()) ||
-                    (r.summary || '').toLowerCase().includes(query.toLowerCase())
-                );
+            if (category !== 'all') res = res.filter(r => r.category === category);
+            if (query.trim()) res = res.filter(r =>
+                r.title.toLowerCase().includes(query.toLowerCase()) ||
+                (r.summary || '').toLowerCase().includes(query.toLowerCase())
+            );
             renderCards(res);
         }
 
-        /* ── MOCK DATA ───────────────────────── */
         function loadMock() {
             cache = [
                 { id: '1', title: 'Safaricom Q1 Earnings Assessment & Mobile Money Velocity Matrix', summary: 'Evaluating liquidity distribution metrics and scaling parameters across regional transactional processing lanes within the M-PESA ecosystem.', category: 'NSE Update', author: 'B. Angwenyi', document_url: '#', published_at: new Date().toISOString() },
@@ -1000,23 +1424,498 @@
             renderCards(cache);
         }
 
-        /* ── EVENT LISTENERS ─────────────────── */
+        /* ════════════════════════════════════════════
+           FILTER / SEARCH EVENTS
+        ════════════════════════════════════════════ */
         document.addEventListener('DOMContentLoaded', () => {
             loadHub();
-
             const btns = document.querySelectorAll('.filter-btn');
             btns.forEach(btn => btn.addEventListener('click', e => {
                 btns.forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
                 applyFilters(e.target.dataset.filter, document.getElementById('research-search').value);
             }));
-
             document.getElementById('research-search').addEventListener('input', e => {
                 const active = document.querySelector('.filter-btn.active');
                 applyFilters(active.dataset.filter, e.target.value);
             });
         });
+
+        /* ════════════════════════════════════════════
+           POSTER MODAL STATE
+        ════════════════════════════════════════════ */
+        let posterStyle = 'editorial';
+        let posterRatio = 'square';
+
+        function openPosterModal(data) {
+            if (data) {
+                document.getElementById('p-title').value = data.title || '';
+                document.getElementById('p-summary').value = data.summary || '';
+                document.getElementById('p-category').value = data.category || '';
+                document.getElementById('p-author').value = data.author || '';
+                document.getElementById('p-date').value = data.date || '';
+            }
+            document.getElementById('poster-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            // Reset preview
+            document.getElementById('poster-canvas').style.display = 'none';
+            document.getElementById('preview-placeholder').style.display = 'flex';
+            document.getElementById('download-btn').style.display = 'none';
+            document.getElementById('preview-meta').textContent = '—';
+        }
+
+        function closePosterModal() {
+            document.getElementById('poster-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target === document.getElementById('poster-overlay')) closePosterModal();
+        }
+
+        function selectStyle(el) {
+            document.querySelectorAll('.style-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            posterStyle = el.dataset.style;
+        }
+
+        function selectRatio(el) {
+            document.querySelectorAll('.ratio-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            posterRatio = el.dataset.ratio;
+        }
+
+        /* ════════════════════════════════════════════
+           POSTER GENERATION ENGINE
+        ════════════════════════════════════════════ */
+        const DIMS = {
+            square: { w: 1080, h: 1080 },
+            portrait: { w: 1080, h: 1920 },
+            landscape: { w: 1920, h: 1080 },
+        };
+
+        const COLORS = {
+            void: '#06070A',
+            deep: '#0A0C10',
+            surface: '#0F1118',
+            raised: '#161B26',
+            goldPrimary: '#C8A96E',
+            goldLight: '#E2C98A',
+            goldDim: '#9A7E52',
+            textPrime: '#F0EDE6',
+            textSec: '#8A8178',
+            textMuted: '#4A4640',
+            emerald: '#10B981',
+        };
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push({ text: line.trim(), x, y });
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push({ text: line.trim(), x, y });
+            return lines;
+        }
+
+        function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+            const lines = wrapText(ctx, text, x, y, maxWidth, lineHeight);
+            lines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            return y + (lines.length - 1) * lineHeight;
+        }
+
+        function generatePoster() {
+            const title = document.getElementById('p-title').value.trim() || 'Intelligence Report';
+            const summary = document.getElementById('p-summary').value.trim() || 'Savanna Capital Research';
+            const category = document.getElementById('p-category').value.trim() || 'Research';
+            const author = document.getElementById('p-author').value.trim() || 'Savanna Capital';
+            const date = document.getElementById('p-date').value.trim() || 'Q2 2026';
+
+            const { w, h } = DIMS[posterRatio];
+            const canvas = document.getElementById('poster-canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+
+            // Show loading
+            document.getElementById('preview-placeholder').innerHTML =
+                '<i class="fa-solid fa-circle-notch fa-spin"></i><span>RENDERING POSTER…</span>';
+            document.getElementById('preview-placeholder').style.display = 'flex';
+
+            // Use rAF to allow UI to update
+            requestAnimationFrame(() => {
+                drawPosterStyle(ctx, w, h, { title, summary, category, author, date }, posterStyle);
+
+                canvas.style.display = 'block';
+                document.getElementById('preview-placeholder').style.display = 'none';
+                document.getElementById('download-btn').style.display = 'inline-flex';
+                document.getElementById('preview-meta').textContent =
+                    `${w}×${h}px · ${posterStyle.toUpperCase()} · PNG`;
+            });
+        }
+
+        function drawPosterStyle(ctx, w, h, data, style) {
+            switch (style) {
+                case 'editorial': drawEditorial(ctx, w, h, data); break;
+                case 'macro': drawMacro(ctx, w, h, data); break;
+                case 'minimal': drawMinimal(ctx, w, h, data); break;
+                case 'cinematic': drawCinematic(ctx, w, h, data); break;
+                default: drawEditorial(ctx, w, h, data);
+            }
+        }
+
+        /* ─── STYLE 1: EDITORIAL ──────────────────────────────── */
+        function drawEditorial(ctx, w, h, d) {
+            const S = w / 1080; // scale factor
+
+            // Background
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+            bgGrad.addColorStop(0, '#0A0C10');
+            bgGrad.addColorStop(0.5, '#06070A');
+            bgGrad.addColorStop(1, '#060708');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle radial glow top-right
+            const glow = ctx.createRadialGradient(w * 0.85, h * 0.05, 0, w * 0.85, h * 0.05, w * 0.55);
+            glow.addColorStop(0, 'rgba(200,169,110,0.08)');
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, w, h);
+
+            const pad = 72 * S;
+
+            // Gold top bar
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.fillRect(pad, pad, w - pad * 2, 4 * S);
+
+            // Brand line
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${14 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${3 * S}px`;
+            ctx.fillText('◈  SAVANNA CAPITAL', pad, pad + 40 * S);
+
+            // Divider label
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${2 * S}px`;
+            ctx.fillText(`RESEARCH INTELLIGENCE  ·  ${d.category.toUpperCase()}`, pad, pad + 60 * S);
+
+            // Thin separator
+            ctx.strokeStyle = 'rgba(200,169,110,0.18)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath();
+            ctx.moveTo(pad, pad + 76 * S);
+            ctx.lineTo(w - pad, pad + 76 * S);
+            ctx.stroke();
+
+            // Big gold accent bar left
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.fillRect(pad, pad + 100 * S, 6 * S, h - pad * 2 - 100 * S - 160 * S);
+
+            // TITLE
+            const titleX = pad + 28 * S;
+            const titleMaxW = w - titleX - pad;
+            ctx.fillStyle = COLORS.textPrime;
+            const titleSize = posterRatio === 'landscape' ? 52 * S : 62 * S;
+            ctx.font = `300 ${titleSize}px 'Cormorant Garamond', Georgia, serif`;
+            ctx.letterSpacing = `${-0.5 * S}px`;
+
+            const titleLines = wrapText(ctx, d.title, titleX, pad + 160 * S, titleMaxW, titleSize * 1.2);
+            titleLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterTitle = titleLines[titleLines.length - 1].y + titleSize * 0.5;
+
+            // Summary
+            ctx.fillStyle = COLORS.textSec;
+            ctx.font = `300 ${22 * S}px 'Outfit', sans-serif`;
+            ctx.letterSpacing = `0px`;
+            const sumMaxW = w - titleX - pad;
+            const sumLines = wrapText(ctx, d.summary, titleX, afterTitle + 36 * S, sumMaxW, 32 * S);
+            const afterSum = sumLines[sumLines.length - 1].y + 26 * S;
+            sumLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+
+            // Key line
+            ctx.strokeStyle = 'rgba(200,169,110,0.15)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath();
+            ctx.moveTo(titleX, afterSum + 36 * S);
+            ctx.lineTo(w - pad, afterSum + 36 * S);
+            ctx.stroke();
+
+            // Author / date
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${13 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${2 * S}px`;
+            ctx.fillText(`BY ${d.author.toUpperCase()}`, titleX, afterSum + 60 * S);
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.fillText(d.date.toUpperCase(), w - pad - ctx.measureText(d.date.toUpperCase()).width, afterSum + 60 * S);
+
+            // Bottom bar
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.fillRect(pad, h - pad - 4 * S, w - pad * 2, 4 * S);
+
+            // Bottom URL
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${1.5 * S}px`;
+            ctx.fillText('savannacapital.co  ·  NAIROBI, KENYA', pad, h - pad - 16 * S);
+        }
+
+        /* ─── STYLE 2: MACRO GRID ─────────────────────────────── */
+        function drawMacro(ctx, w, h, d) {
+            const S = w / 1080;
+            const pad = 72 * S;
+
+            // Background
+            ctx.fillStyle = '#060709';
+            ctx.fillRect(0, 0, w, h);
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(200,169,110,0.06)';
+            ctx.lineWidth = 1;
+            const gridSpacing = 60 * S;
+            for (let x = 0; x < w; x += gridSpacing) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSpacing) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Top band
+            ctx.fillStyle = 'rgba(200,169,110,0.04)';
+            ctx.fillRect(0, 0, w, 120 * S);
+
+            // Gold corner marks
+            const cm = 20 * S;
+            ctx.strokeStyle = COLORS.goldPrimary;
+            ctx.lineWidth = 2 * S;
+            [[pad, pad], [w - pad, pad], [pad, h - pad], [w - pad, h - pad]].forEach(([cx, cy]) => {
+                const dx = cx < w / 2 ? 1 : -1;
+                const dy = cy < h / 2 ? 1 : -1;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + dx * cm, cy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy + dy * cm); ctx.stroke();
+            });
+
+            // Brand
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.font = `500 ${15 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${3 * S}px`;
+            ctx.fillText('SAVANNA CAPITAL', pad + 14 * S, pad + 14 * S);
+
+            // Category badge
+            const catText = d.category.toUpperCase();
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            const catW = ctx.measureText(catText).width + 20 * S;
+            ctx.fillStyle = 'rgba(200,169,110,0.12)';
+            ctx.fillRect(pad + 14 * S, pad + 28 * S, catW, 22 * S);
+            ctx.strokeStyle = 'rgba(200,169,110,0.3)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(pad + 14 * S, pad + 28 * S, catW, 22 * S);
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.fillText(catText, pad + 24 * S, pad + 44 * S);
+
+            // Separator
+            ctx.strokeStyle = 'rgba(200,169,110,0.22)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath(); ctx.moveTo(pad + 14 * S, pad + 66 * S); ctx.lineTo(w - pad, pad + 66 * S); ctx.stroke();
+
+            // Title
+            const titleY = pad + 104 * S;
+            const titleSize = posterRatio === 'landscape' ? 48 * S : 58 * S;
+            ctx.fillStyle = COLORS.textPrime;
+            ctx.font = `400 ${titleSize}px 'Cormorant Garamond', serif`;
+            ctx.letterSpacing = `-0.5px`;
+            const titleLines = wrapText(ctx, d.title, pad + 14 * S, titleY, w - pad * 2 - 28 * S, titleSize * 1.18);
+            titleLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterTitle = titleLines[titleLines.length - 1].y + titleSize * 0.5;
+
+            // Gold underline of title
+            ctx.strokeStyle = COLORS.goldPrimary;
+            ctx.lineWidth = 2 * S;
+            ctx.beginPath(); ctx.moveTo(pad + 14 * S, afterTitle + 16 * S); ctx.lineTo(w * 0.4, afterTitle + 16 * S); ctx.stroke();
+
+            // Summary
+            ctx.fillStyle = COLORS.textSec;
+            ctx.font = `300 ${20 * S}px 'Outfit', sans-serif`;
+            ctx.letterSpacing = `0px`;
+            const sumLines = wrapText(ctx, d.summary, pad + 14 * S, afterTitle + 48 * S, w - pad * 2 - 28 * S, 30 * S);
+            sumLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterSum = sumLines[sumLines.length - 1].y + 24 * S;
+
+            // Data row
+            const dataY = h - pad - 50 * S;
+            ctx.strokeStyle = 'rgba(200,169,110,0.14)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath(); ctx.moveTo(pad + 14 * S, dataY - 16 * S); ctx.lineTo(w - pad, dataY - 16 * S); ctx.stroke();
+
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${12 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${2 * S}px`;
+            ctx.fillText(`ANALYST: ${d.author.toUpperCase()}`, pad + 14 * S, dataY);
+            ctx.fillText(d.date.toUpperCase(), w - pad - ctx.measureText(d.date.toUpperCase()).width, dataY);
+
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${10 * S}px 'DM Mono', monospace`;
+            ctx.fillText('savannacapital.co  ·  INTELLIGENCE ARCHIVE', pad + 14 * S, dataY + 22 * S);
+        }
+
+        /* ─── STYLE 3: MINIMAL ───────────────────────────────── */
+        function drawMinimal(ctx, w, h, d) {
+            const S = w / 1080;
+            const pad = 88 * S;
+
+            // Off-black background
+            ctx.fillStyle = '#0D0E12';
+            ctx.fillRect(0, 0, w, h);
+
+            // Single thin gold line top
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.fillRect(pad, pad, 80 * S, 2 * S);
+
+            // Brand
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${12 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${3 * S}px`;
+            ctx.fillText('SAVANNA CAPITAL', pad, pad + 32 * S);
+
+            // Category tiny
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${10 * S}px 'DM Mono', monospace`;
+            ctx.fillText(d.category.toUpperCase(), pad, pad + 50 * S);
+
+            // Lots of whitespace, then big title
+            const titleY = h * 0.3;
+            const titleSize = posterRatio === 'landscape' ? 56 * S : 70 * S;
+            ctx.fillStyle = COLORS.textPrime;
+            ctx.font = `300 ${titleSize}px 'Cormorant Garamond', serif`;
+            ctx.letterSpacing = `${-1 * S}px`;
+            const titleLines = wrapText(ctx, d.title, pad, titleY, w - pad * 2, titleSize * 1.15);
+            titleLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterTitle = titleLines[titleLines.length - 1].y + titleSize * 0.5;
+
+            // Italic summary in gold
+            ctx.fillStyle = COLORS.goldPrimary;
+            ctx.font = `italic 300 ${24 * S}px 'Cormorant Garamond', serif`;
+            ctx.letterSpacing = `0px`;
+            const sumLines = wrapText(ctx, d.summary, pad, afterTitle + 44 * S, w - pad * 2, 34 * S);
+            sumLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+
+            // Bottom
+            const botY = h - pad;
+            ctx.strokeStyle = 'rgba(200,169,110,0.15)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath(); ctx.moveTo(pad, botY - 36 * S); ctx.lineTo(w - pad, botY - 36 * S); ctx.stroke();
+
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${1.5 * S}px`;
+            ctx.fillText(`${d.author.toUpperCase()}  ·  ${d.date.toUpperCase()}`, pad, botY - 16 * S);
+            ctx.fillText('savannacapital.co', w - pad - ctx.measureText('savannacapital.co').width, botY - 16 * S);
+        }
+
+        /* ─── STYLE 4: CINEMATIC ──────────────────────────────── */
+        function drawCinematic(ctx, w, h, d) {
+            const S = w / 1080;
+            const pad = 72 * S;
+
+            // Dark gradient base
+            const bg = ctx.createLinearGradient(0, 0, w * 0.4, h);
+            bg.addColorStop(0, '#090B0F');
+            bg.addColorStop(0.6, '#060709');
+            bg.addColorStop(1, '#04050A');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, w, h);
+
+            // Gold radial behind title area
+            const glow = ctx.createRadialGradient(w * 0.15, h * 0.5, 0, w * 0.15, h * 0.5, w * 0.7);
+            glow.addColorStop(0, 'rgba(200,169,110,0.14)');
+            glow.addColorStop(0.5, 'rgba(200,169,110,0.04)');
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, w, h);
+
+            // Full-height gold left bar
+            const barW = 8 * S;
+            const barGrad = ctx.createLinearGradient(0, 0, 0, h);
+            barGrad.addColorStop(0, 'transparent');
+            barGrad.addColorStop(0.2, COLORS.goldPrimary);
+            barGrad.addColorStop(0.8, COLORS.goldPrimary);
+            barGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = barGrad;
+            ctx.fillRect(pad, 0, barW, h);
+
+            const textX = pad + barW + 36 * S;
+            const maxW = w - textX - pad;
+
+            // Brand eyebrow
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${12 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${3 * S}px`;
+            ctx.fillText('◈  SAVANNA CAPITAL', textX, h * 0.12);
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${10 * S}px 'DM Mono', monospace`;
+            ctx.fillText(d.category.toUpperCase(), textX, h * 0.12 + 22 * S);
+
+            // Massive title
+            const titleSize = posterRatio === 'landscape' ? 60 * S : 80 * S;
+            ctx.fillStyle = COLORS.textPrime;
+            ctx.font = `300 ${titleSize}px 'Cormorant Garamond', serif`;
+            ctx.letterSpacing = `${-1 * S}px`;
+            const titleLines = wrapText(ctx, d.title, textX, h * 0.28, maxW, titleSize * 1.1);
+            titleLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterTitle = titleLines[titleLines.length - 1].y + titleSize * 0.5;
+
+            // Gold italic quote/summary
+            ctx.fillStyle = COLORS.goldLight;
+            ctx.font = `italic 300 ${26 * S}px 'Cormorant Garamond', serif`;
+            ctx.letterSpacing = `0px`;
+            const sumLines = wrapText(ctx, `"${d.summary}"`, textX, afterTitle + 40 * S, maxW, 36 * S);
+            sumLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+            const afterSum = sumLines[sumLines.length - 1].y + 30 * S;
+
+            // Separator
+            ctx.strokeStyle = 'rgba(200,169,110,0.2)';
+            ctx.lineWidth = 1 * S;
+            ctx.beginPath(); ctx.moveTo(textX, afterSum + 24 * S); ctx.lineTo(textX + 200 * S, afterSum + 24 * S); ctx.stroke();
+
+            // Author / date
+            ctx.fillStyle = COLORS.goldDim;
+            ctx.font = `${13 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${2 * S}px`;
+            ctx.fillText(d.author.toUpperCase(), textX, afterSum + 50 * S);
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            ctx.fillText(d.date.toUpperCase(), textX, afterSum + 68 * S);
+
+            // Bottom URL
+            ctx.fillStyle = COLORS.textMuted;
+            ctx.font = `${11 * S}px 'DM Mono', monospace`;
+            ctx.letterSpacing = `${1.5 * S}px`;
+            ctx.fillText('savannacapital.co  ·  NAIROBI, KENYA', textX, h - pad);
+        }
+
+        /* ════════════════════════════════════════════
+           DOWNLOAD
+        ════════════════════════════════════════════ */
+        function downloadPoster() {
+            const canvas = document.getElementById('poster-canvas');
+            const title = document.getElementById('p-title').value.trim().slice(0, 40).replace(/\s+/g, '_') || 'savanna_poster';
+            const link = document.createElement('a');
+            link.download = `SAVANNA_${title}_${posterStyle.toUpperCase()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
     </script>
+
 </body>
 
 </html>
