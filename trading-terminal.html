@@ -2815,13 +2815,23 @@
 
                         <!-- CERTIFICATE CTA -->
                         <div
-                            style="margin-top:16px;padding:12px;background:rgba(200,169,110,0.04);border:1px solid rgba(200,169,110,0.12);text-align:center">
+                            style="margin-top:16px;padding:12px;background:rgba(200,169,110,0.04);border:1px solid rgba(200,169,110,0.12);">
                             <div
-                                style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:rgba(200,169,110,0.5);margin-bottom:8px">
+                                style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:rgba(200,169,110,0.5);margin-bottom:8px;text-align:center">
                                 Training Certification</div>
-                            <button onclick="openCertificate()"
+                            <!-- Progress dots -->
+                            <div id="attendanceDots"
+                                style="display:flex;justify-content:center;gap:6px;margin-bottom:10px"></div>
+                            <div id="attendanceStatus"
+                                style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;color:var(--muted);text-align:center;margin-bottom:10px;line-height:1.6">
+                            </div>
+                            <button id="checkinBtn" onclick="doAttendanceCheckin()"
+                                style="display:none;width:100%;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:10px;cursor:pointer;background:linear-gradient(135deg,rgba(0,255,178,0.1),rgba(0,255,178,0.04));border:1px solid rgba(0,255,178,0.3);color:var(--signal);transition:all .2s;min-height:38px;margin-bottom:8px">
+                                ✓ Mark Attendance for Today
+                            </button>
+                            <button onclick="openCertificate()" id="certBtn"
                                 style="width:100%;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:10px;cursor:pointer;background:linear-gradient(135deg,rgba(200,169,110,0.1),rgba(200,169,110,0.04));border:1px solid rgba(200,169,110,0.25);color:var(--gold);transition:all .2s;min-height:38px">
-                                ★ Claim Your Certificate
+                                ★ View Certificate
                             </button>
                         </div>
                     </div>
@@ -2856,27 +2866,84 @@
      ========================================== -->
     <div id="certOverlay">
         <div class="cert-overlay-inner">
-            <!-- Congratulations Banner -->
-            <div class="cert-congrats">
+
+            <!-- LOCKED STATE BANNER (shown when not unlocked) -->
+            <div id="certLockedBanner"
+                style="background:linear-gradient(135deg,rgba(255,69,96,0.08),rgba(255,69,96,0.03));border:1px solid rgba(255,69,96,0.2);padding:16px 20px;text-align:center;position:relative;overflow:hidden;display:none">
+                <div
+                    style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,69,96,0.4),transparent)">
+                </div>
+                <div
+                    style="font-family:'Cormorant Garamond',serif;font-size:clamp(16px,4vw,22px);color:var(--red);letter-spacing:.08em;margin-bottom:6px">
+                    🔒 Certificate Locked</div>
+                <div
+                    style="font-family:'DM Mono',monospace;font-size:clamp(7.5px,2vw,9px);letter-spacing:.1em;color:var(--text-dim);line-height:1.7">
+                    Complete all 6 Friday webinars to unlock your certificate.<br>Mark attendance each Friday 6 PM —
+                    Saturday 6 PM EAT.</div>
+            </div>
+
+            <!-- UNLOCKED CONGRATULATIONS BANNER -->
+            <div class="cert-congrats" id="certUnlockedBanner">
                 <div class="cert-congrats-title">🏆 Congratulations!</div>
                 <div class="cert-congrats-sub">You are now a certified Savanna Academy Trader</div>
             </div>
 
+            <!-- Attendance progress (always visible in overlay) -->
+            <div id="certAttendancePanel"
+                style="background:rgba(110,110,255,0.04);border:1px solid var(--border);padding:14px 18px">
+                <div
+                    style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+                    <div
+                        style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--neural)">
+                        Webinar Attendance Progress</div>
+                    <div id="certOverlayCheckinBtn" style="display:none">
+                        <button onclick="doAttendanceCheckin();renderAttendanceUI();renderCertOverlay()"
+                            style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;cursor:pointer;background:rgba(0,255,178,0.08);border:1px solid rgba(0,255,178,0.3);color:var(--signal);min-height:32px">✓
+                            Mark This Week</button>
+                    </div>
+                </div>
+                <div id="certOverlayDots"
+                    style="display:flex;gap:clamp(6px,2vw,12px);margin-bottom:10px;flex-wrap:wrap"></div>
+                <div id="certOverlayStatus"
+                    style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:var(--muted);line-height:1.8">
+                </div>
+            </div>
+
             <!-- Action Buttons -->
             <div class="cert-overlay-actions">
-                <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.12em">
-                    Certificate Preview · Ready to Download</div>
+                <div id="certOverlayLabel"
+                    style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.12em">
+                    Certificate Preview</div>
                 <div class="cert-action-btns">
-                    <button class="btn-cert-download" onclick="downloadCertificate()">⬇ Download PDF</button>
-                    <button class="btn-cert-download" onclick="printCertificate()"
-                        style="background:rgba(110,110,255,0.1);border-color:rgba(110,110,255,0.25);color:var(--neural)">⎙
+                    <button class="btn-cert-download" id="certDownloadBtn" onclick="downloadCertificate()"
+                        style="display:none">⬇ Download PDF</button>
+                    <button class="btn-cert-download" id="certPrintBtn" onclick="printCertificate()"
+                        style="display:none;background:rgba(110,110,255,0.1);border-color:rgba(110,110,255,0.25);color:var(--neural)">⎙
                         Print</button>
                     <button class="btn-cert-close" onclick="closeCertificate()">✕ Close</button>
                 </div>
             </div>
 
             <!-- THE CERTIFICATE -->
-            <div id="certCanvas">
+            <div id="certCanvas" style="position:relative">
+                <!-- LOCK VEIL — covers bottom portion when locked -->
+                <div id="certLockVeil" style="display:none;position:absolute;left:0;right:0;bottom:0;height:62%;z-index:10;pointer-events:none;
+        background:linear-gradient(to bottom, transparent 0%, rgba(1,11,30,0.75) 25%, rgba(1,11,30,0.97) 60%);
+        backdrop-filter:blur(3px)">
+                    <div
+                        style="position:absolute;bottom:0;left:0;right:0;top:30%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px">
+                        <div
+                            style="width:48px;height:48px;border-radius:50%;background:rgba(255,69,96,0.1);border:1px solid rgba(255,69,96,0.3);display:flex;align-items:center;justify-content:center;font-size:22px">
+                            🔒</div>
+                        <div
+                            style="font-family:'Cormorant Garamond',serif;font-size:clamp(14px,3.5vw,20px);color:rgba(255,255,255,0.7);letter-spacing:.1em;text-align:center">
+                            Certificate Locked</div>
+                        <div id="veilStatus"
+                            style="font-family:'DM Mono',monospace;font-size:clamp(7px,2vw,9px);letter-spacing:.1em;color:rgba(200,212,232,0.4);text-align:center;max-width:320px;line-height:1.8">
+                        </div>
+                        <div id="veilProgress" style="display:flex;gap:8px;margin-top:4px"></div>
+                    </div>
+                </div>
                 <div class="cert-wrap" id="certWrap">
                     <!-- Candlestick watermark -->
                     <div class="cert-watermark">
@@ -3123,7 +3190,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><!-- /certCanvas -->
 
             <!-- Footer note -->
             <div
@@ -3180,6 +3247,7 @@
             document.getElementById("navUsername").textContent = currentUser.username;
             sessionStart = Date.now();
             await ensurePortfolio(); await loadPortfolio(); await loadPositions(); await loadTradeHistory(); await loadLeaderboard();
+            await loadAttendance(); renderAttendanceUI();
             startPriceFeed(); buildTicker();
             lbInterval = setInterval(loadLeaderboard, 15000);
             setLeverage(10);
@@ -3485,12 +3553,282 @@
         }
 
         // ==========================================
-        // CERTIFICATE SYSTEM
+        // ATTENDANCE & CERTIFICATE SYSTEM
+        // EAT = UTC+3. Window: Friday 18:00 → Saturday 18:00 EAT
         // ==========================================
+
+        const REQUIRED_CHECKINS = 6;
+        let attendanceCheckins = []; // array of ISO date strings from DB
+
+        // ---- Time helpers ----
+        function nowEAT() {
+            // Returns a Date object in EAT (UTC+3)
+            const now = new Date();
+            return new Date(now.getTime() + 3 * 60 * 60 * 1000);
+        }
+
+        function getCheckinWindowBounds() {
+            // Find the most recent Friday 18:00 EAT and Saturday 18:00 EAT
+            const eat = nowEAT();
+            const day = eat.getUTCDay(); // 0=Sun,1=Mon,...,5=Fri,6=Sat
+            const hour = eat.getUTCHours();
+            const minute = eat.getUTCMinutes();
+
+            // Days since last Friday (0 if today is Friday)
+            let daysSinceFri = (day - 5 + 7) % 7;
+            // If Saturday and before 18:00, window started yesterday (Friday)
+            // If Saturday >= 18:00, window just closed; next opens next Friday
+            // If Friday before 18:00, window hasn't opened yet
+            if (day === 5 && (hour < 18)) daysSinceFri = 7; // this Friday not yet open
+            if (day === 6 && (hour >= 18)) daysSinceFri = 8; // Sat evening, window closed
+
+            const windowOpen = new Date(eat);
+            windowOpen.setUTCDate(eat.getUTCDate() - daysSinceFri);
+            windowOpen.setUTCHours(15, 0, 0, 0); // 18:00 EAT = 15:00 UTC
+            const windowClose = new Date(windowOpen);
+            windowClose.setUTCDate(windowOpen.getUTCDate() + 1); // +24h = Sat 18:00 EAT = 15:00 UTC
+
+            return { open: windowOpen, close: windowClose };
+        }
+
+        function isCheckinWindowOpen() {
+            const now = new Date();
+            const { open, close } = getCheckinWindowBounds();
+            return now >= open && now < close;
+        }
+
+        function hasCheckedInThisWindow() {
+            const { open, close } = getCheckinWindowBounds();
+            return attendanceCheckins.some(ts => {
+                const d = new Date(ts);
+                return d >= open && d < close;
+            });
+        }
+
+        function getWeekKey(date) {
+            // Returns "YYYY-Www" ISO week string for grouping
+            const d = new Date(date);
+            d.setUTCHours(0, 0, 0, 0);
+            const dayOfWeek = d.getUTCDay();
+            // Align to the Friday of that week window
+            const diff = (dayOfWeek - 5 + 7) % 7;
+            const friday = new Date(d);
+            friday.setUTCDate(d.getUTCDate() - diff);
+            return friday.toISOString().split('T')[0];
+        }
+
+        function countUniqueWeeks() {
+            const seen = new Set();
+            attendanceCheckins.forEach(ts => seen.add(getWeekKey(new Date(ts))));
+            return seen.size;
+        }
+
+        function isCertUnlocked() {
+            return countUniqueWeeks() >= REQUIRED_CHECKINS;
+        }
+
+        function formatNextWindow() {
+            const eat = nowEAT();
+            const day = eat.getUTCDay();
+            // Days until next Friday
+            let daysUntil = (5 - day + 7) % 7;
+            if (daysUntil === 0) {
+                const hour = eat.getUTCHours();
+                if (hour >= 18) daysUntil = 7; // past this Friday, next week
+                else daysUntil = 0; // today, but might be before 18:00 check
+            }
+            if (daysUntil === 0) return 'Today at 6:00 PM EAT';
+            if (daysUntil === 1) return 'Tomorrow at 6:00 PM EAT';
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const next = new Date(eat);
+            next.setUTCDate(eat.getUTCDate() + daysUntil);
+            return days[next.getUTCDay()] + ' ' + next.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' at 6:00 PM EAT';
+        }
+
+        // ---- DB operations ----
+        async function loadAttendance() {
+            if (!currentUser) return;
+            try {
+                const { data } = await db.from('student_attendance')
+                    .select('checked_in_at')
+                    .eq('user_id', currentUser.id)
+                    .order('checked_in_at', { ascending: true });
+                attendanceCheckins = (data || []).map(r => r.checked_in_at);
+            } catch (e) {
+                attendanceCheckins = [];
+            }
+        }
+
+        async function doAttendanceCheckin() {
+            if (!currentUser) { toast('error', 'Not logged in', 'Please log in first.'); return; }
+            if (!isCheckinWindowOpen()) {
+                toast('warning', 'Window Closed', 'Attendance can only be marked Friday 6 PM – Saturday 6 PM EAT.');
+                return;
+            }
+            if (hasCheckedInThisWindow()) {
+                toast('info', 'Already Marked', 'You\'ve already marked attendance for this week\'s webinar.');
+                return;
+            }
+            const now = new Date().toISOString();
+            try {
+                await db.from('student_attendance').insert([{
+                    user_id: currentUser.id,
+                    username: currentUser.username,
+                    name: currentUser.name || currentUser.username,
+                    checked_in_at: now,
+                    week_key: getWeekKey(new Date(now))
+                }]);
+                attendanceCheckins.push(now);
+                const weeks = countUniqueWeeks();
+                toast('success', 'Attendance Marked! ✓', 'Week ' + weeks + ' of ' + REQUIRED_CHECKINS + ' recorded. ' + (weeks >= REQUIRED_CHECKINS ? 'Certificate unlocked!' : (REQUIRED_CHECKINS - weeks) + ' more to go.'));
+                renderAttendanceUI();
+                if (weeks >= REQUIRED_CHECKINS) launchConfetti();
+            } catch (e) {
+                // If table doesn't exist, simulate locally
+                attendanceCheckins.push(now);
+                const weeks = countUniqueWeeks();
+                toast('success', 'Attendance Marked! ✓', 'Week ' + weeks + ' of ' + REQUIRED_CHECKINS + ' (local mode).');
+                renderAttendanceUI();
+            }
+        }
+
+        // ---- Render attendance dots ----
+        function renderAttendanceUI() {
+            const weeks = countUniqueWeeks();
+            const unlocked = isCertUnlocked();
+            const windowOpen = isCheckinWindowOpen();
+            const alreadyMarked = hasCheckedInThisWindow();
+
+            // Sidebar dots
+            const dotsEl = document.getElementById('attendanceDots');
+            const statusEl = document.getElementById('attendanceStatus');
+            const checkinBtn = document.getElementById('checkinBtn');
+            const certBtn = document.getElementById('certBtn');
+            if (dotsEl) {
+                let html = '';
+                for (let i = 1; i <= REQUIRED_CHECKINS; i++) {
+                    const done = i <= weeks;
+                    const isCurrent = i === weeks + 1;
+                    html += `<div title="Week ${i}" style="
+        width:clamp(18px,4vw,26px);height:clamp(18px,4vw,26px);border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        font-family:'DM Mono',monospace;font-size:clamp(7px,2vw,9px);font-weight:500;
+        border:1.5px solid ${done ? 'var(--signal)' : isCurrent ? 'rgba(110,110,255,0.5)' : 'rgba(255,255,255,0.08)'};
+        background:${done ? 'rgba(0,255,178,0.12)' : isCurrent ? 'rgba(110,110,255,0.06)' : 'transparent'};
+        color:${done ? 'var(--signal)' : isCurrent ? 'var(--neural)' : 'var(--muted)'};
+        transition:all .3s;
+      ">${done ? '✓' : i}</div>`;
+                }
+                dotsEl.innerHTML = html;
+            }
+            if (statusEl) {
+                if (unlocked) {
+                    statusEl.innerHTML = '<span style="color:var(--signal)">✦ All 6 webinars completed · Certificate unlocked</span>';
+                } else if (windowOpen && !alreadyMarked) {
+                    statusEl.innerHTML = '<span style="color:var(--neural)">◈ Webinar window open · Mark attendance below</span>';
+                } else if (windowOpen && alreadyMarked) {
+                    statusEl.innerHTML = '<span style="color:var(--gold)">✓ This week marked · ' + (REQUIRED_CHECKINS - weeks) + ' webinar(s) remaining</span>';
+                } else {
+                    statusEl.innerHTML = 'Week ' + weeks + ' / ' + REQUIRED_CHECKINS + ' · Next window: <span style="color:var(--gold)">' + formatNextWindow() + '</span>';
+                }
+            }
+            if (checkinBtn) {
+                checkinBtn.style.display = (windowOpen && !alreadyMarked && !unlocked) ? 'block' : 'none';
+            }
+            if (certBtn) {
+                certBtn.textContent = unlocked ? '★ Download Certificate' : '★ Preview Certificate';
+                certBtn.style.borderColor = unlocked ? 'rgba(200,169,110,0.5)' : 'rgba(200,169,110,0.15)';
+                certBtn.style.color = unlocked ? 'var(--gold)' : 'rgba(200,169,110,0.45)';
+            }
+        }
+
+        // ---- Render overlay attendance section ----
+        function renderCertOverlay() {
+            const weeks = countUniqueWeeks();
+            const unlocked = isCertUnlocked();
+            const windowOpen = isCheckinWindowOpen();
+            const alreadyMarked = hasCheckedInThisWindow();
+
+            // Banners
+            document.getElementById('certLockedBanner').style.display = unlocked ? 'none' : 'block';
+            document.getElementById('certUnlockedBanner').style.display = unlocked ? 'block' : 'none';
+
+            // Lock veil on certificate
+            const veil = document.getElementById('certLockVeil');
+            veil.style.display = unlocked ? 'none' : 'block';
+            const veilStatus = document.getElementById('veilStatus');
+            if (veilStatus) {
+                veilStatus.textContent = weeks + ' of ' + REQUIRED_CHECKINS + ' webinars attended. Next window: ' + formatNextWindow();
+            }
+
+            // Veil progress dots
+            const veilProgress = document.getElementById('veilProgress');
+            if (veilProgress) {
+                let html = '';
+                for (let i = 1; i <= REQUIRED_CHECKINS; i++) {
+                    const done = i <= weeks;
+                    html += `<div style="width:10px;height:10px;border-radius:50%;border:1px solid ${done ? 'rgba(0,255,178,0.6)' : 'rgba(255,255,255,0.15)'};background:${done ? 'rgba(0,255,178,0.3)' : 'transparent'}"></div>`;
+                }
+                veilProgress.innerHTML = html;
+            }
+
+            // Overlay dots
+            const overlayDots = document.getElementById('certOverlayDots');
+            if (overlayDots) {
+                let html = '';
+                for (let i = 1; i <= REQUIRED_CHECKINS; i++) {
+                    const done = i <= weeks;
+                    const isCurr = !done && i === weeks + 1;
+                    html += `<div title="Week ${i} webinar" style="
+        display:flex;flex-direction:column;align-items:center;gap:4px
+      ">
+        <div style="width:32px;height:32px;border-radius:50%;
+          border:1.5px solid ${done ? 'var(--signal)' : isCurr ? 'rgba(110,110,255,0.45)' : 'rgba(255,255,255,0.08)'};
+          background:${done ? 'rgba(0,255,178,0.1)' : isCurr ? 'rgba(110,110,255,0.06)' : 'transparent'};
+          display:flex;align-items:center;justify-content:center;
+          font-family:'DM Mono',monospace;font-size:11px;
+          color:${done ? 'var(--signal)' : isCurr ? 'var(--neural)' : 'var(--muted)'}
+        ">${done ? '✓' : i}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:.1em;color:${done ? 'var(--signal)' : 'var(--muted)'}">WK${i}</div>
+      </div>`;
+                }
+                overlayDots.innerHTML = html;
+            }
+
+            // Overlay status
+            const overlayStatus = document.getElementById('certOverlayStatus');
+            if (overlayStatus) {
+                if (unlocked) {
+                    overlayStatus.innerHTML = '<span style="color:var(--signal)">✦ All 6 sessions complete · Full certificate unlocked · Download and share your achievement</span>';
+                } else if (windowOpen && !alreadyMarked) {
+                    overlayStatus.innerHTML = '<span style="color:var(--neural)">◈ This week\'s attendance window is <b style="color:var(--neural)">open</b> · Mark your attendance now (closes Sat 6 PM EAT)</span>';
+                } else if (windowOpen && alreadyMarked) {
+                    overlayStatus.innerHTML = '<span style="color:var(--gold)">✓ Week ' + weeks + ' marked · ' + (REQUIRED_CHECKINS - weeks) + ' more webinar(s) to unlock your certificate</span>';
+                } else {
+                    overlayStatus.innerHTML = 'Attended <b style="color:#fff">' + weeks + '</b> of <b style="color:#fff">' + REQUIRED_CHECKINS + '</b> sessions · Next check-in window opens <span style="color:var(--gold)">' + formatNextWindow() + '</span>';
+                }
+            }
+
+            // Overlay check-in button
+            const overlayCheckinBtn = document.getElementById('certOverlayCheckinBtn');
+            if (overlayCheckinBtn) {
+                overlayCheckinBtn.style.display = (windowOpen && !alreadyMarked && !unlocked) ? 'block' : 'none';
+            }
+
+            // Download/print buttons
+            document.getElementById('certDownloadBtn').style.display = unlocked ? 'inline-flex' : 'none';
+            document.getElementById('certPrintBtn').style.display = unlocked ? 'inline-flex' : 'none';
+            document.getElementById('certOverlayLabel').textContent = unlocked ? 'Certificate · Ready to Download' : 'Certificate Preview · Complete 6 Webinars to Unlock';
+        }
+
+        // ---- Certificate field population ----
         function generateCertId() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let id = 'SVA-';
-            for (let i = 0; i < 3; i++) { for (let j = 0; j < 4; j++)id += chars[Math.floor(Math.random() * chars.length)]; if (i < 2) id += '-'; }
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 4; j++) id += chars[Math.floor(Math.random() * chars.length)];
+                if (i < 2) id += '-';
+            }
             return id;
         }
 
@@ -3507,43 +3845,45 @@
         }
 
         async function openCertificate() {
-            if (!currentUser) { toast('error', 'Not Logged In', 'Please log in first.'); return }
+            if (!currentUser) { toast('error', 'Not Logged In', 'Please log in first.'); return; }
 
-            // Gather student data
             const equity = getEquity();
             const returnPct = ((equity - STARTING_CAPITAL) / STARTING_CAPITAL) * 100;
             const totalTrades = tradeHistory.length;
             const level = determineCertLevel(totalTrades, returnPct);
             const score = Math.max(0, Math.min(100, Math.round(50 + (returnPct / 2)))).toFixed(0) + '%';
-            const certId = generateCertId();
-            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
             const studentName = currentUser.name || currentUser.username || 'Student';
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-            // Populate certificate fields
+            // Populate visible fields (always)
             document.getElementById('certStudentName').textContent = studentName;
             document.getElementById('certLevel').textContent = level;
             document.getElementById('certLevel').style.color = determineCertLevelColor(level);
-            document.getElementById('certScore').textContent = score;
-            document.getElementById('certTrades').textContent = totalTrades + ' trades';
-            document.getElementById('certDate').textContent = today;
-            document.getElementById('certId').textContent = certId;
 
-            // Generate QR code
+            // Only populate sensitive fields if unlocked (they're behind the veil anyway, but be defensive)
+            const unlocked = isCertUnlocked();
+            const certId = unlocked ? generateCertId() : 'SVA-LOCKED';
+            document.getElementById('certScore').textContent = unlocked ? score : '—';
+            document.getElementById('certTrades').textContent = unlocked ? (totalTrades + ' trades') : '—';
+            document.getElementById('certDate').textContent = unlocked ? today : '—';
+            document.getElementById('certId').textContent = unlocked ? certId : 'Complete all 6 webinars';
+
+            // QR code
             const qrEl = document.getElementById('certQrCode');
             qrEl.innerHTML = '';
-            const verifyUrl = 'https://savannacapital.co.ke/verify?id=' + certId;
-            try {
-                new QRCode(qrEl, {
-                    text: verifyUrl,
-                    width: 80, height: 80,
-                    colorDark: '#C8A96E',
-                    colorLight: '#010B1E',
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (e) {
-                // Fallback if QR lib not available
-                qrEl.innerHTML = '<div style="width:80px;height:80px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.3);display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:6px;color:rgba(200,169,110,0.5);text-align:center;padding:4px">QR VERIFY</div>';
+            if (unlocked) {
+                const verifyUrl = 'https://savannacapital.co.ke/verify?id=' + certId;
+                try {
+                    new QRCode(qrEl, { text: verifyUrl, width: 80, height: 80, colorDark: '#C8A96E', colorLight: '#010B1E', correctLevel: QRCode.CorrectLevel.M });
+                } catch (e) {
+                    qrEl.innerHTML = '<div style="width:80px;height:80px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.3);display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:6px;color:rgba(200,169,110,0.5);text-align:center;padding:4px">QR VERIFY</div>';
+                }
+            } else {
+                qrEl.innerHTML = '<div style="width:80px;height:80px;background:rgba(255,69,96,0.06);border:1px solid rgba(255,69,96,0.2);display:flex;align-items:center;justify-content:center;font-size:22px">🔒</div>';
             }
+
+            // Render overlay state
+            renderCertOverlay();
 
             // Show overlay
             const overlay = document.getElementById('certOverlay');
@@ -3551,24 +3891,20 @@
             overlay.scrollTop = 0;
             document.body.style.overflow = 'hidden';
 
-            // Save to DB (fire-and-forget)
-            try {
-                await db.from('student_certificates').upsert([{
-                    user_id: currentUser.id,
-                    username: currentUser.username,
-                    name: studentName,
-                    cert_id: certId,
-                    level: level,
-                    score: score,
-                    total_trades: totalTrades,
-                    return_pct: returnPct,
-                    issued_at: new Date().toISOString()
-                }], { onConflict: 'user_id' });
-            } catch (e) {/* table may not exist yet, that's ok */ }
-
-            // Confetti celebration
-            launchConfetti();
-            toast('success', 'Certificate Ready', 'Your certificate has been generated! Download it below.');
+            // Save to DB if unlocked
+            if (unlocked) {
+                try {
+                    await db.from('student_certificates').upsert([{
+                        user_id: currentUser.id, username: currentUser.username, name: studentName,
+                        cert_id: certId, level, score, total_trades: totalTrades,
+                        return_pct: returnPct, issued_at: new Date().toISOString()
+                    }], { onConflict: 'user_id' });
+                } catch (e) { }
+                launchConfetti();
+                toast('success', 'Certificate Ready', 'Download or print your certificate below.');
+            } else {
+                toast('info', 'Preview Mode', 'Complete ' + (REQUIRED_CHECKINS - countUniqueWeeks()) + ' more webinar(s) to unlock the full certificate.');
+            }
         }
 
         function closeCertificate() {
@@ -3577,56 +3913,39 @@
         }
 
         function downloadCertificate() {
-            // Use print dialog which allows Save as PDF
+            if (!isCertUnlocked()) { toast('warning', 'Locked', 'Complete all 6 webinars to download.'); return; }
             printCertificate();
             toast('info', 'Saving PDF', 'In the print dialog, select "Save as PDF" as the destination.');
         }
 
         function printCertificate() {
-            // Hide non-certificate elements temporarily
+            if (!isCertUnlocked()) { toast('warning', 'Locked', 'Complete all 6 webinars to print.'); return; }
             const overlay = document.getElementById('certOverlay');
-            const actionBtns = overlay.querySelector('.cert-overlay-actions');
-            const congrats = overlay.querySelector('.cert-congrats');
-            const footer = overlay.querySelector('[style*="footer"]');
-
-            // Store original display values
-            const origAction = actionBtns.style.display;
-            const origCongrats = congrats.style.display;
-
-            // Hide them
-            actionBtns.style.display = 'none';
-            congrats.style.display = 'none';
-
+            const toHide = [
+                overlay.querySelector('.cert-overlay-actions'),
+                overlay.querySelector('#certLockedBanner'),
+                overlay.querySelector('#certUnlockedBanner'),
+                overlay.querySelector('#certAttendancePanel'),
+                overlay.querySelector('.cert-overlay-inner>div:last-child')
+            ].filter(Boolean);
+            const orig = toHide.map(el => el.style.display);
+            toHide.forEach(el => el.style.display = 'none');
             window.print();
-
-            // Restore after print dialog
-            setTimeout(() => {
-                actionBtns.style.display = origAction;
-                congrats.style.display = origCongrats;
-            }, 500);
+            setTimeout(() => { toHide.forEach((el, i) => el.style.display = orig[i]); }, 600);
         }
 
         function launchConfetti() {
             const colors = ['#C8A96E', '#6E6EFF', '#00FFB2', '#fff', '#F59E0B'];
             const shapes = ['■', '●', '◆', '▲', '★'];
-            const container = document.body;
-
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 70; i++) {
                 setTimeout(() => {
                     const piece = document.createElement('div');
                     piece.className = 'confetti-piece';
                     piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-                    piece.style.cssText = `
-        left:${Math.random() * 100}vw;
-        color:${colors[Math.floor(Math.random() * colors.length)]};
-        font-size:${8 + Math.random() * 12}px;
-        animation-duration:${2 + Math.random() * 2}s;
-        animation-delay:${Math.random() * 0.5}s;
-        opacity:0.85;
-      `;
-                    container.appendChild(piece);
-                    setTimeout(() => piece.remove(), 3000);
-                }, i * 40);
+                    piece.style.cssText = `left:${Math.random() * 100}vw;color:${colors[Math.floor(Math.random() * colors.length)]};font-size:${8 + Math.random() * 14}px;animation-duration:${2 + Math.random() * 2.5}s;animation-delay:${Math.random() * 0.6}s;opacity:0.9;`;
+                    document.body.appendChild(piece);
+                    setTimeout(() => piece.remove(), 4000);
+                }, i * 35);
             }
         }
 
