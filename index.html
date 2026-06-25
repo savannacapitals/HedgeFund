@@ -9,6 +9,8 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap"
         rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -58,7 +60,51 @@
             overflow-x: hidden;
         }
 
-        /* Skip link for keyboard accessibility */
+        /* ── Page Load Screen ── */
+        #page-loader {
+            position: fixed;
+            inset: 0;
+            background: #010203;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+        }
+
+        #page-loader .loader-logo {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        #page-loader .loader-bar-wrap {
+            width: 180px;
+            height: 1px;
+            background: rgba(201, 169, 110, .12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #page-loader .loader-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-muted), var(--gold-light));
+            transition: width .05s linear;
+        }
+
+        #page-loader .loader-pct {
+            font-family: 'DM Mono', monospace;
+            font-size: 9px;
+            letter-spacing: .22em;
+            color: rgba(201, 169, 110, .4);
+            text-transform: uppercase;
+        }
+
+        /* Skip link */
         .skip-link {
             position: absolute;
             top: -100%;
@@ -79,7 +125,7 @@
             top: 1rem;
         }
 
-        /* Noise texture overlay */
+        /* Noise */
         body::before {
             content: '';
             position: fixed;
@@ -102,7 +148,6 @@
             background: var(--gold-muted);
         }
 
-        /* ── REDUCED MOTION ── */
         @media (prefers-reduced-motion: reduce) {
 
             *,
@@ -112,9 +157,13 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
+
+            #page-loader {
+                display: none !important;
+            }
         }
 
-        /* ── GOLD UTILITIES ── */
+        /* ── Gold utils ── */
         .gold-text {
             background: linear-gradient(118deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-muted) 100%);
             -webkit-background-clip: text;
@@ -190,7 +239,7 @@
             color: var(--gold) !important;
         }
 
-        /* ── MOBILE NAV ── */
+        /* ── Mobile nav ── */
         #mobile-menu {
             position: fixed;
             inset: 0;
@@ -224,7 +273,6 @@
             color: var(--gold-light);
         }
 
-        /* hamburger */
         .hamburger {
             width: 22px;
             height: 14px;
@@ -255,7 +303,7 @@
             transform: translateY(-6.5px) rotate(-45deg);
         }
 
-        /* ── TERMINAL PILL ── */
+        /* ── Terminal pill ── */
         .terminal-pill {
             display: inline-flex;
             align-items: center;
@@ -276,7 +324,7 @@
         .terminal-pill:hover {
             border-color: #a3e635;
             background: rgba(163, 230, 53, 0.12);
-            box-shadow: 0 0 18px rgba(163, 230, 53, 0.12);
+            box-shadow: 0 0 18px rgba(163, 230, 53, .12);
             color: #d9f99d;
         }
 
@@ -383,119 +431,24 @@
             line-height: 1;
         }
 
-        /* ── TICKER ── */
-        .ticker-wrap {
-            overflow: hidden;
-            background: rgba(201, 169, 110, .03);
-            border-top: 1px solid rgba(201, 169, 110, .08);
-            border-bottom: 1px solid rgba(201, 169, 110, .08);
+        /* ── 3D Tilt Cards ── */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            will-change: transform;
         }
 
-        .ticker-track {
-            display: flex;
-            width: max-content;
-            animation: ticker 44s linear infinite;
-        }
-
-        .ticker-track:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes ticker {
-            0% {
-                transform: translateX(0)
-            }
-
-            100% {
-                transform: translateX(-50%)
-            }
-        }
-
-        .ticker-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 28px;
-            font-family: 'DM Mono', monospace;
-            font-size: 8.5px;
-            letter-spacing: .12em;
-            color: rgba(201, 169, 110, .55);
-            border-right: 1px solid rgba(201, 169, 110, .08);
-            white-space: nowrap;
-        }
-
-        .ticker-item .up {
-            color: #4ade80;
-        }
-
-        .ticker-item .down {
-            color: #f87171;
-        }
-
-        /* ── SECTION TYPOGRAPHY ── */
-        .section-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 8px;
-            letter-spacing: .25em;
-            text-transform: uppercase;
-            color: var(--gold);
-            opacity: .8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-label::before {
-            content: '//';
-            opacity: .4;
-        }
-
-        .section-h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.2rem, 4.5vw, 3.8rem);
-            font-weight: 400;
-            letter-spacing: -.01em;
-            color: #fff;
-            line-height: 1.1;
-        }
-
-        /* ── REVEAL ANIMATIONS ── */
-        .reveal {
-            opacity: 0;
-            transform: translateY(32px);
-            transition: opacity .85s cubic-bezier(.16, 1, .3, 1), transform .85s cubic-bezier(.16, 1, .3, 1);
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal-delay-1 {
-            transition-delay: .1s;
-        }
-
-        .reveal-delay-2 {
-            transition-delay: .2s;
-        }
-
-        .reveal-delay-3 {
-            transition-delay: .3s;
-        }
-
-        .reveal-delay-4 {
-            transition-delay: .45s;
-        }
-
-        /* ── PILLAR CARDS ── */
+        /* ── Enhanced Pillar Cards ── */
         .pillar-card {
             position: relative;
             padding: 2rem 1.5rem;
             border: 1px solid rgba(255, 255, 255, .04);
             background: linear-gradient(160deg, rgba(201, 169, 110, .03) 0%, transparent 60%);
-            transition: border-color .4s, transform .4s;
+            transition: border-color .4s, transform .4s, box-shadow .4s;
             overflow: hidden;
             cursor: default;
+            transform-style: preserve-3d;
+            will-change: transform;
         }
 
         .pillar-card::after {
@@ -513,14 +466,30 @@
 
         .pillar-card:hover {
             border-color: rgba(201, 169, 110, .18);
-            transform: translateY(-4px);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .4), 0 0 30px rgba(201, 169, 110, .04);
         }
 
         .pillar-card:hover::after {
             transform: scaleX(1);
         }
 
-        /* ── STRATEGY GRID ── */
+        /* Shimmer effect on cards */
+        .pillar-card .shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 40%, rgba(201, 169, 110, .05) 50%, transparent 60%);
+            background-size: 200% 100%;
+            background-position: -100% 0;
+            transition: background-position .7s ease;
+            pointer-events: none;
+        }
+
+        .pillar-card:hover .shimmer {
+            background-position: 200% 0;
+        }
+
+        /* ── Strategy cards ── */
         .strategy-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -544,7 +513,7 @@
             border: 1px solid rgba(255, 255, 255, .05);
             background: var(--dark);
             overflow: hidden;
-            transition: background .4s, transform .35s;
+            transition: background .4s, transform .35s, box-shadow .35s;
             cursor: default;
         }
 
@@ -559,7 +528,8 @@
 
         .strat-card:hover {
             background: #080C14;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, .5), 0 0 0 1px rgba(201, 169, 110, .06);
         }
 
         .strat-card:hover::before {
@@ -576,18 +546,19 @@
             color: rgba(201, 169, 110, .04);
             line-height: 1;
             user-select: none;
-            transition: color .4s;
+            transition: color .4s, transform .4s;
         }
 
         .strat-card:hover .num {
             color: rgba(201, 169, 110, .09);
+            transform: scale(1.05);
         }
 
         .strat-card.flagship {
             background: linear-gradient(140deg, #0D1118, #060A0F) !important;
         }
 
-        /* ── PERFORMANCE CHART ── */
+        /* ── Performance chart ── */
         #perf-line {
             stroke-dasharray: 600;
             stroke-dashoffset: 600;
@@ -598,19 +569,26 @@
             stroke-dashoffset: 0;
         }
 
-        /* ── INSIGHT CARDS ── */
+        /* ── Metric counters ── */
+        .metric-val {
+            display: inline-block;
+            position: relative;
+        }
+
+        /* ── Insight cards ── */
         .insight-card {
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, .05);
-            transition: border-color .4s, transform .4s;
+            transition: border-color .4s, transform .4s, box-shadow .4s;
             background: var(--surface);
             cursor: pointer;
         }
 
         .insight-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
             border-color: rgba(201, 169, 110, .25);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .5), 0 0 40px rgba(201, 169, 110, .04);
         }
 
         .insight-card .img-wrap {
@@ -634,7 +612,7 @@
             transform: scale(1.06);
         }
 
-        /* ── DOTS ── */
+        /* ── Glow dots ── */
         .glow-dot {
             width: 5px;
             height: 5px;
@@ -651,7 +629,7 @@
             box-shadow: 0 0 6px var(--gold);
         }
 
-        /* ── BUTTONS ── */
+        /* ── Buttons ── */
         .btn-gold {
             position: relative;
             overflow: hidden;
@@ -751,7 +729,6 @@
             flex-shrink: 0;
         }
 
-        /* ── TERMINAL CTA ── */
         .terminal-cta-btn {
             display: inline-flex;
             align-items: center;
@@ -793,7 +770,7 @@
             box-shadow: none;
         }
 
-        /* ── TERMINAL ENTRY SECTION ── */
+        /* ── Terminal entry section ── */
         .terminal-entry {
             position: relative;
             background: #040609;
@@ -870,7 +847,7 @@
             transform: translateX(4px);
         }
 
-        /* mini terminal preview */
+        /* Mini terminal preview */
         .t-preview {
             background: #060A0D;
             border: 1px solid rgba(163, 230, 53, .14);
@@ -946,7 +923,7 @@
             margin-left: 2px;
         }
 
-        /* ── NETWORK VIZ ── */
+        /* ── Network viz ── */
         .network-visualization-container {
             position: relative;
             width: 100%;
@@ -1015,43 +992,117 @@
             }
         }
 
-        /* ── MODAL ── */
-        .modal-backdrop {
-            transition: opacity .35s ease, visibility .35s ease;
+        /* ── Scroll line progress indicator ── */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 1px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-muted), var(--gold-light));
+            z-index: 9997;
+            transition: width .1s linear;
+            box-shadow: 0 0 8px rgba(201, 169, 110, .4);
         }
 
-        input:focus {
-            box-shadow: 0 0 0 1px var(--gold);
-            outline: none;
+        /* ── Section reveals (GSAP handles these) ── */
+        .gs-reveal {
+            opacity: 0;
+            transform: translateY(40px);
         }
 
-        input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 100px #040608 inset;
-            -webkit-text-fill-color: #fff;
+        .gs-reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
         }
 
-        /* ── FOOTER ── */
-        .footer-col-title {
+        .gs-reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .gs-reveal-scale {
+            opacity: 0;
+            transform: scale(0.94);
+        }
+
+        /* ── Ticker ── */
+        .ticker-wrap {
+            overflow: hidden;
+            background: rgba(201, 169, 110, .03);
+            border-top: 1px solid rgba(201, 169, 110, .08);
+            border-bottom: 1px solid rgba(201, 169, 110, .08);
+        }
+
+        .ticker-track {
+            display: flex;
+            width: max-content;
+            animation: ticker 44s linear infinite;
+        }
+
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-50%)
+            }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 28px;
+            font-family: 'DM Mono', monospace;
+            font-size: 8.5px;
+            letter-spacing: .12em;
+            color: rgba(201, 169, 110, .55);
+            border-right: 1px solid rgba(201, 169, 110, .08);
+            white-space: nowrap;
+        }
+
+        .ticker-item .up {
+            color: #4ade80;
+        }
+
+        .ticker-item .down {
+            color: #f87171;
+        }
+
+        /* ── Section Typography ── */
+        .section-label {
             font-family: 'DM Mono', monospace;
             font-size: 8px;
-            letter-spacing: .2em;
+            letter-spacing: .25em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, .5);
-            margin-bottom: 1.2rem;
+            color: var(--gold);
+            opacity: .8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .hr-gold {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(201, 169, 110, .15) 30%, rgba(201, 169, 110, .15) 70%, transparent);
+        .section-label::before {
+            content: '//';
+            opacity: .4;
         }
 
-        /* ── ENHANCED STATS DIVIDER ── */
-        .stat-divider {
-            border-left: 1px solid rgba(255, 255, 255, .06);
-            padding-left: 1.5rem;
+        .section-h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+            font-weight: 400;
+            letter-spacing: -.01em;
+            color: #fff;
+            line-height: 1.1;
         }
 
-        /* ── SCROLL INDICATOR ── */
+        /* ── Scroll indicator ── */
         .scroll-indicator {
             position: absolute;
             bottom: 80px;
@@ -1093,18 +1144,25 @@
             }
         }
 
-        /* ── CONTACT / REACH-OUT ── */
+        /* ── Stat divider ── */
+        .stat-divider {
+            border-left: 1px solid rgba(255, 255, 255, .06);
+            padding-left: 1.5rem;
+        }
+
+        /* ── Reach cards ── */
         .reach-card {
             border: 1px solid rgba(201, 169, 110, .1);
             background: linear-gradient(145deg, #0A0F18 0%, #060A10 100%);
             padding: 2.5rem;
             position: relative;
             overflow: hidden;
-            transition: border-color .4s;
+            transition: border-color .4s, transform .4s;
         }
 
         .reach-card:hover {
             border-color: rgba(201, 169, 110, .22);
+            transform: translateY(-4px);
         }
 
         .reach-card::before {
@@ -1116,20 +1174,132 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(201, 169, 110, .3), transparent);
         }
+
+        /* ── Modal ── */
+        .modal-backdrop {
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 1px var(--gold);
+            outline: none;
+        }
+
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 100px #040608 inset;
+            -webkit-text-fill-color: #fff;
+        }
+
+        /* ── Footer ── */
+        .footer-col-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 8px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .5);
+            margin-bottom: 1.2rem;
+        }
+
+        .hr-gold {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 110, .15) 30%, rgba(201, 169, 110, .15) 70%, transparent);
+        }
+
+        /* ── Glow ring on hero stat ── */
+        .stat-ring {
+            position: relative;
+            display: inline-block;
+        }
+
+        .stat-ring::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 3px;
+            background: radial-gradient(ellipse at center, rgba(201, 169, 110, .06), transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .4s;
+        }
+
+        .stat-ring:hover::after {
+            opacity: 1;
+        }
+
+        /* ── Animated border on terminal preview ── */
+        @keyframes borderPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(163, 230, 53, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(163, 230, 53, .08);
+            }
+        }
+
+        .t-preview {
+            animation: borderPulse 4s ease-in-out infinite;
+        }
+
+        /* ── Cursor spotlight effect ── */
+        #cursor-spotlight {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 169, 110, .035) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: opacity .3s;
+            opacity: 0;
+        }
+
+        /* ── Typewriter effect ── */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--gold);
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: t-blink 0.8s step-end infinite;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="antialiased selection:bg-brandGold selection:text-brandDark">
 
-    <!-- ── SKIP LINK (accessibility) ── -->
+    <!-- ── Cursor spotlight ── -->
+    <div id="cursor-spotlight"></div>
+
+    <!-- ── Scroll progress bar ── -->
+    <div id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- ── Page Loader ── -->
+    <div id="page-loader" aria-hidden="true">
+        <div class="loader-logo" id="loader-logo">
+            <svg class="w-10 h-10 text-brandGold" viewBox="0 0 100 100" fill="#C9A96E"
+                style="filter:drop-shadow(0 0 12px rgba(201,169,110,.4))">
+                <path
+                    d="M50 75v-20c3.5-1 7-3 11-6.5 5.5-4.8 11.5-6.5 21-6.5 5 0 8.5.8 11 2.5.5.3 1-.2.8-.8-1.5-4-5-8-11-10.5-6.5-2.7-15.5-2-23.5 2-3 .8-6 2.3-9.3 4.3V31c4-1.5 8.5-2.5 14.5-2.5 6 0 11 1.5 14 3.5.5.3.9-.3.6-.7-2-3.5-6.5-6.3-12.5-7.5-5.5-1.1-12.5-.3-17.6 2V22c2-.8 4.5-1.2 7.5-1.2 4 0 7.5.8 9.5 2 .5.3.8-.4.5-.7-1.5-2.2-4.8-4-9.5-4.6-4.2-.5-8.5.2-11.5 1.5V10c0-.6-.4-1-1-1s-1 .4-1 1v9.2c-3-1.3-7.3-2-11.5-1.5-4.7.6-8 2.4-9.5 4.6-.3.3 0 1 .5.7 2-1.2 5.5-2 9.5-2 3 0 5.5.4 7.5 1.2v4.3c-5.1-2.3-12.1-3.1-17.6-2-6 1.2-10.5 4-12.5 7.5-.3.4.1 1 .6.7 3-2 8-3.5 14-3.5 6 0 10.5 1 14.5 2.5v9c-3.3-2-6.3-3.5-9.3-4.3-8-4-17-4.7-23.5-2-6 2.5-9.5 6.5-11 10.5-.2.6.3 1.1.8.8 2.5-1.7 6-2.5 11-2.5 9.5 0 15.5 1.7 21 6.5 4 3.5 7.5 5.5 11 6.5v20c0 .6.4 1 1 1s1-.4 1-1z" />
+            </svg>
+        </div>
+        <div class="loader-bar-wrap">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
+        <div class="loader-pct" id="loader-pct">0%</div>
+    </div>
+
+    <!-- Skip link -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- ══════════════════════════════════════════════ NAV -->
+    <!-- ══ NAV ══ -->
     <nav id="main-nav" role="navigation" aria-label="Main navigation"
         class="w-full fixed top-0 z-50 border-b border-white/[0.04] bg-[#030507]/75 backdrop-blur-2xl px-6 md:px-14 py-[18px] flex justify-between items-center">
-
-        <!-- Logo -->
         <div class="flex items-center gap-3.5 cursor-pointer" onclick="window.scrollTo({top:0,behavior:'smooth'})"
             role="link" tabindex="0" aria-label="Savanna Capital – back to top"
             onkeydown="if(event.key==='Enter')window.scrollTo({top:0,behavior:'smooth'})">
@@ -1145,8 +1315,6 @@
                     Fund · Est. 2024</div>
             </div>
         </div>
-
-        <!-- Desktop nav links -->
         <div
             class="hidden md:flex items-center gap-7 text-[8.5px] tracking-[.17em] uppercase font-medium text-gray-500">
             <a href="#hero" class="nav-link hover:text-white transition-colors">Home</a>
@@ -1158,8 +1326,6 @@
                 <span class="live-dot" aria-hidden="true"></span>Savanna Intelligence
             </a>
         </div>
-
-        <!-- Desktop CTA + Mobile hamburger -->
         <div class="flex items-center gap-4">
             <button onclick="toggleModal(true)" aria-label="Open investor login"
                 class="btn-gold border border-brandGold/35 text-brandGold text-[8.5px] tracking-[.18em] uppercase px-5 py-2.5 flex items-center gap-2">
@@ -1170,7 +1336,6 @@
                         d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                 </svg>
             </button>
-            <!-- Hamburger (mobile) -->
             <button id="ham-btn" class="md:hidden hamburger" aria-label="Toggle mobile menu" aria-expanded="false"
                 aria-controls="mobile-menu">
                 <span></span><span></span><span></span>
@@ -1178,7 +1343,7 @@
         </div>
     </nav>
 
-    <!-- ── MOBILE MENU ── -->
+    <!-- Mobile menu -->
     <div id="mobile-menu" role="dialog" aria-label="Mobile navigation" aria-modal="true">
         <button onclick="closeMobileMenu()" aria-label="Close menu"
             class="absolute top-6 right-6 text-gray-500 hover:text-white transition text-2xl leading-none cursor-pointer">&times;</button>
@@ -1196,7 +1361,7 @@
         </button>
     </div>
 
-    <!-- ══════════════════════════════════════════════ HERO -->
+    <!-- ══ HERO ══ -->
     <section id="hero" class="relative min-h-screen flex flex-col overflow-hidden">
         <canvas id="hero-canvas" aria-hidden="true"></canvas>
         <div class="absolute inset-0 pointer-events-none"
@@ -1204,8 +1369,12 @@
         </div>
         <div class="absolute top-0 left-0 w-full h-full pointer-events-none bg-lines"></div>
 
+        <!-- Parallax layers -->
+        <div id="parallax-bg" class="absolute inset-0 pointer-events-none"
+            style="background:radial-gradient(ellipse 40% 40% at 30% 60%,rgba(201,169,110,.025) 0%,transparent 70%);">
+        </div>
+
         <div id="main-content" class="relative z-10 flex flex-col md:flex-row flex-1 pt-24">
-            <!-- LEFT copy -->
             <div class="w-full md:w-[58%] flex flex-col justify-center px-8 md:px-16 py-20">
                 <div class="mb-6 hero-fade" style="animation-delay:.05s">
                     <span class="hero-overline">Est. 2024 · Nairobi, Kenya</span>
@@ -1239,31 +1408,31 @@
                         Philosophy →</a>
                 </div>
 
-                <!-- Stats -->
+                <!-- Stats with GSAP counters -->
                 <div class="mt-14 grid grid-cols-3 gap-4 hero-fade" style="animation-delay:.92s">
-                    <div>
-                        <div class="stat-num counter" data-target="18" data-suffix="%+"
-                            aria-label="18% average annual return">0%</div>
+                    <div class="stat-ring">
+                        <div class="stat-num" id="stat-return" data-target="18" data-suffix="%+"
+                            aria-label="18% average annual return">0%+</div>
                         <div class="text-[8px] uppercase tracking-[.16em] text-gray-600 mt-1.5 font-mono">Avg. Ann.
                             Return</div>
                     </div>
-                    <div class="stat-divider">
-                        <div class="stat-num counter" data-target="6" data-suffix=" Strats" aria-label="6 strategies">0
-                        </div>
+                    <div class="stat-divider stat-ring">
+                        <div class="stat-num" id="stat-strats" data-target="6" data-suffix=" Strats"
+                            aria-label="6 strategies">0 Strats</div>
                         <div class="text-[8px] uppercase tracking-[.16em] text-gray-600 mt-1.5 font-mono">Strategies
                         </div>
                     </div>
-                    <div class="stat-divider">
-                        <div class="stat-num counter" data-target="3" data-suffix=" Hubs" aria-label="3 global offices">
-                            0</div>
+                    <div class="stat-divider stat-ring">
+                        <div class="stat-num" id="stat-hubs" data-target="3" data-suffix=" Hubs"
+                            aria-label="3 global offices">0 Hubs</div>
                         <div class="text-[8px] uppercase tracking-[.16em] text-gray-600 mt-1.5 font-mono">Global Offices
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT hero image -->
-            <div class="hidden md:block md:w-[42%] relative overflow-hidden">
+            <!-- Right hero image -->
+            <div class="hidden md:block md:w-[42%] relative overflow-hidden" id="hero-img-wrap">
                 <div class="absolute inset-y-0 left-0 w-32 z-10"
                     style="background:linear-gradient(to right,#030507,transparent);"></div>
                 <div class="absolute inset-0 z-10"
@@ -1281,27 +1450,24 @@
                 <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1200"
                     alt="Global financial district at dusk"
                     class="w-full h-full object-cover filter grayscale brightness-[0.28] contrast-[1.5] saturate-0"
-                    loading="lazy">
+                    loading="lazy" id="hero-img">
             </div>
         </div>
 
-        <!-- Scroll indicator -->
         <div class="scroll-indicator" aria-hidden="true">
             <span>Scroll</span>
             <div class="scroll-arrow"></div>
         </div>
 
-        <!-- Ticker -->
         <div class="ticker-wrap relative z-10" aria-label="Live market data ticker" role="marquee">
             <div class="ticker-track" id="ticker"></div>
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ TERMINAL ENTRY -->
+    <!-- ══ TERMINAL ENTRY ══ -->
     <section class="terminal-entry py-20 px-8 md:px-16" id="terminal-section">
         <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center relative z-10">
-            <!-- LEFT: copy -->
-            <div class="reveal">
+            <div class="gs-reveal">
                 <div class="flex items-center gap-3 mb-6">
                     <span class="live-dot"
                         style="width:7px;height:7px;border-radius:50%;background:#a3e635;box-shadow:0 0 8px #a3e635;display:inline-block;animation:tpulse 1.4s ease infinite;flex-shrink:0;"
@@ -1346,8 +1512,7 @@
                 </a>
             </div>
 
-            <!-- RIGHT: live mini preview -->
-            <div class="reveal reveal-delay-2">
+            <div class="gs-reveal" style="transition-delay:.2s">
                 <div class="t-preview" role="region" aria-label="Live market preview">
                     <div
                         style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(163,230,53,0.1);">
@@ -1387,12 +1552,12 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ PHILOSOPHY -->
+    <!-- ══ PHILOSOPHY ══ -->
     <section id="philosophy"
         class="relative py-32 px-8 md:px-16 bg-[#060A0F] border-t border-white/[0.04] scroll-mt-20 overflow-hidden">
         <div class="bg-lines absolute inset-0 opacity-50" aria-hidden="true"></div>
         <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-14">
-            <div class="lg:col-span-4 reveal">
+            <div class="lg:col-span-4 gs-reveal-left">
                 <div class="section-label mb-4">Investment Philosophy</div>
                 <h2 class="section-h2 mb-6">Built on<br><em class="gold-text not-italic">Conviction.</em></h2>
                 <div class="gold-line mb-6" aria-hidden="true"></div>
@@ -1403,7 +1568,8 @@
                     Strategies →</a>
             </div>
             <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div class="pillar-card reveal reveal-delay-1">
+                <div class="pillar-card tilt-card gs-reveal" style="transition-delay:.1s">
+                    <div class="shimmer"></div>
                     <div class="text-brandGold mb-4 opacity-75">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"
                             aria-hidden="true">
@@ -1416,7 +1582,8 @@
                     <p class="text-[12px] text-gray-500 font-light leading-relaxed">Proprietary research and data
                         analytics inform every investment decision we make.</p>
                 </div>
-                <div class="pillar-card reveal reveal-delay-2">
+                <div class="pillar-card tilt-card gs-reveal" style="transition-delay:.2s">
+                    <div class="shimmer"></div>
                     <div class="text-brandGold mb-4 opacity-75">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"
                             aria-hidden="true">
@@ -1430,7 +1597,8 @@
                     <p class="text-[12px] text-gray-500 font-light leading-relaxed">A systematic approach to opportunity
                         identification and portfolio construction.</p>
                 </div>
-                <div class="pillar-card reveal reveal-delay-2">
+                <div class="pillar-card tilt-card gs-reveal" style="transition-delay:.2s">
+                    <div class="shimmer"></div>
                     <div class="text-brandGold mb-4 opacity-75">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"
                             aria-hidden="true">
@@ -1442,7 +1610,8 @@
                     <p class="text-[12px] text-gray-500 font-light leading-relaxed">Comprehensive risk management
                         embedded across every stage of the investment lifecycle.</p>
                 </div>
-                <div class="pillar-card reveal reveal-delay-3">
+                <div class="pillar-card tilt-card gs-reveal" style="transition-delay:.3s">
+                    <div class="shimmer"></div>
                     <div class="text-brandGold mb-4 opacity-75">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"
                             aria-hidden="true">
@@ -1459,7 +1628,7 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ NETWORK VIZ -->
+    <!-- ══ NETWORK VIZ ══ -->
     <div class="network-visualization-container" role="img"
         aria-label="Animated global network visualization showing Savanna Capital's offices">
         <div class="terminal-matrix-hud" aria-hidden="true">
@@ -1469,9 +1638,9 @@
         <canvas id="globalNetworkCanvas"></canvas>
     </div>
 
-    <!-- ══════════════════════════════════════════════ STRATEGIES -->
+    <!-- ══ STRATEGIES ══ -->
     <section id="strategies" class="py-32 px-8 md:px-16 border-t border-white/[0.04] bg-[#030507] scroll-mt-20">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-16 reveal">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-16 gs-reveal">
             <div>
                 <div class="section-label mb-4">Investment Approach</div>
                 <h2 class="section-h2">Six Strategies.<br><em class="gold-text not-italic">One Vision.</em></h2>
@@ -1481,7 +1650,7 @@
                 Insights →</a>
         </div>
         <div class="strategy-grid border border-white/[0.04]" role="list">
-            <div class="strat-card reveal reveal-delay-1" style="min-height:270px" role="listitem">
+            <div class="strat-card gs-reveal" style="min-height:270px;transition-delay:.05s" role="listitem">
                 <span class="num" aria-hidden="true">01</span>
                 <div class="text-brandGold mb-5 opacity-80"><svg class="w-6 h-6" fill="none" stroke="currentColor"
                         stroke-width="1" viewBox="0 0 24 24" aria-hidden="true">
@@ -1494,7 +1663,7 @@
                 <p class="text-[11.5px] text-gray-500 font-light leading-relaxed max-w-[200px]">Top-down macro themes
                     across rates, FX, commodities and geopolitical events.</p>
             </div>
-            <div class="strat-card reveal reveal-delay-2 border-l border-white/[0.04]" style="min-height:270px"
+            <div class="strat-card gs-reveal border-l border-white/[0.04]" style="min-height:270px;transition-delay:.1s"
                 role="listitem">
                 <span class="num" aria-hidden="true">02</span>
                 <div class="text-brandGold mb-5 opacity-80"><svg class="w-6 h-6" fill="none" stroke="currentColor"
@@ -1508,8 +1677,8 @@
                 <p class="text-[11.5px] text-gray-500 font-light leading-relaxed max-w-[200px]">Fundamental, bottom-up
                     stock selection focused on asymmetric return opportunities.</p>
             </div>
-            <div class="strat-card reveal reveal-delay-3 md:border-l border-white/[0.04]" style="min-height:270px"
-                role="listitem">
+            <div class="strat-card gs-reveal md:border-l border-white/[0.04]"
+                style="min-height:270px;transition-delay:.15s" role="listitem">
                 <span class="num" aria-hidden="true">03</span>
                 <div class="text-brandGold mb-5 opacity-80"><svg class="w-6 h-6" fill="none" stroke="currentColor"
                         stroke-width="1" viewBox="0 0 24 24" aria-hidden="true">
@@ -1521,8 +1690,8 @@
                 <p class="text-[11.5px] text-gray-500 font-light leading-relaxed max-w-[200px]">Data-driven models
                     seeking to capture inefficiencies across global markets.</p>
             </div>
-            <div class="strat-card reveal reveal-delay-1 border-t border-white/[0.04]" style="min-height:270px"
-                role="listitem">
+            <div class="strat-card gs-reveal border-t border-white/[0.04]"
+                style="min-height:270px;transition-delay:.05s" role="listitem">
                 <span class="num" aria-hidden="true">04</span>
                 <div class="text-brandGold mb-5 opacity-80"><svg class="w-6 h-6" fill="none" stroke="currentColor"
                         stroke-width="1" viewBox="0 0 24 24" aria-hidden="true">
@@ -1534,8 +1703,8 @@
                 <p class="text-[11.5px] text-gray-500 font-light leading-relaxed max-w-[200px]">Capitalizing on
                     corporate events, restructurings and special situation opportunities.</p>
             </div>
-            <div class="strat-card flagship reveal reveal-delay-2 border-l border-t border-white/[0.06] relative"
-                style="min-height:270px;background:linear-gradient(140deg,#0D1220 0%,#060A12 100%)!important"
+            <div class="strat-card flagship gs-reveal border-l border-t border-white/[0.06] relative"
+                style="min-height:270px;background:linear-gradient(140deg,#0D1220 0%,#060A12 100%)!important;transition-delay:.1s"
                 role="listitem">
                 <span class="num" aria-hidden="true">05</span>
                 <div class="absolute top-0 right-0 px-3 py-1.5 border-b border-l border-brandGold/20"
@@ -1554,8 +1723,8 @@
                 <p class="text-[11.5px] text-gray-500 font-light leading-relaxed max-w-[200px]">Identifying
                     high-conviction opportunities across African markets and emerging sectors.</p>
             </div>
-            <div class="strat-card reveal reveal-delay-3 md:border-l border-t border-white/[0.04]"
-                style="min-height:270px" role="listitem">
+            <div class="strat-card gs-reveal md:border-l border-t border-white/[0.04]"
+                style="min-height:270px;transition-delay:.15s" role="listitem">
                 <span class="num" aria-hidden="true">06</span>
                 <div class="text-brandGold mb-5 opacity-80"><svg class="w-6 h-6" fill="none" stroke="currentColor"
                         stroke-width="1" viewBox="0 0 24 24" aria-hidden="true">
@@ -1572,15 +1741,14 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ PERFORMANCE -->
+    <!-- ══ PERFORMANCE ══ -->
     <section id="performance" class="py-32 px-8 md:px-16 bg-[#060A0F] border-t border-white/[0.04] scroll-mt-20">
-        <div class="mb-16 reveal">
+        <div class="mb-16 gs-reveal">
             <div class="section-label mb-4">Track Record</div>
             <h2 class="section-h2">Performance<br><em class="gold-text not-italic">That Speaks.</em></h2>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <!-- Chart -->
-            <div class="lg:col-span-2 border border-white/[0.06] bg-[#080C13] p-8 reveal"
+            <div class="lg:col-span-2 border border-white/[0.06] bg-[#080C13] p-8 gs-reveal"
                 style="box-shadow:inset 0 1px 0 rgba(201,169,110,.07)">
                 <div class="flex justify-between items-start mb-8">
                     <div>
@@ -1607,6 +1775,13 @@
                             <stop offset="0%" stop-color="#fff" stop-opacity=".05" />
                             <stop offset="100%" stop-color="#fff" stop-opacity="0" />
                         </linearGradient>
+                        <filter id="glow-filter">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                            <feMerge>
+                                <feMergeNode in="coloredBlur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
                     </defs>
                     <path d="M0,160 Q100,145 200,135 T400,115 T600,90 L600,200 L0,200 Z" fill="url(#bmGrad)" />
                     <path d="M0,160 Q100,145 200,135 T400,115 T600,90" fill="none" stroke="rgba(255,255,255,.12)"
@@ -1614,13 +1789,13 @@
                     <path d="M0,155 Q80,120 160,100 T320,65 T480,40 T600,20 L600,200 L0,200 Z" fill="url(#fundGrad)"
                         opacity=".7" />
                     <path id="perf-line" d="M0,155 Q80,120 160,100 T320,65 T480,40 T600,20" fill="none" stroke="#C9A96E"
-                        stroke-width="2" stroke-linecap="round" />
+                        stroke-width="2" stroke-linecap="round" filter="url(#glow-filter)" />
                     <circle cx="0" cy="155" r="3" fill="#C9A96E" opacity=".8" />
                     <circle cx="120" cy="108" r="3" fill="#C9A96E" opacity=".8" />
                     <circle cx="240" cy="80" r="3" fill="#C9A96E" opacity=".8" />
                     <circle cx="360" cy="55" r="3" fill="#C9A96E" opacity=".8" />
                     <circle cx="480" cy="38" r="3" fill="#C9A96E" opacity=".8" />
-                    <circle cx="600" cy="20" r="4.5" fill="#C9A96E" />
+                    <circle cx="600" cy="20" r="4.5" fill="#C9A96E" filter="url(#glow-filter)" />
                     <text x="0" y="196" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.18)">2020</text>
                     <text x="110" y="196" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.18)">2021</text>
                     <text x="228" y="196" font-family="DM Mono" font-size="7.5" fill="rgba(255,255,255,.18)">2022</text>
@@ -1632,25 +1807,27 @@
                     <div>
                         <div class="text-[8px] font-mono text-gray-600 tracking-widest mb-1 uppercase">Cumulative Return
                         </div>
-                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal">+142%</div>
+                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal perf-metric"
+                            data-target="142" data-prefix="+" data-suffix="%">+0%</div>
                     </div>
                     <div class="border-l border-white/[0.05] pl-8">
                         <div class="text-[8px] font-mono text-gray-600 tracking-widest mb-1 uppercase">Sharpe Ratio
                         </div>
-                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal">1.84</div>
+                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal perf-metric"
+                            data-target="184" data-prefix="" data-suffix="" data-decimal="2">0.00</div>
                     </div>
                     <div class="border-l border-white/[0.05] pl-8">
                         <div class="text-[8px] font-mono text-gray-600 tracking-widest mb-1 uppercase">Max Drawdown
                         </div>
-                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal">−8.2%</div>
+                        <div class="text-[1.8rem] font-serif text-brandGoldLight font-normal perf-metric"
+                            data-target="82" data-prefix="−" data-suffix="%" data-decimal="1">−0%</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column -->
             <div class="flex flex-col gap-5">
-                <div class="border border-white/[0.06] bg-[#080C13] p-7 flex-1 reveal reveal-delay-1"
-                    style="box-shadow:inset 0 1px 0 rgba(201,169,110,.06)">
+                <div class="border border-white/[0.06] bg-[#080C13] p-7 flex-1 gs-reveal"
+                    style="box-shadow:inset 0 1px 0 rgba(201,169,110,.06);transition-delay:.1s">
                     <div class="section-label mb-3 text-[7.5px]">Risk Management</div>
                     <h3 class="text-lg font-serif text-white font-normal uppercase leading-tight mb-6 tracking-wide">
                         Protecting<br>capital first.</h3>
@@ -1659,7 +1836,7 @@
                             <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
                                 <path stroke="rgba(255,255,255,.05)" stroke-width="2.5" fill="none"
                                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path stroke="#C9A96E" stroke-dasharray="82,100" stroke-width="2.5"
+                                <path id="risk-arc" stroke="#C9A96E" stroke-dasharray="0,100" stroke-width="2.5"
                                     stroke-linecap="round" fill="none"
                                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                             </svg>
@@ -1678,8 +1855,8 @@
                         </ul>
                     </div>
                 </div>
-                <div class="relative overflow-hidden border border-brandGold/[0.14] p-7 reveal reveal-delay-2"
-                    style="background:linear-gradient(145deg,#0E1420 0%,#060A10 100%)">
+                <div class="relative overflow-hidden border border-brandGold/[0.14] p-7 gs-reveal"
+                    style="background:linear-gradient(145deg,#0E1420 0%,#060A10 100%);transition-delay:.2s">
                     <div class="absolute -bottom-14 -right-14 w-40 h-40 border border-brandGold/[0.08] rotate-45 pointer-events-none"
                         aria-hidden="true"></div>
                     <div class="absolute -bottom-24 -right-24 w-60 h-60 border border-brandGold/[0.04] rotate-45 pointer-events-none"
@@ -1694,9 +1871,9 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ INSIGHTS -->
+    <!-- ══ INSIGHTS ══ -->
     <section id="insights" class="py-32 px-8 md:px-16 bg-[#030507] border-t border-white/[0.04] scroll-mt-20">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-16 reveal">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-16 gs-reveal">
             <div>
                 <div class="section-label mb-4">Research &amp; Views</div>
                 <h2 class="section-h2">Latest<br><em class="gold-text not-italic">Insights.</em></h2>
@@ -1706,7 +1883,7 @@
                 Insights →</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <article class="insight-card reveal reveal-delay-1">
+            <article class="insight-card gs-reveal" style="transition-delay:.05s">
                 <div class="img-wrap w-full aspect-[16/9] overflow-hidden">
                     <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600"
                         alt="Global Macro insight — satellite view of Earth"
@@ -1724,7 +1901,7 @@
                     <span class="link-gold text-[9px] uppercase tracking-[.14em] text-brandGold">Read Insight →</span>
                 </div>
             </article>
-            <article class="insight-card reveal reveal-delay-2">
+            <article class="insight-card gs-reveal" style="transition-delay:.1s">
                 <div class="img-wrap w-full aspect-[16/9] overflow-hidden">
                     <img src="https://images.unsplash.com/photo-1542362567-b07eac790931?auto=format&fit=crop&q=80&w=600"
                         alt="African Markets insight — aerial city view"
@@ -1742,7 +1919,7 @@
                     <span class="link-gold text-[9px] uppercase tracking-[.14em] text-brandGold">Read Insight →</span>
                 </div>
             </article>
-            <article class="insight-card reveal reveal-delay-3">
+            <article class="insight-card gs-reveal" style="transition-delay:.15s">
                 <div class="img-wrap w-full aspect-[16/9] overflow-hidden">
                     <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=600"
                         alt="Macro insight — financial data abstract"
@@ -1763,16 +1940,16 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ CONTACT STRIP -->
+    <!-- ══ CONTACT STRIP ══ -->
     <section class="py-20 px-8 md:px-16 bg-[#060A0F] border-t border-white/[0.04]">
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="reach-card reveal">
+            <div class="reach-card gs-reveal">
                 <div class="section-label mb-3 text-[7.5px]">Nairobi, Kenya</div>
                 <h3 class="text-lg font-serif text-white font-normal uppercase mb-2 tracking-wide">East Africa Hub</h3>
                 <a href="mailto:atikabryan@gmail.com"
                     class="text-[12px] text-gray-500 hover:text-brandGold transition-colors font-light">atikabryan@gmail.com</a>
             </div>
-            <div class="reach-card reveal reveal-delay-1">
+            <div class="reach-card gs-reveal" style="transition-delay:.1s">
                 <div class="section-label mb-3 text-[7.5px]">Dubai, UAE</div>
                 <h3 class="text-lg font-serif text-white font-normal uppercase mb-2 tracking-wide">MENA Hub</h3>
                 <a href="mailto:atikabryan@gmail.com"
@@ -1781,7 +1958,7 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════════════════════════ FOOTER -->
+    <!-- ══ FOOTER ══ -->
     <footer class="bg-[#020407] text-gray-500 text-xs py-16 px-8 md:px-16 border-t border-white/[0.05]"
         role="contentinfo">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
@@ -1852,7 +2029,7 @@
         </div>
     </footer>
 
-    <!-- ══════════════════════════════════════════════ MODAL: LOGIN -->
+    <!-- ══ MODAL: LOGIN ══ -->
     <div id="loginModal" role="dialog" aria-modal="true" aria-label="Investor login"
         class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#030507]/96 backdrop-blur-xl opacity-0 invisible">
         <div class="bg-[#080C14] border border-brandGold/20 p-8 max-w-md w-full relative"
@@ -1891,15 +2068,14 @@
                     <p class="text-[9.5px] font-mono text-gray-500 uppercase tracking-wider mb-2.5">New Allocator or
                         Institutional Partner?</p>
                     <button type="button" onclick="toggleIntakeForm(true)"
-                        class="w-full border border-white/[0.08] hover:border-brandGold text-gray-300 font-mono text-[9.5px] tracking-widest py-2.5 uppercase transition duration-300 cursor-pointer">
-                        Request Terminal Access
-                    </button>
+                        class="w-full border border-white/[0.08] hover:border-brandGold text-gray-300 font-mono text-[9.5px] tracking-widest py-2.5 uppercase transition duration-300 cursor-pointer">Request
+                        Terminal Access</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ MODAL: INTAKE -->
+    <!-- ══ MODAL: INTAKE ══ -->
     <div id="intakeModal" role="dialog" aria-modal="true" aria-label="Request investor access"
         class="fixed inset-0 z-50 flex items-center justify-center bg-[#030507]/96 backdrop-blur-md opacity-0 invisible transition-all duration-500 ease-in-out p-4">
         <div class="bg-brandCard border border-white/[0.09] max-w-sm w-full p-6 md:p-8 relative">
@@ -1937,26 +2113,299 @@
                         class="w-full bg-brandDark border border-white/[0.08] text-white px-3 py-2.5 focus:outline-none focus:border-brandGold transition">
                 </div>
                 <button type="submit"
-                    class="w-full bg-brandGold text-brandDark font-semibold text-[9px] tracking-widest py-3 uppercase hover:bg-white transition duration-300 mt-2 cursor-pointer">
-                    Transmit Request →
-                </button>
+                    class="w-full bg-brandGold text-brandDark font-semibold text-[9px] tracking-widest py-3 uppercase hover:bg-white transition duration-300 mt-2 cursor-pointer">Transmit
+                    Request →</button>
             </form>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ── Hero particle canvas
+            // ══════════════════════════════════════════════
+            // PAGE LOADER
+            // ══════════════════════════════════════════════
+            (function () {
+                const loader = document.getElementById('page-loader');
+                const bar = document.getElementById('loader-bar');
+                const pct = document.getElementById('loader-pct');
+                const logo = document.getElementById('loader-logo');
+
+                // Animate logo in
+                setTimeout(() => {
+                    logo.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    logo.style.opacity = '1';
+                    logo.style.transform = 'translateY(0)';
+                }, 100);
+
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 18 + 4;
+                    if (progress > 100) progress = 100;
+                    bar.style.width = progress + '%';
+                    pct.textContent = Math.round(progress) + '%';
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            loader.style.transition = 'opacity 0.7s ease';
+                            loader.style.opacity = '0';
+                            setTimeout(() => { loader.style.display = 'none'; }, 700);
+                        }, 300);
+                    }
+                }, 60);
+            })();
+
+        // ══════════════════════════════════════════════
+        // GSAP SETUP
+        // ══════════════════════════════════════════════
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ── Scroll progress bar ──
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            document.getElementById('scroll-progress').style.width = (scrolled / maxScroll * 100) + '%';
+        }, { passive: true });
+
+        // ── Cursor spotlight ──
+        const spotlight = document.getElementById('cursor-spotlight');
+        let spotlightVisible = false;
+        document.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+            if (!spotlightVisible) {
+                spotlight.style.opacity = '1';
+                spotlightVisible = true;
+            }
+        });
+        document.addEventListener('mouseleave', () => { spotlight.style.opacity = '0'; spotlightVisible = false; });
+
+        // ── GSAP ScrollTrigger for section reveals ──
+        document.querySelectorAll('.gs-reveal').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 88%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        document.querySelectorAll('.gs-reveal-left').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        document.querySelectorAll('.gs-reveal-right').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        document.querySelectorAll('.gs-reveal-scale').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.85,
+                ease: 'back.out(1.4)',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // ── Hero stat counters (GSAP) ──
+        function animateCounter(el) {
+            const target = +el.dataset.target;
+            const suffix = el.dataset.suffix || '';
+            const obj = { val: 0 };
+            gsap.to(obj, {
+                val: target,
+                duration: 1.8,
+                ease: 'power2.out',
+                onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; }
+            });
+        }
+
+        // Trigger stats on scroll
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    animateCounter(e.target);
+                    statObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        ['stat-return', 'stat-strats', 'stat-hubs'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) statObserver.observe(el);
+        });
+
+        // ── Performance section metrics (GSAP) ──
+        document.querySelectorAll('.perf-metric').forEach(el => {
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+                onEnter: () => {
+                    const target = +el.dataset.target;
+                    const prefix = el.dataset.prefix || '';
+                    const suffix = el.dataset.suffix || '';
+                    const decimal = el.dataset.decimal ? +el.dataset.decimal : 0;
+                    const divisor = Math.pow(10, decimal);
+                    const obj = { val: 0 };
+                    gsap.to(obj, {
+                        val: target,
+                        duration: 1.6,
+                        ease: 'power2.out',
+                        onUpdate: () => {
+                            const v = obj.val / divisor;
+                            el.textContent = prefix + v.toFixed(decimal) + suffix;
+                        }
+                    });
+                }
+            });
+        });
+
+        // ── Performance chart line animation ──
+        ScrollTrigger.create({
+            trigger: '#perf-svg',
+            start: 'top 80%',
+            once: true,
+            onEnter: () => {
+                document.getElementById('perf-line').classList.add('animate');
+                // Also animate risk arc
+                const arc = document.getElementById('risk-arc');
+                if (arc) {
+                    gsap.to({}, {
+                        duration: 1.8,
+                        ease: 'power2.out',
+                        onUpdate: function () {
+                            const p = this.progress();
+                            arc.setAttribute('stroke-dasharray', (82 * p) + ',100');
+                        }
+                    });
+                }
+            }
+        });
+
+        // ── 3D Tilt on pillar cards ──
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const dx = (e.clientX - cx) / (rect.width / 2);
+                const dy = (e.clientY - cy) / (rect.height / 2);
+                gsap.to(card, {
+                    rotateX: -dy * 6,
+                    rotateY: dx * 6,
+                    transformPerspective: 800,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+            });
+        });
+
+        // ── Staggered strategy card entrance ──
+        ScrollTrigger.create({
+            trigger: '.strategy-grid',
+            start: 'top 80%',
+            once: true,
+            onEnter: () => {
+                gsap.fromTo('.strat-card', {
+                    opacity: 0,
+                    y: 30
+                }, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    stagger: 0.08,
+                    ease: 'power3.out'
+                });
+            }
+        });
+
+        // ── Parallax on hero right image ──
+        ScrollTrigger.create({
+            trigger: '#hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+            onUpdate: (self) => {
+                const img = document.getElementById('hero-img');
+                if (img) img.style.transform = `translateY(${self.progress * 40}px)`;
+                const bg = document.getElementById('parallax-bg');
+                if (bg) bg.style.transform = `translateY(${self.progress * 20}px)`;
+            }
+        });
+
+        // ── Magnetic hover on CTA buttons ──
+        document.querySelectorAll('.academy-btn, .terminal-cta-btn, .btn-gold').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const dx = (e.clientX - cx) * 0.12;
+                const dy = (e.clientY - cy) * 0.12;
+                gsap.to(btn, { x: dx, y: dy, duration: 0.3, ease: 'power2.out' });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+            });
+        });
+
+        // ── Hero canvas ──
         const hCanvas = document.getElementById('hero-canvas'), hCtx = hCanvas.getContext('2d');
         let particles = [];
         const GOLD = 'rgba(201,169,110,';
         function resizeHero() { hCanvas.width = hCanvas.offsetWidth; hCanvas.height = hCanvas.offsetHeight; }
         resizeHero();
         window.addEventListener('resize', resizeHero);
-        for (let i = 0; i < 55; i++) particles.push({ x: Math.random() * hCanvas.width, y: Math.random() * hCanvas.height, vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28, r: Math.random() * 1.4 + .4 });
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; }, { passive: true });
+        for (let i = 0; i < 65; i++) particles.push({
+            x: Math.random() * hCanvas.width, y: Math.random() * hCanvas.height,
+            vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
+            r: Math.random() * 1.6 + .4
+        });
         function drawHero() {
             hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
             particles.forEach(p => {
+                // Subtle mouse repulsion
+                const dx = p.x - mouseX, dy = p.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120) {
+                    p.vx += (dx / dist) * 0.015;
+                    p.vy += (dy / dist) * 0.015;
+                }
+                p.vx *= 0.995; p.vy *= 0.995;
                 p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > hCanvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > hCanvas.height) p.vy *= -1;
@@ -1965,13 +2414,16 @@
             });
             for (let i = 0; i < particles.length; i++) for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, d = Math.sqrt(dx * dx + dy * dy);
-                if (d < 115) { hCtx.beginPath(); hCtx.moveTo(particles[i].x, particles[i].y); hCtx.lineTo(particles[j].x, particles[j].y); hCtx.strokeStyle = GOLD + (0.11 * (1 - d / 115)) + ')'; hCtx.lineWidth = .5; hCtx.stroke(); }
+                if (d < 115) {
+                    hCtx.beginPath(); hCtx.moveTo(particles[i].x, particles[i].y); hCtx.lineTo(particles[j].x, particles[j].y);
+                    hCtx.strokeStyle = GOLD + (0.11 * (1 - d / 115)) + ')'; hCtx.lineWidth = .5; hCtx.stroke();
+                }
             }
             requestAnimationFrame(drawHero);
         }
         drawHero();
 
-        // ── Ticker
+        // ── Ticker ──
         const tickerData = [
             { sym: 'SBUX', val: '+2.4%', up: true }, { sym: 'MSFT', val: '+1.1%', up: true },
             { sym: 'AAPL', val: '−0.3%', up: false }, { sym: 'NSE:EABL', val: '+3.8%', up: true },
@@ -1984,29 +2436,7 @@
         const makeItems = () => tickerData.map(t => `<div class="ticker-item"><span style="color:rgba(255,255,255,.4)">${t.sym}</span><span class="${t.up ? 'up' : 'down'}">${t.val}</span></div>`).join('');
         track.innerHTML = makeItems() + makeItems();
 
-        // ── Scroll reveal
-        const ro = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: .1 });
-        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
-
-        // ── Counter animation
-        const co = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (!e.isIntersecting) return;
-                const el = e.target, target = +el.dataset.target, suffix = el.dataset.suffix || '';
-                let s = 0; const step = target / 40;
-                const iv = setInterval(() => { s = Math.min(s + step, target); el.textContent = Math.round(s) + suffix; if (s >= target) clearInterval(iv); }, 40);
-                co.unobserve(el);
-            });
-        }, { threshold: .5 });
-        document.querySelectorAll('.counter').forEach(c => co.observe(c));
-
-        // ── Performance chart animation
-        const po = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) { document.getElementById('perf-line').classList.add('animate'); po.disconnect(); }
-        }, { threshold: .3 });
-        po.observe(document.getElementById('perf-svg'));
-
-        // ── Nav scroll + active link
+        // ── Nav scroll + active link ──
         const nav = document.getElementById('main-nav');
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
@@ -2022,28 +2452,21 @@
             });
         }, { passive: true });
 
-        // ── Mobile menu
+        // ── Mobile menu ──
         const hamBtn = document.getElementById('ham-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         function openMobileMenu() {
-            hamBtn.classList.add('open');
-            mobileMenu.classList.add('open');
-            hamBtn.setAttribute('aria-expanded', 'true');
-            document.body.style.overflow = 'hidden';
+            hamBtn.classList.add('open'); mobileMenu.classList.add('open');
+            hamBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden';
         }
         function closeMobileMenu() {
-            hamBtn.classList.remove('open');
-            mobileMenu.classList.remove('open');
-            hamBtn.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
+            hamBtn.classList.remove('open'); mobileMenu.classList.remove('open');
+            hamBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = '';
         }
-        hamBtn.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('open')) closeMobileMenu(); else openMobileMenu();
-        });
-        // Close on Escape
+        hamBtn.addEventListener('click', () => { mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMobileMenu(); toggleModal(false); toggleIntakeForm(false); } });
 
-        // ── Live BTC/ETH feed
+        // ── Live BTC/ETH feed ──
         (function () {
             try {
                 const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker/ethusdt@ticker");
@@ -2052,19 +2475,22 @@
                     if (d.s === 'BTCUSDT') {
                         const p = parseFloat(d.c), pct = parseFloat(d.P);
                         const el = document.getElementById('prev-btc'), ec = document.getElementById('prev-btc-c');
-                        if (el) el.textContent = '$' + p.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                        if (el) { el.textContent = '$' + p.toLocaleString(undefined, { minimumFractionDigits: 2 }); gsap.fromTo(el, { color: '#4ade80' }, { color: '#e8eaf0', duration: 1 }); }
                         if (ec) { ec.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%'; ec.className = pct >= 0 ? 't-pos' : 't-neg'; }
                     }
                     if (d.s === 'ETHUSDT') {
                         const el = document.getElementById('prev-eth');
-                        if (el) el.textContent = '$' + parseFloat(d.c).toLocaleString(undefined, { minimumFractionDigits: 2 });
+                        if (el) { el.textContent = '$' + parseFloat(d.c).toLocaleString(undefined, { minimumFractionDigits: 2 }); gsap.fromTo(el, { color: '#4ade80' }, { color: '#e8eaf0', duration: 1 }); }
                     }
                 };
             } catch (e) { }
-            setInterval(() => { const a = document.getElementById('prev-alpha'); if (a) a.textContent = (34.2 + (Math.random() - .5) * 1.5).toFixed(1) + '%'; }, 2000);
+            setInterval(() => {
+                const a = document.getElementById('prev-alpha');
+                if (a) { a.textContent = (34.2 + (Math.random() - .5) * 1.5).toFixed(1) + '%'; gsap.fromTo(a, { opacity: 0.4 }, { opacity: 1, duration: 0.4 }); }
+            }, 2000);
         })();
 
-        // ── Network canvas
+        // ── Network canvas ──
         (function () {
             const canvas = document.getElementById('globalNetworkCanvas'), ctx = canvas.getContext('2d');
             let width = 0, height = 0;
@@ -2148,17 +2574,20 @@
             setTimeout(() => { resizeNet(); loop(); }, 50);
         })();
 
-        // ── Supabase + Auth
+        // ── Supabase + Auth ──
         const SUPABASE_URL = "https://prxlshwbirmtajtworzc.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByeGxzaHdiaXJtdGFqdHdvcnpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NTQ2NTMsImV4cCI6MjA5NTIzMDY1M30.cGo1u2RcFqpNgCf_npFUIHoXEAuU27gEZWB_NYLGv10";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         function toggleModal(show) {
             const modal = document.getElementById('loginModal');
-            modal.classList.toggle('opacity-0', !show);
-            modal.classList.toggle('invisible', !show);
+            if (show) {
+                modal.classList.remove('opacity-0', 'invisible');
+                gsap.fromTo(modal.querySelector('div'), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' });
+            } else {
+                gsap.to(modal.querySelector('div'), { y: 10, opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: () => { modal.classList.add('opacity-0', 'invisible'); } });
+            }
             document.body.classList.toggle('overflow-hidden', show);
-            if (show) { setTimeout(() => modal.querySelector('input'), 100); }
         }
 
         async function handleLogin(e) {
@@ -2192,8 +2621,9 @@
             if (show) {
                 if (lm) lm.classList.add('opacity-0', 'invisible');
                 im.classList.remove('opacity-0', 'invisible');
+                gsap.fromTo(im.querySelector('div'), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power3.out' });
             } else {
-                im.classList.add('opacity-0', 'invisible');
+                gsap.to(im.querySelector('div'), { y: 8, opacity: 0, duration: 0.25, ease: 'power2.in', onComplete: () => { im.classList.add('opacity-0', 'invisible'); } });
             }
         }
 
