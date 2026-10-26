@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-terminal-bg text-terminal-text font-sans antialiased selection:bg-terminal-gold/30 selection:text-terminal-gold;
+    }
+}
+
+/* Custom scrollbar for dense financial tables */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0A0B0E;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1E222D;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2E364F;
+}
