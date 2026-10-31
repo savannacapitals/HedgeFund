@@ -1,18 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const supabase = useMemo(() => createClient(), []);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
+    const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Authentication flow will connect to Supabase client here
-        setTimeout(() => setLoading(false), 1000);
+        setError(null);
+        setNotice(null);
+        setNeedsConfirmation(false);
+
+        try {
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email: email.trim(),
+                password,
+            });
+
+            if (signInError) {
+                const msg = signInError.message.toLowerCase();
+                if (msg.includes("email not confirmed")) {
+                    setNeedsConfirmation(true);
+                    setError("Please confirm your email address first. Check your inbox for the confirmation link.");
+                } else if (msg.includes("invalid login credentials")) {
+                    setError("Incorrect email or password.");
+                } else {
+                    setError(signInError.message);
+                }
+                setLoading(false);
+                return;
+            }
+
+            // Signed in: go to the dashboard and refresh so server pages see the new session
+            router.push("/dashboard");
+            router.refresh();
+        } catch (err: any) {
+            console.error("Sign-in failed:", err);
+            setError("Could not reach the sign-in service. Check your connection and try again.");
+            setLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        setError(null);
+        const { error: resendError } = await supabase.auth.resend({ type: "signup", email: email.trim() });
+        if (resendError) setError(resendError.message);
+        else setNotice("Confirmation email sent. Check your inbox (and spam folder).");
     };
 
     return (
@@ -24,12 +69,29 @@ export default function LoginPage() {
                     <p className="text-xs text-terminal-muted mt-2">Access your research subscriptions and academy portal</p>
                 </div>
 
+                {error && (
+                    <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
+                        {error}
+                        {needsConfirmation && (
+                            <button type="button" onClick={handleResend} className="block mt-2 text-terminal-gold hover:underline">
+                                Resend confirmation email
+                            </button>
+                        )}
+                    </div>
+                )}
+                {notice && (
+                    <div className="mb-4 p-3 rounded bg-terminal-emerald/10 border border-terminal-emerald/30 text-terminal-emerald text-xs font-mono">
+                        {notice}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                         <label className="block text-xs font-mono text-terminal-muted mb-2">EMAIL ADDRESS</label>
                         <input
                             type="email"
                             required
+                            autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="analyst@institution.com"
@@ -47,6 +109,7 @@ export default function LoginPage() {
                         <input
                             type="password"
                             required
+                            autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••••••"

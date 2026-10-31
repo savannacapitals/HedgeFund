@@ -10,6 +10,7 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
@@ -18,6 +19,7 @@ export default function RegisterPage() {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setNotice(null);
 
         try {
             const { data, error: signUpError } = await supabase.auth.signUp({
@@ -36,7 +38,14 @@ export default function RegisterPage() {
                 return;
             }
 
-            // Successfully registered and logged in — redirect to dashboard
+            // With email confirmation switched on, there is no session until the link is clicked
+            if (!data.session) {
+                setNotice("Account created. Check your email and click the confirmation link, then sign in.");
+                setLoading(false);
+                return;
+            }
+
+            // Registered and signed in: go to the dashboard
             router.push("/dashboard");
             router.refresh();
         } catch (err: any) {
@@ -57,6 +66,12 @@ export default function RegisterPage() {
                 {error && (
                     <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
                         {error}
+                    </div>
+                )}
+
+                {notice && (
+                    <div className="mb-4 p-3 rounded bg-terminal-emerald/10 border border-terminal-emerald/30 text-terminal-emerald text-xs font-mono">
+                        {notice}
                     </div>
                 )}
 

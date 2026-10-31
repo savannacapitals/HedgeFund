@@ -21,6 +21,7 @@ export default function DashboardPage() {
 
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<CourseProgress[]>([]);
+    const [role, setRole] = useState<string>("");
 
     useEffect(() => {
         async function load() {
@@ -31,6 +32,13 @@ export default function DashboardPage() {
                 router.push("/login");
                 return;
             }
+
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .maybeSingle();
+            setRole(profile?.role || "");
 
             const { data: enrolments } = await supabase
                 .from("course_enrolments")
@@ -102,7 +110,12 @@ export default function DashboardPage() {
     }, [supabase, router]);
 
     const inProgress = courses.filter((c) => c.percent < 100).length;
+    const completedCourses = courses.filter((c) => c.total > 0 && c.percent === 100).length;
     const certificateCount = courses.filter((c) => c.certificateCode).length;
+    const totalLessons = courses.reduce((n, c) => n + c.total, 0);
+    const doneLessons = courses.reduce((n, c) => n + c.done, 0);
+    const overallPercent = totalLessons ? Math.round((doneLessons / totalLessons) * 100) : 0;
+    const isStaff = role === "editor" || role === "administrator";
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
@@ -118,8 +131,13 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center space-x-3 text-xs font-mono">
+                    {isStaff && (
+                        <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
+                            ACADEMY ADMIN
+                        </Link>
+                    )}
                     <span className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-muted">
-                        STATUS: <span className="text-terminal-emerald font-bold">ACTIVE SUBSCRIBER</span>
+                        ACCOUNT: <span className="text-terminal-emerald font-bold">{loading ? "..." : (role || "member").replace("_", " ").toUpperCase()}</span>
                     </span>
                 </div>
             </div>
@@ -130,20 +148,24 @@ export default function DashboardPage() {
                     <span className="text-xs font-mono text-terminal-muted block mb-1">ENROLLED COURSES</span>
                     <span className="text-3xl font-bold font-mono text-terminal-text">{loading ? "–" : courses.length}</span>
                     <span className="text-xs font-mono text-terminal-emerald block mt-2">
-                        {loading ? "Loading..." : `${inProgress} in progress · ${certificateCount} certificate${certificateCount === 1 ? "" : "s"}`}
+                        {loading ? "Loading..." : courses.length === 0 ? "Not enrolled yet" : `${inProgress} in progress`}
                     </span>
                 </div>
 
                 <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">RESEARCH SUBSCRIPTION</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-gold">PASSPORT</span>
-                    <span className="text-xs font-mono text-terminal-muted block mt-2">Renews Nov 2026</span>
+                    <span className="text-xs font-mono text-terminal-muted block mb-1">LESSONS COMPLETED</span>
+                    <span className="text-3xl font-bold font-mono text-terminal-gold">{loading ? "–" : `${doneLessons}/${totalLessons}`}</span>
+                    <span className="text-xs font-mono text-terminal-muted block mt-2">
+                        {loading ? "Loading..." : totalLessons === 0 ? "Enrol in a course to begin" : `${overallPercent}% across your courses`}
+                    </span>
                 </div>
 
                 <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">PAPER TRADING EQUITY</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">$10,000.00</span>
-                    <span className="text-xs font-mono text-terminal-emerald block mt-2">+2.4% Simulated Return</span>
+                    <span className="text-xs font-mono text-terminal-muted block mb-1">CERTIFICATES EARNED</span>
+                    <span className="text-3xl font-bold font-mono text-terminal-text">{loading ? "–" : certificateCount}</span>
+                    <span className="text-xs font-mono text-terminal-emerald block mt-2">
+                        {loading ? "Loading..." : `${completedCourses} course${completedCourses === 1 ? "" : "s"} completed`}
+                    </span>
                 </div>
             </div>
 
@@ -207,7 +229,7 @@ export default function DashboardPage() {
 
                 {/* Quick Tools & Shortcuts */}
                 <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <h2 className="text-lg font-bold text-terminal-text mb-4">Quantitative Workflows</h2>
+                    <h2 className="text-lg font-bold text-terminal-text mb-4">Quantitative Workflows <span className="text-xs font-mono text-terminal-muted">(preview)</span></h2>
 
                     <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                         <Link
@@ -216,7 +238,7 @@ export default function DashboardPage() {
                         >
                             <span className="text-terminal-gold text-lg block mb-1">📊</span>
                             <span className="text-terminal-text font-bold block">Asset Watchlist</span>
-                            <span className="text-terminal-muted text-[10px]">Track Regional Yields & Equities</span>
+                            <span className="text-terminal-muted text-[10px]">Sample preview · not live data</span>
                         </Link>
 
                         <Link
@@ -225,7 +247,7 @@ export default function DashboardPage() {
                         >
                             <span className="text-terminal-gold text-lg block mb-1">📓</span>
                             <span className="text-terminal-text font-bold block">Trading Journal</span>
-                            <span className="text-terminal-muted text-[10px]">Paper Trading Log & Metrics</span>
+                            <span className="text-terminal-muted text-[10px]">Sample preview · not your trades</span>
                         </Link>
                     </div>
                 </div>
