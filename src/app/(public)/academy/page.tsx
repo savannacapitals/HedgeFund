@@ -122,8 +122,8 @@ export default function AcademyCataloguePage() {
                                 <p className="text-xs text-terminal-muted line-clamp-3 mb-6 leading-relaxed">{course.description}</p>
                             </div>
                             <div className="flex justify-between items-center pt-4 border-t border-terminal-border/50">
-                                <span className="font-mono text-xs text-terminal-muted">{course.duration_hours || "Self-paced"}</span>
-                                <span className="font-mono font-bold text-terminal-gold">${course.price_usd || 40}</span>
+                                <span className="font-mono text-xs text-terminal-muted">{course.duration_hours ? `${course.duration_hours} hrs` : "Self-paced"}</span>
+                                <span className="font-mono font-bold text-terminal-gold">{Number(course.price) === 0 ? "FREE" : `$${Number(course.price)}`}</span>
                             </div>
                         </Link>
                     ))}

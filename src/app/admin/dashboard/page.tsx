@@ -51,6 +51,9 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center space-x-3 text-xs font-mono">
+                    <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
+                        ACADEMY ADMIN
+                    </Link>
                     <span className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-gold font-bold">
                         ROLE: ADMINISTRATOR
                     </span>

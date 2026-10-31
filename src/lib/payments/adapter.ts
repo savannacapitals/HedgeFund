@@ -48,7 +48,8 @@ export class MockCryptoPaymentAdapter implements ICryptoPaymentAdapter {
     }
 
     verifyWebhookSignature(rawBody: string, signature: string): boolean {
-        // In sandbox, verify mock signature header
+        // The sandbox adapter must never accept webhooks in production.
+        if (process.env.NODE_ENV === "production") return false;
         return signature === "mock_secure_signature_hash";
     }
 

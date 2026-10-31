@@ -13,6 +13,7 @@ export default function CheckoutPage() {
     const [order, setOrder] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const supabase = createClient();
 
@@ -21,12 +22,12 @@ export default function CheckoutPage() {
             if (!orderId) return;
             setLoading(true);
 
-            // Fetch order and associated details
+            // Row-level security only returns orders that belong to the signed-in user
             const { data, error } = await supabase
                 .from("orders")
                 .select("*, courses(*)")
                 .eq("id", orderId)
-                .single();
+                .maybeSingle();
 
             if (error || !data) {
                 console.error("Order not found:", error);
@@ -39,29 +40,22 @@ export default function CheckoutPage() {
         fetchOrder();
     }, [orderId, supabase]);
 
-    const handleSimulatedPayment = async () => {
+    // The browser only asks the server to complete the payment.
+    // Marking the order paid and granting access happens on the server.
+    const handlePay = async () => {
         setProcessing(true);
+        setErrorMessage("");
         try {
-            // Simulate successful payment confirmation and enrolment grant
-            const { error: updateError } = await supabase
-                .from("orders")
-                .update({ status: "paid" })
-                .eq("id", order.id);
-
-            if (updateError) throw updateError;
-
-            // Grant course enrolment
-            await supabase.from("course_enrolments").insert({
-                user_id: order.user_id,
-                course_id: order.course_id,
-                order_id: order.id,
-                status: "active"
+            const res = await fetch("/api/payments/sandbox-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId: order.id }),
             });
-
-            router.push(`/academy/courses/${order.courses?.slug}/lessons`);
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.error || "Payment failed.");
+            router.push(result.redirectTo);
         } catch (err: any) {
-            alert("Payment error: " + err.message);
-        } finally {
+            setErrorMessage(err.message);
             setProcessing(false);
         }
     };
@@ -86,6 +80,35 @@ export default function CheckoutPage() {
         );
     }
 
+    const total = Number(order.total_amount).toFixed(2);
+
+    if (order.status === "confirmed") {
+        return (
+            <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-24 max-w-xl mx-auto text-center">
+                <h1 className="text-2xl font-bold mb-2">Payment Received</h1>
+                <p className="text-terminal-muted text-xs mb-6 font-mono">This order has already been paid. Your course access is active.</p>
+                <Link
+                    href={`/learn/${order.courses?.slug}/lessons`}
+                    className="px-4 py-2 rounded bg-terminal-gold text-terminal-bg text-xs font-mono font-bold"
+                >
+                    Go to Course
+                </Link>
+            </div>
+        );
+    }
+
+    if (order.status !== "pending") {
+        return (
+            <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-24 max-w-xl mx-auto text-center">
+                <h1 className="text-2xl font-bold mb-2">Order Unavailable</h1>
+                <p className="text-terminal-muted text-xs mb-6 font-mono">This order can no longer be paid. Please start a new enrolment.</p>
+                <Link href="/academy" className="px-4 py-2 rounded bg-terminal-gold text-terminal-bg text-xs font-mono font-bold">
+                    Return to Academy Catalogue
+                </Link>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-12 max-w-3xl mx-auto">
             <div className="mb-8 border-b border-terminal-border pb-6">
@@ -99,7 +122,7 @@ export default function CheckoutPage() {
                         <h2 className="font-bold text-sm">Order Summary</h2>
                         <div className="flex justify-between items-center text-xs font-mono text-terminal-muted border-b border-terminal-border/40 pb-3">
                             <span>{order.courses?.title || "Academy Course Access"}</span>
-                            <span className="text-terminal-text font-bold">${order.amount_usd || 40}.00</span>
+                            <span className="text-terminal-text font-bold">${total}</span>
                         </div>
                         <div className="flex justify-between items-center text-xs font-mono text-terminal-muted">
                             <span>Tax / Processing Fee</span>
@@ -107,7 +130,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex justify-between items-center text-sm font-mono font-bold text-terminal-gold pt-3 border-t border-terminal-border">
                             <span>Total Payable</span>
-                            <span>${order.amount_usd || 40}.00 USD</span>
+                            <span>${total} {order.currency}</span>
                         </div>
                     </div>
 
@@ -132,12 +155,15 @@ export default function CheckoutPage() {
                         <p className="text-xs text-terminal-muted leading-relaxed">
                             Upon payment verification, your institutional access and lifetime course updates will be instantly provisioned.
                         </p>
+                        {errorMessage && (
+                            <p className="text-xs font-mono text-red-400">{errorMessage}</p>
+                        )}
                         <button
-                            onClick={handleSimulatedPayment}
+                            onClick={handlePay}
                             disabled={processing}
                             className="w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-xs font-mono tracking-wider hover:bg-terminal-gold/90 transition-colors disabled:opacity-50"
                         >
-                            {processing ? "PROCESSING..." : `PAY SECURELY ($${order.amount_usd || 40})`}
+                            {processing ? "PROCESSING..." : `PAY SECURELY ($${total})`}
                         </button>
                     </div>
                 </div>

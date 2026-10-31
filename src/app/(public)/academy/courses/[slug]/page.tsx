@@ -42,16 +42,28 @@ export default function CourseLandingPage() {
             }
 
             setCourse(courseData);
-
-            // 3. Fetch course modules & lessons
+            // 3. Fetch modules, then lessons from the safe curriculum view
             const { data: modulesData } = await supabase
                 .from("course_modules")
-                .select("*, course_lessons(*)")
+                .select("*")
                 .eq("course_id", courseData.id)
                 .order("order_index", { ascending: true });
 
-            if (modulesData) {
-                setModules(modulesData);
+            if (modulesData && modulesData.length > 0) {
+                const { data: lessonsData } = await supabase
+                    .from("course_curriculum")
+                    .select("*")
+                    .in("module_id", modulesData.map((m) => m.id))
+                    .order("order_index", { ascending: true });
+
+                setModules(
+                    modulesData.map((m) => ({
+                        ...m,
+                        course_lessons: (lessonsData ?? []).filter((l) => l.module_id === m.id),
+                    }))
+                );
+            } else {
+                setModules([]);
             }
 
             // 4. Check if user is enrolled
@@ -61,7 +73,7 @@ export default function CourseLandingPage() {
                     .select("*")
                     .eq("user_id", user.id)
                     .eq("course_id", courseData.id)
-                    .single();
+                    .maybeSingle();
 
                 if (enrolmentData) {
                     setIsEnrolled(true);
@@ -82,24 +94,19 @@ export default function CourseLandingPage() {
 
         setEnrolling(true);
         try {
-            // 1. Create a pending order for this course
-            const { data: orderData, error: orderError } = await supabase
-                .from("orders")
-                .insert({
-                    user_id: user.id,
-                    course_id: course.id,
-                    amount_usd: course.price_usd || 40,
-                    status: "pending"
-                })
-                .select()
-                .single();
+            // The server checks the price, creates the order and decides where to send the user
+            const res = await fetch("/api/academy/enrol", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ courseId: course.id }),
+            });
+            const result = await res.json();
 
-            if (orderError || !orderData) {
-                throw new Error(orderError?.message || "Failed to initialize order.");
+            if (!res.ok) {
+                throw new Error(result.error || "Failed to start enrolment.");
             }
 
-            // 2. Redirect to the secure checkout page with the order reference
-            router.push(`/checkout/${orderData.id}`);
+            router.push(result.redirectTo);
         } catch (err: any) {
             alert("Enrolment error: " + err.message);
             setEnrolling(false);
@@ -118,7 +125,7 @@ export default function CourseLandingPage() {
         return (
             <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-24 max-w-3xl mx-auto text-center">
                 <h1 className="text-2xl font-bold mb-2">Course Not Found</h1>
-                <p className="text-terminal-muted text-xs mb-6 font-mono">The requested institutional program does not exist or has been unlished.</p>
+                <p className="text-terminal-muted text-xs mb-6 font-mono">The requested institutional program does not exist or has been unpublished.</p>
                 <Link href="/academy" className="px-4 py-2 rounded bg-terminal-gold text-terminal-bg text-xs font-mono font-bold">
                     Return to Academy Catalogue
                 </Link>
@@ -142,8 +149,8 @@ export default function CourseLandingPage() {
                         <div className="flex items-center space-x-3 mb-4">
                             <span className="font-mono text-xs px-2.5 py-1 rounded bg-terminal-surface border border-terminal-border text-terminal-gold">
                                 {course.level || "Professional Level"}
-                            </span>
-                            <span className="font-mono text-xs text-terminal-muted">{course.duration_hours || "Self-Paced"}</span>
+                            </span><span className="font-mono text-xs text-terminal-muted">{course.duration_hours ? `${course.duration_hours} hrs` : "Self-Paced"}</span>
+
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">{course.title}</h1>
                         <p className="text-terminal-muted text-base leading-relaxed">{course.description}</p>
@@ -181,7 +188,7 @@ export default function CourseLandingPage() {
                     <div className="sticky top-6 p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-6">
                         <div className="flex justify-between items-center border-b border-terminal-border pb-4">
                             <span className="font-mono text-xs text-terminal-muted">PROGRAM TUITION</span>
-                            <span className="text-2xl font-mono font-bold text-terminal-gold">${course.price_usd || 40}</span>
+                            <span className="text-2xl font-mono font-bold text-terminal-gold">{Number(course.price) === 0 ? "FREE" : `$${Number(course.price)}`}</span>
                         </div>
 
                         <div className="space-y-3 text-xs font-mono text-terminal-muted">
@@ -212,7 +219,7 @@ export default function CourseLandingPage() {
                                 disabled={enrolling}
                                 className="w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-xs font-mono tracking-wider hover:bg-terminal-gold/90 transition-colors disabled:opacity-50"
                             >
-                                {enrolling ? "PROCESSING..." : `ENROL FOR $${course.price_usd || 40}`}
+                                {enrolling ? "PROCESSING..." : Number(course.price) === 0 ? "ENROL FREE" : `ENROL FOR $${Number(course.price)}`}
                             </button>
                         )}
                     </div>
