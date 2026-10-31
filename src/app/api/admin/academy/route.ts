@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { STAFF_ROLES } from "@/lib/auth/staff";
 
 /**
  * Academy content management. Every read and write for the admin screen goes through here.
  * Editors and administrators only. Deleting is limited to administrators.
  */
 
-const STAFF_ROLES = ["editor", "administrator"];
 const LEVELS = ["Beginner", "Intermediate", "Advanced"];
 const CONTENT_TYPES = ["video", "reading", "quiz", "assignment"];
 

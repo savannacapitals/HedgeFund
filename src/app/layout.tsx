@@ -2,47 +2,55 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-    subsets: ["latin"],
-    variable: "--font-inter",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-    subsets: ["latin"],
-    variable: "--font-jetbrains-mono",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
-    title: "Savanna Capitals — Institutional Financial Intelligence",
-    description: "African financial intelligence, quantitative research, and professional education academy.",
+    title: "Savanna Capitals | Financial Intelligence & Research",
+    description:
+        "Independent financial intelligence, African and global market research, and professional financial education.",
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+const navigation = [
+    { label: "Platform", href: "/#platform" },
+    { label: "Research", href: "/research" },
+    { label: "Academy", href: "/academy" },
+    { label: "About", href: "/#about" },
+];
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
-            <body className="min-h-screen flex flex-col bg-terminal-bg text-terminal-text">
-                <header className="border-b border-terminal-border bg-terminal-surface/50 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <span className="font-mono text-terminal-gold font-bold tracking-wider">SAVANNA CAPITALS</span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-terminal-border text-terminal-muted font-mono">TERMINAL v1.0</span>
-                    </div>
-                    <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-terminal-muted">
-                        <a href="/research" className="hover:text-terminal-text transition-colors">Research</a>
-                        <a href="/academy" className="hover:text-terminal-text transition-colors">Academy</a>
-                        <a href="/pricing" className="hover:text-terminal-text transition-colors">Pricing</a>
-                    </nav>
-                    <div className="flex items-center space-x-4">
-                        <a href="/login" className="text-sm text-terminal-muted hover:text-terminal-text transition-colors">Sign In</a>
-                        <a href="/register" className="text-sm bg-terminal-gold text-terminal-bg font-semibold px-4 py-2 rounded hover:bg-terminal-gold/90 transition-colors">Get Started</a>
+            <body className="min-h-screen flex flex-col">
+                <header className="site-header">
+                    <div className="header-inner">
+                        <a href="/" className="brand-lockup" aria-label="Savanna Capitals home">
+                            <span className="brand-mark"><i /><i /><i /></span>
+                            <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
+                        </a>
+                        <nav className="desktop-nav" aria-label="Main navigation">
+                            {navigation.map((item) => <a href={item.href} key={item.label}>{item.label}</a>)}
+                        </nav>
+                        <div className="header-actions">
+                            <a href="/login" className="sign-in-link">Sign in</a>
+                            <a href="/register" className="header-cta">Get started <span>↗</span></a>
+                        </div>
                     </div>
                 </header>
                 <main className="flex-1">{children}</main>
-                <footer className="border-t border-terminal-border bg-terminal-surface px-6 py-6 text-center text-xs text-terminal-muted font-mono">
-                    <p>© {new Date().getFullYear()} Savanna Capitals. All rights reserved. Research and educational platform.</p>
+                <footer className="site-footer">
+                    <div className="footer-main">
+                        <a href="/" className="brand-lockup">
+                            <span className="brand-mark"><i /><i /><i /></span>
+                            <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
+                        </a>
+                        <p>Independent thinking. African perspective. Global context.</p>
+                        <div className="footer-links"><a href="/research">Research</a><a href="/academy">Academy</a><a href="/contact">Contact</a></div>
+                    </div>
+                    <div className="footer-bottom">
+                        <span>© {new Date().getFullYear()} Savanna Capitals. All rights reserved.</span>
+                        <span>Research and education platform. Not investment advice.</span>
+                    </div>
                 </footer>
             </body>
         </html>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getStaffAccess } from "@/lib/auth/staff";
 
 interface AuditLogEntry {
     id: string;
@@ -36,7 +38,13 @@ const SAMPLE_AUDIT_LOGS: AuditLogEntry[] = [
     },
 ];
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+    // The admin layout already checks this; checking again here keeps the page safe
+    // even if it is ever moved out of /admin.
+    const access = await getStaffAccess();
+    if (access.status === "anonymous") redirect("/login");
+    if (access.status === "forbidden") redirect("/");
+
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
             {/* Admin Header */}
@@ -55,7 +63,7 @@ export default function AdminDashboardPage() {
                         ACADEMY ADMIN
                     </Link>
                     <span className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-gold font-bold">
-                        ROLE: ADMINISTRATOR
+                        ROLE: {(access.role || "").toUpperCase()}
                     </span>
                 </div>
             </div>
