@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <head>
                 <script dangerouslySetInnerHTML={{ __html: themeScript }} />
             </head>
-            <body className="min-h-screen min-h-dvh flex flex-col">
+            <body className="min-h-dvh flex flex-col">
                 <header className="site-header">
                     <div className="header-inner">
                         <a href="/" className="brand-lockup" aria-label="Savanna Capitals home">
