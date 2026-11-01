@@ -296,36 +296,36 @@ a {
 }
 
 .brand-mark {
-    width: 26px;
-    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 36px;
+}
+
+.brand-mark.is-centered {
     display: flex;
-    align-items: end;
-    gap: 3px;
-    padding: 3px;
-    border: 1px solid rgb(var(--sc-green-rgb) / .45);
-    border-radius: 7px;
-    transform: skewY(-8deg);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.brand-mark i {
+.brand-mark img {
     display: block;
-    width: 4px;
-    border-radius: 2px 2px 0 0;
-    background: var(--sc-green);
+    height: 100%;
+    width: auto;
 }
 
-.brand-mark i:nth-child(1) {
-    height: 9px;
-    opacity: .65;
+/* Bright gold on the dark theme, deeper gold on the light theme */
+.brand-mark .logo-light {
+    display: none;
 }
 
-.brand-mark i:nth-child(2) {
-    height: 15px;
-    opacity: .85;
+:root[data-theme="light"] .brand-mark .logo-dark {
+    display: none;
 }
 
-.brand-mark i:nth-child(3) {
-    height: 19px;
+:root[data-theme="light"] .brand-mark .logo-light {
+    display: block;
 }
 
 .brand-name {
@@ -1187,8 +1187,7 @@ a {
     }
 
     .brand-mark {
-        width: 23px;
-        height: 23px;
+        height: 30px;
     }
 
     .hero-section {

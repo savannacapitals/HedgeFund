@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import BrandMark from "@/components/BrandMark";
 
 export default function CertificatePage() {
     const params = useParams();
@@ -111,6 +112,7 @@ export default function CertificatePage() {
 
             {/* Light card so it prints cleanly on paper */}
             <div className="max-w-4xl mx-auto bg-[#FBF8F0] text-[#1A1A1A] border-8 border-double border-[#B8962E] p-10 md:p-16 text-center">
+                <BrandMark height={64} tone="light" centered className="mb-4" />
                 <p className="font-mono text-xs tracking-[0.3em] text-[#8A6D1B] uppercase">Savanna Academy</p>
                 <h1 className="text-3xl md:text-4xl font-bold mt-4 tracking-wide">Certificate of Completion</h1>
 

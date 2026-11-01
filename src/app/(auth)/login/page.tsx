@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import BrandMark from "@/components/BrandMark";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -43,23 +44,8 @@ export default function LoginPage() {
                 return;
             }
 
-            // Signed in. Staff (editors and administrators) land on the admin dashboard,
-            // everyone else on the member dashboard. If the lookup fails, fall back to the member one.
-            let destination = "/dashboard";
-            try {
-                const res = await fetch("/api/auth/landing", { cache: "no-store" });
-                if (res.ok) {
-                    const json = await res.json();
-                    if (typeof json.destination === "string" && json.destination.startsWith("/")) {
-                        destination = json.destination;
-                    }
-                }
-            } catch {
-                // keep the default
-            }
-
-            // Refresh so server pages see the new session
-            router.push(destination);
+            // Signed in: go to the dashboard and refresh so server pages see the new session
+            router.push("/dashboard");
             router.refresh();
         } catch (err: any) {
             console.error("Sign-in failed:", err);
@@ -79,6 +65,7 @@ export default function LoginPage() {
         <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-6 py-12">
             <div className="w-full max-w-md p-8 rounded-lg bg-terminal-surface border border-terminal-border">
                 <div className="text-center mb-8">
+                    <BrandMark height={72} centered className="mb-5" />
                     <span className="font-mono text-xs text-terminal-gold">TERMINAL ACCESS</span>
                     <h1 className="text-2xl font-bold text-terminal-text mt-1">Sign In to Savanna</h1>
                     <p className="text-xs text-terminal-muted mt-2">Access your research subscriptions and academy portal</p>

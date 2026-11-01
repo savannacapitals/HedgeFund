@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import BrandMark from "@/components/BrandMark";
 
 const POLL_EVERY_MS = 8000;
 
@@ -162,6 +163,7 @@ export default function CheckoutPage() {
 
     const shell = (title: string, text: string, action?: React.ReactNode) => (
         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-24 max-w-xl mx-auto text-center">
+            <BrandMark height={56} centered className="mb-6" />
             <h1 className="text-2xl font-bold mb-2">{title}</h1>
             <p className="text-terminal-muted text-xs mb-6 font-mono">{text}</p>
             {action}

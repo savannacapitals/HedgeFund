@@ -4,14 +4,27 @@ import "./globals.css";
 import AuthButtons from "@/components/AuthButtons";
 import ThemeToggle from "@/components/ThemeToggle";
 import MobileMenu from "@/components/MobileMenu";
+import BrandMark from "@/components/BrandMark";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
+// Needed so the social-preview image gets a full web address. Set NEXT_PUBLIC_SITE_URL to your live domain in hosting.
+function siteUrl(): URL {
+    try {
+        return new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+    } catch {
+        return new URL("http://localhost:3000");
+    }
+}
+
 export const metadata: Metadata = {
+    metadataBase: siteUrl(),
     title: "Savanna Capitals | Financial Intelligence & Research",
     description:
         "Independent financial intelligence, African and global market research, and professional financial education.",
+    openGraph: { siteName: "Savanna Capitals", type: "website" },
+    twitter: { card: "summary_large_image" },
 };
 
 // Tells the browser both themes are supported, so built-in controls, scrollbars and the
@@ -45,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <header className="site-header">
                     <div className="header-inner">
                         <a href="/" className="brand-lockup" aria-label="Savanna Capitals home">
-                            <span className="brand-mark"><i /><i /><i /></span>
+                            <BrandMark />
                             <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
                         </a>
                         <nav className="desktop-nav" aria-label="Main navigation">
@@ -62,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <footer className="site-footer">
                     <div className="footer-main">
                         <a href="/" className="brand-lockup">
-                            <span className="brand-mark"><i /><i /><i /></span>
+                            <BrandMark />
                             <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
                         </a>
                         <p>Independent thinking. African perspective. Global context.</p>
