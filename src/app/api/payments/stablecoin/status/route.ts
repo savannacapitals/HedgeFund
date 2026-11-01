@@ -36,11 +36,12 @@ export async function GET(request: Request) {
     const body: Record<string, unknown> = { status: payment!.status, paidNetwork: payment!.paid_network, paidToken: payment!.paid_token };
 
     if (payment!.status === "succeeded") {
-        const { data: order } = await admin.from("orders").select("course_id").eq("id", payment!.order_id).maybeSingle();
+        const { data: order } = await admin.from("orders").select("course_id, kind").eq("id", payment!.order_id).maybeSingle();
         const { data: course } = order?.course_id
             ? await admin.from("courses").select("slug").eq("id", order.course_id).maybeSingle()
             : { data: null };
-        body.redirectTo = course?.slug ? `/learn/${course.slug}/lessons` : "/dashboard";
+        body.redirectTo =
+            order?.kind === "community" ? "/community/killzone" : course?.slug ? `/learn/${course.slug}/lessons` : "/dashboard";
     }
 
     return NextResponse.json(body);

@@ -43,8 +43,23 @@ export default function LoginPage() {
                 return;
             }
 
-            // Signed in: go to the dashboard and refresh so server pages see the new session
-            router.push("/dashboard");
+            // Signed in. Staff (editors and administrators) land on the admin dashboard,
+            // everyone else on the member dashboard. If the lookup fails, fall back to the member one.
+            let destination = "/dashboard";
+            try {
+                const res = await fetch("/api/auth/landing", { cache: "no-store" });
+                if (res.ok) {
+                    const json = await res.json();
+                    if (typeof json.destination === "string" && json.destination.startsWith("/")) {
+                        destination = json.destination;
+                    }
+                }
+            } catch {
+                // keep the default
+            }
+
+            // Refresh so server pages see the new session
+            router.push(destination);
             router.refresh();
         } catch (err: any) {
             console.error("Sign-in failed:", err);

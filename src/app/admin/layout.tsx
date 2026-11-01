@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getStaffAccess } from "@/lib/auth/staff";
+import { ADMIN_AREA_ROLES } from "@/lib/auth/roles";
+import AdminNav from "@/components/admin/AdminNav";
 
 export const metadata: Metadata = {
     robots: { index: false, follow: false },
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 // Everything under /admin is for editors and administrators only.
 // This runs on the server before any admin page is sent to the browser.
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    const access = await getStaffAccess();
+    const access = await getStaffAccess(ADMIN_AREA_ROLES);
 
     if (access.status === "anonymous") {
         redirect("/login");
@@ -26,5 +28,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         );
     }
 
-    return <>{children}</>;
+    return (
+        <>
+            <AdminNav role={access.role} />
+            {children}
+        </>
+    );
 }

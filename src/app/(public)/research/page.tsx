@@ -1,11 +1,15 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+
+// Always show what is published right now
+export const dynamic = "force-dynamic";
 
 interface ResearchArticle {
     id: string;
     title: string;
     slug: string;
     summary: string;
-    category: "Macroeconomics" | "Fixed Income" | "Equities" | "Policy";
+    category: string;
     author: string;
     publishedAt: string;
     readTime: string;
@@ -54,7 +58,38 @@ const SAMPLE_ARTICLES: ResearchArticle[] = [
     },
 ];
 
-export default function ResearchLibraryPage() {
+async function getPublishedArticles(): Promise<ResearchArticle[]> {
+    try {
+        const supabase = await createClient();
+        // Row-level security only lets visitors read published articles
+        const { data, error } = await supabase
+            .from("research_articles")
+            .select("id, title, slug, summary, category, body, published_at")
+            .eq("status", "published")
+            .order("published_at", { ascending: false })
+            .limit(100);
+        if (error || !data) return [];
+        return data.map((a: any) => ({
+            id: a.id,
+            title: a.title,
+            slug: a.slug,
+            summary: a.summary || "",
+            category: a.category,
+            author: "Savanna Research",
+            publishedAt: (a.published_at || "").slice(0, 10),
+            readTime: `${Math.max(1, Math.round(String(a.body || "").split(/\s+/).length / 200))} min read`,
+        }));
+    } catch {
+        return [];
+    }
+}
+
+export default async function ResearchLibraryPage() {
+    // Articles published from /admin/content. Until the first one is published,
+    // the original sample reports stay on the page so it is never empty.
+    const published = await getPublishedArticles();
+    const articles = published.length ? published : SAMPLE_ARTICLES;
+
     return (
         <div className="max-w-7xl mx-auto px-6 py-12">
             {/* Header */}
@@ -81,13 +116,13 @@ export default function ResearchLibraryPage() {
                     <button className="px-3 py-1.5 rounded bg-terminal-bg text-terminal-muted hover:text-terminal-text border border-terminal-border">POLICY</button>
                 </div>
                 <div className="font-mono text-xs text-terminal-muted">
-                    SHOWING: <span className="text-terminal-gold font-bold">{SAMPLE_ARTICLES.length}</span> REPORTS
+                    SHOWING: <span className="text-terminal-gold font-bold">{articles.length}</span> REPORTS
                 </div>
             </div>
 
             {/* Article Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {SAMPLE_ARTICLES.map((article) => (
+                {articles.map((article) => (
                     <article
                         key={article.id}
                         className="p-6 rounded-lg bg-terminal-surface border border-terminal-border hover:border-terminal-gold/50 transition-all flex flex-col justify-between group"

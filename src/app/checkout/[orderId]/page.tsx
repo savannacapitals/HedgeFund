@@ -178,7 +178,9 @@ export default function CheckoutPage() {
     }
     if (!order) return shell("Order Not Found", "The requested transaction reference is invalid or has expired.", <Link href="/academy" className={goldLink}>Return to Academy Catalogue</Link>);
     if (order.status === "confirmed" || paid) {
-        return shell("Payment Received", "Your payment is confirmed and your course access is active.", <Link href={paid || `/learn/${order.courses?.slug}/lessons`} className={goldLink}>Go to Course</Link>);
+        return order.kind === "community"
+            ? shell("Payment Received", "Your payment is confirmed and your Killzone Journal access is active.", <Link href={paid || "/community/killzone"} className={goldLink}>Join The Killzone Journal</Link>)
+            : shell("Payment Received", "Your payment is confirmed and your course access is active.", <Link href={paid || `/learn/${order.courses?.slug}/lessons`} className={goldLink}>Go to Course</Link>);
     }
     if (order.status !== "pending") return shell("Order Unavailable", "This order can no longer be paid. Please start a new enrolment.", <Link href="/academy" className={goldLink}>Return to Academy Catalogue</Link>);
     if (payment && payment.status === "expired") {
@@ -200,7 +202,7 @@ export default function CheckoutPage() {
                     <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-4">
                         <h2 className="font-bold text-sm">Order Summary</h2>
                         <div className="flex justify-between items-center text-xs font-mono text-terminal-muted border-b border-terminal-border/40 pb-3">
-                            <span>{order.courses?.title || "Academy Course Access"}</span>
+                            <span>{order.kind === "community" ? "The Killzone Journal · Community Access" : order.courses?.title || "Academy Course Access"}</span>
                             <span className="text-terminal-text font-bold">{total} {order.currency}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm font-mono font-bold text-terminal-gold">
@@ -224,7 +226,7 @@ export default function CheckoutPage() {
                         <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-4">
                             <p className="text-xs text-terminal-muted leading-relaxed">
                                 We will give you an exact amount to send. The last few digits are unique to your order, so please send
-                                it exactly as shown. Your course unlocks automatically once the payment is confirmed.
+                                it exactly as shown. Your {order.kind === "community" ? "Killzone Journal access" : "course"} unlocks automatically once the payment is confirmed.
                             </p>
                             {errorMessage && <p className="text-xs font-mono text-red-400">{errorMessage}</p>}
                             <button
@@ -313,7 +315,7 @@ export default function CheckoutPage() {
                             )}
 
                             <div className="p-3 rounded bg-terminal-bg border border-terminal-border text-xs font-mono text-terminal-muted">
-                                Waiting for your payment… this page updates by itself. You can leave and come back: your course unlocks as soon as the payment is confirmed on the network.
+                                Waiting for your payment… this page updates by itself. You can leave and come back: your {order.kind === "community" ? "Killzone Journal access" : "course"} unlocks as soon as the payment is confirmed on the network.
                             </div>
                         </div>
                     )}

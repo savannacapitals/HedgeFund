@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import KillzoneCard from "@/components/KillzoneCard";
 
 type EmbedInfo = { kind: "iframe" | "video"; src: string } | null;
 
@@ -409,6 +410,12 @@ export default function LessonPlayerPage() {
                             ENROL
                         </Link>
                     </div>
+                </div>
+            )}
+
+            {isEnrolled && (
+                <div className="max-w-7xl mx-auto px-6 pt-6">
+                    <KillzoneCard />
                 </div>
             )}
 

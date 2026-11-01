@@ -12,6 +12,7 @@ export interface FulfilResult {
     ok: boolean;
     alreadyFulfilled?: boolean;
     courseSlug?: string | null;
+    redirectTo?: string;
     code?: FulfilErrorCode;
     message?: string;
 }
@@ -26,16 +27,20 @@ export async function completeOrder(orderId: string): Promise<FulfilResult> {
 
     const { data: order, error: orderError } = await admin
         .from("orders")
-        .select("id, user_id, course_id, status")
+        .select("id, user_id, course_id, status, kind")
         .eq("id", orderId)
         .maybeSingle();
 
     if (orderError) return { ok: false, code: "database_error", message: orderError.message };
     if (!order) return { ok: false, code: "order_not_found", message: "Order not found." };
-    if (!order.course_id) return { ok: false, code: "order_not_payable", message: "Order is not linked to a course." };
     if (order.status === "failed" || order.status === "refunded") {
         return { ok: false, code: "order_not_payable", message: `Order is ${order.status}.` };
     }
+
+    // The Killzone Journal unlock fee: confirms the order and grants the community pass (no course involved)
+    if (order.kind === "community") return completeCommunityOrder(admin, order);
+
+    if (!order.course_id) return { ok: false, code: "order_not_payable", message: "Order is not linked to a course." };
 
     const alreadyFulfilled = order.status === "confirmed";
 
@@ -83,6 +88,27 @@ export async function completeOrder(orderId: string): Promise<FulfilResult> {
         .maybeSingle();
 
     return { ok: true, alreadyFulfilled, courseSlug: course?.slug ?? null };
+}
+
+/** Confirms a community (Killzone Journal) order and records the pass. Safe to call more than once. */
+async function completeCommunityOrder(admin: ReturnType<typeof createAdminClient>, order: any): Promise<FulfilResult> {
+    const alreadyFulfilled = order.status === "confirmed";
+
+    if (order.status === "pending") {
+        const { error: updateError } = await admin
+            .from("orders")
+            .update({ status: "confirmed", updated_at: new Date().toISOString() })
+            .eq("id", order.id)
+            .eq("status", "pending");
+        if (updateError) return { ok: false, code: "database_error", message: updateError.message };
+    }
+
+    const { error: passError } = await admin
+        .from("community_access")
+        .upsert({ user_id: order.user_id, source: "unlock_fee", order_id: order.id }, { onConflict: "user_id" });
+    if (passError) return { ok: false, code: "database_error", message: passError.message };
+
+    return { ok: true, alreadyFulfilled, courseSlug: null, redirectTo: "/community/killzone" };
 }
 
 /** Sandbox only: checks the amount against the order total, then completes the order */
