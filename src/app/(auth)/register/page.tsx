@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function RegisterPage() {
     const [fullName, setFullName] = useState("");
@@ -76,6 +77,8 @@ export default function RegisterPage() {
                         {notice}
                     </div>
                 )}
+
+                <GoogleButton onError={(m) => setError(m || null)} />
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

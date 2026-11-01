@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,6 +17,13 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [needsConfirmation, setNeedsConfirmation] = useState(false);
+
+    // The Google callback sends people back here with ?error=... if something went wrong
+    useEffect(() => {
+        const code = new URLSearchParams(window.location.search).get("error");
+        if (code === "oauth_cancelled") setError("Google sign-in was cancelled.");
+        else if (code) setError("Google sign-in failed. Please try again.");
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,6 +94,8 @@ export default function LoginPage() {
                         {notice}
                     </div>
                 )}
+
+                <GoogleButton onError={(m) => setError(m || null)} />
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
