@@ -74,7 +74,7 @@ export default function ResetPasswordRequestPage() {
                 )}
 
                 <div className="mt-6 text-center text-xs text-terminal-muted font-mono">
-                    <Link href="/login" className="text-terminal-gold hover:underline">
+                    <Link href="/login" className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
                         &larr; Back to sign in
                     </Link>
                 </div>

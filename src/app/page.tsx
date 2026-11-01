@@ -31,18 +31,18 @@ function MarketVisual() {
                 <svg viewBox="0 0 620 220" role="img" aria-label="Illustrative market trend line" preserveAspectRatio="none">
                     <defs>
                         <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#36D6A0" stopOpacity=".22" />
-                            <stop offset="100%" stopColor="#36D6A0" stopOpacity="0" />
+                            <stop offset="0%" stopColor="var(--sc-chart-area)" stopOpacity=".22" />
+                            <stop offset="100%" stopColor="var(--sc-chart-area)" stopOpacity="0" />
                         </linearGradient>
                         <linearGradient id="lineStroke" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#4CD6AE" />
-                            <stop offset="100%" stopColor="#8CE8D1" />
+                            <stop offset="0%" stopColor="var(--sc-chart-line-a)" />
+                            <stop offset="100%" stopColor="var(--sc-chart-line-b)" />
                         </linearGradient>
                     </defs>
-                    {[35, 90, 145, 200].map((y) => <line key={y} x1="0" y1={y} x2="620" y2={y} stroke="#263640" strokeDasharray="3 7" />)}
+                    {[35, 90, 145, 200].map((y) => <line key={y} x1="0" y1={y} x2="620" y2={y} stroke="var(--sc-chart-grid)" strokeDasharray="3 7" />)}
                     <path d="M0 168 C35 160 48 178 76 151 S118 139 145 148 S184 119 211 132 S250 91 278 111 S315 120 344 88 S382 104 410 78 S452 88 479 57 S520 72 548 45 S590 53 620 22 L620 220 L0 220Z" fill="url(#areaFill)" />
                     <path d="M0 168 C35 160 48 178 76 151 S118 139 145 148 S184 119 211 132 S250 91 278 111 S315 120 344 88 S382 104 410 78 S452 88 479 57 S520 72 548 45 S590 53 620 22" fill="none" stroke="url(#lineStroke)" strokeWidth="2.6" vectorEffect="non-scaling-stroke" />
-                    <circle cx="620" cy="22" r="5" fill="#8CE8D1" stroke="#0C171A" strokeWidth="3" />
+                    <circle cx="620" cy="22" r="5" fill="var(--sc-chart-line-b)" stroke="var(--sc-chart-dot-ring)" strokeWidth="3" />
                 </svg>
                 <div className="chart-x-labels"><span>RESEARCH</span><span>ANALYSIS</span><span>DECISION</span><span>ALLOCATION</span></div>
             </div>

@@ -78,7 +78,7 @@ export default function ResetPasswordUpdatePage() {
                         <p className="text-xs font-mono text-red-400">
                             This reset link is invalid or has expired.
                         </p>
-                        <Link href="/reset-password" className="text-xs font-mono text-terminal-gold hover:underline">
+                        <Link href="/reset-password" className="inline-block py-2 -my-2 text-xs font-mono text-terminal-gold hover:underline">
                             Request a new link &rarr;
                         </Link>
                     </div>

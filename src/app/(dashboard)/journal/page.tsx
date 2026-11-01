@@ -38,7 +38,7 @@ const JOURNAL_ENTRIES: JournalEntry[] = [
 export default function JournalPage() {
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border-b border-terminal-border pb-6 mb-8 flex justify-between items-center">
+            <div className="border-b border-terminal-border pb-6 mb-8 flex flex-wrap justify-between items-center gap-4">
                 <div>
                     <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-2">
                         <span>ANALYTICS // PAPER TRADING JOURNAL</span>
@@ -56,8 +56,8 @@ export default function JournalPage() {
             <div className="space-y-4">
                 {JOURNAL_ENTRIES.map((entry) => (
                     <div key={entry.id} className="p-5 rounded-lg bg-terminal-surface border border-terminal-border font-mono text-xs">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                                 <span className={`px-2 py-0.5 rounded font-bold ${entry.type === "BUY" ? "bg-terminal-emerald/20 text-terminal-emerald" : "bg-red-500/20 text-red-400"}`}>
                                     {entry.type}
                                 </span>

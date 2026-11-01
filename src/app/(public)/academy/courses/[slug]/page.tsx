@@ -136,7 +136,7 @@ export default function CourseLandingPage() {
     return (
         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-12 max-w-7xl mx-auto">
             {/* Breadcrumb */}
-            <div className="mb-6 font-mono text-xs text-terminal-muted flex items-center space-x-2">
+            <div className="mb-6 font-mono text-xs text-terminal-muted flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Link href="/academy" className="hover:text-terminal-gold">ACADEMY</Link>
                 <span>/</span>
                 <span className="text-terminal-text">{course.category}</span>

@@ -54,8 +54,8 @@ export default function WatchlistPage() {
                 </h1>
             </div>
 
-            <div className="bg-terminal-surface rounded-lg border border-terminal-border overflow-hidden">
-                <table className="w-full text-left font-mono text-xs">
+            <div className="bg-terminal-surface rounded-lg border border-terminal-border overflow-x-auto">
+                <table className="w-full min-w-[36rem] text-left font-mono text-xs">
                     <thead className="bg-terminal-bg border-b border-terminal-border text-terminal-muted">
                         <tr>
                             <th className="p-4">SYMBOL</th>

@@ -130,7 +130,7 @@ export default function DashboardPage() {
                     </h1>
                 </div>
 
-                <div className="flex items-center space-x-3 text-xs font-mono">
+                <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
                     {isStaff && (
                         <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
                             ACADEMY ADMIN

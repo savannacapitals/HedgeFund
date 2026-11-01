@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
                     </h1>
                 </div>
 
-                <div className="flex items-center space-x-3 text-xs font-mono">
+                <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
                     <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
                         ACADEMY ADMIN
                     </Link>
@@ -148,7 +148,7 @@ export default async function AdminDashboardPage() {
 
             {/* Append-Only Audit Log */}
             <div className="bg-terminal-surface rounded-lg border border-terminal-border p-6 font-mono text-xs">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                     <h2 className="text-base font-bold text-terminal-text">Immutable System Audit Log</h2>
                     <span className="text-terminal-gold text-[10px]">APPEND-ONLY RECORD</span>
                 </div>

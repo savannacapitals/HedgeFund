@@ -655,7 +655,7 @@ export default function LessonPlayerPage() {
                                         {isDone ? "CONTINUE →" : "PASS THE QUIZ TO CONTINUE"}
                                     </button>
                                 ) : isEnrolled ? (
-                                    <div className="flex gap-3">
+                                    <div className="flex flex-wrap gap-3">
                                         <button
                                             onClick={handleToggleComplete}
                                             disabled={saving}

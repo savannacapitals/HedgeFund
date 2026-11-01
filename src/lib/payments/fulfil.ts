@@ -17,16 +17,16 @@ export interface FulfilResult {
 }
 
 /**
- * Marks an order as paid and grants the course enrolment.
- * Safe to call more than once for the same order (webhooks are often retried).
- * Called only from server code: the payment webhook and the sandbox route.
+ * Confirms the order and grants the course enrolment. Safe to call more than once.
+ * It does NOT check any money: only call it after a payment has been verified
+ * (reconcilePayment) or in the sandbox route.
  */
-export async function fulfilOrder(orderId: string, amountPaid: number): Promise<FulfilResult> {
+export async function completeOrder(orderId: string): Promise<FulfilResult> {
     const admin = createAdminClient();
 
     const { data: order, error: orderError } = await admin
         .from("orders")
-        .select("id, user_id, course_id, total_amount, status")
+        .select("id, user_id, course_id, status")
         .eq("id", orderId)
         .maybeSingle();
 
@@ -35,9 +35,6 @@ export async function fulfilOrder(orderId: string, amountPaid: number): Promise<
     if (!order.course_id) return { ok: false, code: "order_not_payable", message: "Order is not linked to a course." };
     if (order.status === "failed" || order.status === "refunded") {
         return { ok: false, code: "order_not_payable", message: `Order is ${order.status}.` };
-    }
-    if (!(Number(amountPaid) >= Number(order.total_amount))) {
-        return { ok: false, code: "amount_too_low", message: "Amount paid is less than the order total." };
     }
 
     const alreadyFulfilled = order.status === "confirmed";
@@ -86,4 +83,23 @@ export async function fulfilOrder(orderId: string, amountPaid: number): Promise<
         .maybeSingle();
 
     return { ok: true, alreadyFulfilled, courseSlug: course?.slug ?? null };
+}
+
+/** Sandbox only: checks the amount against the order total, then completes the order */
+export async function fulfilOrder(orderId: string, amountPaid: number): Promise<FulfilResult> {
+    const admin = createAdminClient();
+
+    const { data: order, error } = await admin
+        .from("orders")
+        .select("id, total_amount")
+        .eq("id", orderId)
+        .maybeSingle();
+
+    if (error) return { ok: false, code: "database_error", message: error.message };
+    if (!order) return { ok: false, code: "order_not_found", message: "Order not found." };
+    if (!(Number(amountPaid) >= Number(order.total_amount))) {
+        return { ok: false, code: "amount_too_low", message: "Amount paid is less than the order total." };
+    }
+
+    return completeOrder(orderId);
 }
