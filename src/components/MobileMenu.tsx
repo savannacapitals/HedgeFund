@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import AuthButtons from "@/components/AuthButtons";
 
-type NavItem = { label: string; href: string };
+type NavItem = { label: string; href: string; icon?: string };
 
 // Hamburger menu for screens narrower than 900px, where the desktop navigation is hidden.
 // On very small phones (480px and below) the Sign in / Get started buttons move in here too.

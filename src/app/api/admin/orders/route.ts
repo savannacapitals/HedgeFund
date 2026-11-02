@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
         let query = admin
             .from("orders")
-            .select("id, user_id, course_id, total_amount, currency, status, created_at, updated_at, profiles(email, full_name), courses(title)")
+            .select("id, user_id, course_id, kind, total_amount, currency, status, created_at, updated_at, profiles(email, full_name), courses(title)")
             .order("created_at", { ascending: false })
             .limit(300);
         const status = url.searchParams.get("status");
@@ -75,7 +75,10 @@ export async function GET(request: Request) {
                 updated_at: o.updated_at,
                 customer: one(o.profiles)?.email || "unknown",
                 customerName: one(o.profiles)?.full_name || null,
-                course: one(o.courses)?.title || null,
+                course:
+                    one(o.courses)?.title ||
+                    ({ ai_membership: "AI Opportunities · Membership", ai_assistance: "AI Opportunities · Account assistance", community: "Killzone Journal" } as Record<string, string>)[o.kind] ||
+                    null,
                 payment: pay
                     ? { status: pay.status, network: pay.paid_network, token: pay.paid_token, paidAt: pay.paid_at, label: pay.label ?? null }
                     : null,
@@ -134,6 +137,8 @@ export async function POST(request: Request) {
             // Close any open payment so its amount can be reused
             await admin.from("payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).eq("status", "pending");
             await admin.from("manual_payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).in("status", ["awaiting", "submitted"]);
+            // An unpaid assistance request has nothing left to wait for
+            await admin.from("ai_assistance_requests").update({ status: "cancelled", updated_at: now }).eq("order_id", order.id).eq("status", "payment_pending");
             await logAudit(admin, { actorId: userId, action: "ORDER_FAIL", target: label, details: { note } });
             return ok({ success: true });
         }

@@ -62,6 +62,8 @@ export async function redirectForOrder(orderId: string): Promise<string> {
     const admin = createAdminClient();
     const { data: order } = await admin.from("orders").select("course_id, kind").eq("id", orderId).maybeSingle();
     if (order?.kind === "community") return "/community/killzone";
+    if (order?.kind === "ai_membership") return "/ai-opportunities/dashboard";
+    if (order?.kind === "ai_assistance") return "/ai-opportunities/dashboard#assistance";
     if (order?.course_id) {
         const { data: course } = await admin.from("courses").select("slug").eq("id", order.course_id).maybeSingle();
         if (course?.slug) return `/learn/${course.slug}/lessons`;

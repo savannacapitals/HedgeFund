@@ -8,6 +8,7 @@ const ITEMS: { section: SectionKey; label: string; href: string }[] = [
     { section: "overview", label: "OVERVIEW", href: "/admin/dashboard" },
     { section: "content", label: "CONTENT", href: "/admin/content" },
     { section: "academy", label: "ACADEMY", href: "/admin/academy" },
+    { section: "ai", label: "AI OPPORTUNITIES", href: "/admin/ai" },
     { section: "users", label: "USERS & ROLES", href: "/admin/users" },
     { section: "orders", label: "ORDERS", href: "/admin/orders" },
 ];

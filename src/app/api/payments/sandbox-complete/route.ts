@@ -48,6 +48,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
         success: true,
-        redirectTo: result.courseSlug ? `/learn/${result.courseSlug}/lessons` : "/dashboard",
+        redirectTo: result.redirectTo || (result.courseSlug ? `/learn/${result.courseSlug}/lessons` : "/dashboard"),
     });
 }

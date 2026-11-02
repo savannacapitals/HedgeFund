@@ -45,6 +45,7 @@ const navigation = [
     { label: "Platform", href: "/#platform" },
     { label: "Research", href: "/research" },
     { label: "Academy", href: "/academy" },
+    { label: "AI Opportunities", href: "/ai-opportunities", icon: "ai" },
     { label: "About", href: "/#about" },
 ];
 
@@ -62,7 +63,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
                         </a>
                         <nav className="desktop-nav" aria-label="Main navigation">
-                            {navigation.map((item) => <a href={item.href} key={item.label}>{item.label}</a>)}
+                            {navigation.map((item) => (
+                                <a href={item.href} key={item.label} className={item.icon ? "nav-with-icon" : undefined}>
+                                    {item.icon && (
+                                        <svg aria-hidden="true" viewBox="0 0 20 20" width="14" height="14" fill="none">
+                                            <rect x="5" y="5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" />
+                                            <path d="M8 2v3M12 2v3M8 15v3M12 15v3M2 8h3M2 12h3M15 8h3M15 12h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                                            <circle cx="10" cy="10" r="1.6" fill="currentColor" />
+                                        </svg>
+                                    )}
+                                    {item.label}
+                                </a>
+                            ))}
                         </nav>
                         <div className="header-actions">
                             <ThemeToggle />
@@ -79,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
                         </a>
                         <p>Independent thinking. African perspective. Global context.</p>
-                        <div className="footer-links"><a href="/research">Research</a><a href="/academy">Academy</a><a href="/contact">Contact</a></div>
+                        <div className="footer-links"><a href="/research">Research</a><a href="/academy">Academy</a><a href="/ai-opportunities">AI Opportunities</a><a href="/contact">Contact</a></div>
                     </div>
                     <div className="footer-bottom">
                         <span>© {new Date().getFullYear()} Savanna Capitals. All rights reserved.</span>

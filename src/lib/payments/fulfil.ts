@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { completeAiAssistanceOrder, completeAiMembershipOrder } from "@/lib/ai/fulfil";
 
 export type FulfilErrorCode =
     | "order_not_found"
@@ -39,6 +40,10 @@ export async function completeOrder(orderId: string): Promise<FulfilResult> {
 
     // The Killzone Journal unlock fee: confirms the order and grants the community pass (no course involved)
     if (order.kind === "community") return completeCommunityOrder(admin, order);
+
+    // Savanna AI Opportunities: KES membership and USD account-assistance orders (no course involved)
+    if (order.kind === "ai_membership") return completeAiMembershipOrder(admin, order);
+    if (order.kind === "ai_assistance") return completeAiAssistanceOrder(admin, order);
 
     if (!order.course_id) return { ok: false, code: "order_not_payable", message: "Order is not linked to a course." };
 
