@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
+import ManualPayPanel from "@/components/ManualPayPanel";
 
 const POLL_EVERY_MS = 8000;
 
@@ -35,6 +36,7 @@ export default function CheckoutPage() {
     const [qr, setQr] = useState("");
     const [copied, setCopied] = useState<"address" | "amount" | "">("");
     const [paid, setPaid] = useState<string | null>(null);
+    const [method, setMethod] = useState<"pochi" | "bank" | "crypto">("pochi");
 
     useEffect(() => {
         async function load() {
@@ -196,7 +198,24 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-12 max-w-4xl mx-auto">
             <div className="mb-8 border-b border-terminal-border pb-6">
                 <span className="font-mono text-xs text-terminal-gold tracking-widest uppercase">SECURE INSTITUTIONAL CHECKOUT</span>
-                <h1 className="text-3xl font-bold mt-2">Pay with USDC or USDT</h1>
+                <h1 className="text-3xl font-bold mt-2">
+                    {method === "pochi" ? "Pay with Pochi la Biashara" : method === "bank" ? "Pay by bank transfer" : "Pay with USDC or USDT"}
+                </h1>
+                <div className="flex flex-wrap gap-2 mt-5">
+                    {([
+                        ["pochi", "POCHI LA BIASHARA"],
+                        ["bank", "BANK TRANSFER"],
+                        ["crypto", "USDC / USDT"],
+                    ] as const).map(([id, label]) => (
+                        <button
+                            key={id}
+                            onClick={() => setMethod(id)}
+                            className={`px-4 py-1.5 rounded border text-xs font-mono font-bold ${method === id ? "border-terminal-gold text-terminal-gold" : "border-terminal-border text-terminal-muted hover:text-terminal-text"}`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -209,15 +228,20 @@ export default function CheckoutPage() {
                         </div>
                         <div className="flex justify-between items-center text-sm font-mono font-bold text-terminal-gold">
                             <span>Total Payable</span>
-                            <span>{payment ? payment.amountDue : info?.approxAmount || total}</span>
+                            <span>{method === "crypto" ? (payment ? payment.amountDue : info?.approxAmount || total) : `${total} ${order.currency}`}</span>
                         </div>
                         <p className="text-[11px] text-terminal-muted leading-relaxed">
-                            USDC and USDT are dollar-pegged digital currencies: 1 coin is worth 1 US dollar.
+                            {method === "crypto"
+                                ? "USDC and USDT are dollar-pegged digital currencies: 1 coin is worth 1 US dollar."
+                                : "The exact amount to pay, in shillings or the bank account's currency, is shown with the payment details."}
                         </p>
                     </div>
                 </div>
 
                 <div className="md:col-span-3">
+                    {method !== "crypto" && <ManualPayPanel key={method} orderId={order.id} method={method} onPaid={(to) => setPaid(to)} />}
+
+                    {method === "crypto" && (<>
                     {info && !info.available && (
                         <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border text-xs font-mono text-terminal-gold">
                             Crypto payments are not available yet. Please check back soon.
@@ -323,6 +347,7 @@ export default function CheckoutPage() {
                     )}
 
                     {errorMessage && payment && <p className="mt-3 text-xs font-mono text-red-400">{errorMessage}</p>}
+                    </>)}
 
                     {showDevSimulate && (
                         <button onClick={simulate} disabled={starting} className="mt-4 w-full py-2 rounded border border-dashed border-terminal-border text-[10px] font-mono text-terminal-muted hover:text-terminal-text disabled:opacity-50">

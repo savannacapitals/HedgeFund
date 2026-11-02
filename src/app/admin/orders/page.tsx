@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
                 <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // ORDERS</div>
                 <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">Order Reconciliation & Refunds</h1>
                 <p className="text-xs font-mono text-terminal-muted mt-2">
-                    Payments confirm themselves when the exact amount arrives on-chain. Use this page for the exceptions.
+                    Crypto payments confirm themselves when the exact amount arrives on-chain, and Pochi la Biashara payments when the M-Pesa SMS reaches the site. Bank transfers (and any Pochi payment still waiting) are confirmed here: check the money is in your account or Pochi, then confirm.
                 </p>
             </div>
 
@@ -142,7 +142,9 @@ export default function AdminOrdersPage() {
                                     <td className="p-3 text-right font-bold">{formatMoney(o.total_amount, o.currency)}</td>
                                     <td className={`p-3 font-bold ${STATUS_COLOUR[o.status] || ""}`}>{o.status.toUpperCase()}</td>
                                     <td className="p-3 text-terminal-muted">
-                                        {o.payment
+                                        {o.payment?.label
+                                            ? o.payment.label
+                                            : o.payment
                                             ? `${o.payment.status}${o.payment.token ? ` · ${o.payment.token}` : ""}${o.payment.network ? ` on ${o.payment.network}` : ""}`
                                             : "none started"}
                                     </td>

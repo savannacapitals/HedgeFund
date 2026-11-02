@@ -37,6 +37,30 @@ export async function GET(request: Request) {
                 .in("order_id", ids)
                 .order("created_at", { ascending: false });
             for (const p of pays ?? []) if (!latestPayment.has(p.order_id)) latestPayment.set(p.order_id, p);
+
+            // Pochi la Biashara and bank-transfer payments: the newest of either kind is shown
+            const { data: manual } = await admin
+                .from("manual_payments")
+                .select("order_id, method, status, provider_ref, payer_name, reference, amount, currency, paid_at, created_at")
+                .in("order_id", ids)
+                .order("created_at", { ascending: false });
+            const seen = new Set<string>();
+            for (const m of manual ?? []) {
+                if (seen.has(m.order_id)) continue;
+                seen.add(m.order_id);
+                const existing = latestPayment.get(m.order_id);
+                if (existing && new Date(existing.created_at) > new Date(m.created_at)) continue;
+                const name = m.method === "pochi" ? "Pochi la Biashara" : "Bank transfer";
+                latestPayment.set(m.order_id, {
+                    order_id: m.order_id,
+                    status: m.status,
+                    paid_at: m.paid_at,
+                    created_at: m.created_at,
+                    label: `${m.status} · ${name} · ${Number(m.amount).toLocaleString("en-KE")} ${m.currency}${
+                        m.provider_ref ? ` · code/ref ${m.provider_ref}` : " · no code yet"
+                    }${m.payer_name ? ` · ${m.payer_name}` : ""} · ${m.reference}`,
+                });
+            }
         }
 
         const one = (v: any) => (Array.isArray(v) ? v[0] : v);
@@ -53,7 +77,7 @@ export async function GET(request: Request) {
                 customerName: one(o.profiles)?.full_name || null,
                 course: one(o.courses)?.title || null,
                 payment: pay
-                    ? { status: pay.status, network: pay.paid_network, token: pay.paid_token, paidAt: pay.paid_at }
+                    ? { status: pay.status, network: pay.paid_network, token: pay.paid_token, paidAt: pay.paid_at, label: pay.label ?? null }
                     : null,
             };
         });
@@ -93,6 +117,12 @@ export async function POST(request: Request) {
             if (order.status !== "pending") throw new HttpError(`Only pending orders can be confirmed (this one is ${order.status}).`, 409);
             const result = await completeOrder(order.id);
             if (!result.ok) throw new HttpError(result.message || "Could not confirm the order.", 422);
+            // Pochi / bank payments: the admin has seen the money, so close the open manual payment as paid
+            await admin
+                .from("manual_payments")
+                .update({ status: "succeeded", paid_at: now, updated_at: now })
+                .eq("order_id", order.id)
+                .in("status", ["awaiting", "submitted"]);
             await logAudit(admin, { actorId: userId, action: "ORDER_RECONCILE", target: label, details: { note } });
             return ok({ success: true });
         }
@@ -103,6 +133,7 @@ export async function POST(request: Request) {
             if (error) throw dbError(error);
             // Close any open payment so its amount can be reused
             await admin.from("payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).eq("status", "pending");
+            await admin.from("manual_payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).in("status", ["awaiting", "submitted"]);
             await logAudit(admin, { actorId: userId, action: "ORDER_FAIL", target: label, details: { note } });
             return ok({ success: true });
         }

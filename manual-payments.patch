@@ -1,0 +1,1263 @@
+diff --git a/docs/manual-payments.env.example b/docs/manual-payments.env.example
+new file mode 100644
+index 0000000..da64c4f
+--- /dev/null
++++ b/docs/manual-payments.env.example
+@@ -0,0 +1,22 @@
++# ---- Pochi la Biashara + bank transfer (add these in Vercel > Settings > Environment Variables) ----
++
++# Your Pochi la Biashara number (the number customers pay to)
++POCHI_PHONE=0700021380
++# Optional: the name M-Pesa shows on the "Hakikisha" confirmation screen, so customers can check they have the right number
++POCHI_ACCOUNT_NAME=
++# Set to false to hide Pochi at checkout
++POCHI_ENABLED=true
++# Long random string (16+ characters). Generate one with:  openssl rand -hex 24
++POCHI_WEBHOOK_SECRET=
++
++# Bank transfer is shown at checkout ONLY when the first three are filled in
++BANK_NAME=
++BANK_ACCOUNT_NAME=
++BANK_ACCOUNT_NUMBER=
++BANK_BRANCH=
++BANK_SWIFT_CODE=
++# KES or USD: the currency your bank account receives
++BANK_CURRENCY=KES
++
++# Already used by the stablecoin checkout; also used to convert USD prices into shillings
++# USD_TO_KES_RATE=129.00
+diff --git a/docs/manual-payments.md b/docs/manual-payments.md
+new file mode 100644
+index 0000000..bd36d6c
+--- /dev/null
++++ b/docs/manual-payments.md
+@@ -0,0 +1,58 @@
++# Pochi la Biashara and bank-transfer payments
++
++Added next to the existing USDC/USDT checkout. Customers now choose between **Pochi la Biashara**, **Bank transfer** and **USDC / USDT** on `/checkout/[orderId]`.
++
++## Why it works this way (research summary)
++
++- **Pochi la Biashara has no collection API.** Safaricom's Daraja portal offers STK Push and C2B only for Paybill and Till numbers. For Pochi, the only API is *Business to Pochi*, which **sends money out** to a Pochi wallet (useful later for refunds, not for taking payment). Customers pay a Pochi number themselves, from the M-Pesa app or `*334#`.
++- So checkout cannot "push" a prompt to the customer's phone. Instead the customer pays, then gives us the **M-Pesa code** from their confirmation SMS.
++- To avoid confirming every payment by hand, the phone that owns the Pochi number **forwards the incoming M-Pesa SMS** to `/api/webhooks/pochi`. When the code the customer typed matches a forwarded SMS and the amount covers the price, the order is confirmed and access unlocks within seconds.
++- Bank transfers have no automatic signal, so an admin confirms them on `/admin/orders` after seeing the money in the account.
++- M-Pesa limits still apply to Pochi: KSh 250,000 per transaction and KSh 500,000 per day (per Safaricom's Pochi FAQ). Larger orders are steered to bank transfer.
++
++## How a Pochi payment flows
++
++1. Customer picks **Pochi la Biashara** → **Show payment details**. The server saves a `manual_payments` row with the exact shilling amount (USD prices are converted with `USD_TO_KES_RATE` and rounded **up** to a whole shilling).
++2. Customer pays `0700 021 380` and types the 10-character M-Pesa code (e.g. `SGL4ABC12D`) → **I have paid**.
++3. The server checks whether the forwarded SMS for that code is already saved. If yes, and the SMS amount is at least the price, the order is confirmed immediately. If not, the payment stays `submitted` and the page keeps checking. When the SMS arrives later, the webhook confirms it.
++4. If nothing matches (SMS forwarder offline, underpayment, typo), the order appears on `/admin/orders` with the code the customer typed, and you can **Confirm** it by hand.
++
++Safety rules built in: one SMS can pay for only one order (atomic claim); one code can back only one payment; amounts always come from the saved order, never from the browser; underpayments are never auto-confirmed; the webhook needs a secret.
++
++## Bank transfer flow
++
++1. Customer picks **Bank transfer** → sees your bank details, the exact amount and a reference like `SC-1A2B3C4D` to put in the narration.
++2. After transferring they enter the bank's transaction reference (and optionally the sender name).
++3. The order shows on `/admin/orders` as `submitted · Bank transfer · … · ref …`. Check your statement, then **Confirm**.
++
++Bank details are **not hard-coded**: they come from the `BANK_*` environment variables, and the Bank tab only appears once name, account name and account number are set.
++
++## One-time setup
++
++1. **Database.** Run `supabase/migrations/00013_manual_payments.sql` in the Supabase SQL Editor.
++2. **Environment variables.** Add the variables from `docs/manual-payments.env.example` in Vercel (Production and Preview), then redeploy. At minimum: `POCHI_PHONE`, `POCHI_WEBHOOK_SECRET`, `USD_TO_KES_RATE` (and the `BANK_*` set for bank transfer).
++3. **SMS forwarding.** On the Android phone with the SIM that owns `0700021380`, install an SMS-forwarder app that can POST incoming SMS to a URL, and set:
++   - URL: `https://<your-domain>/api/webhooks/pochi`
++   - Method: `POST`, content type JSON
++   - Header: `x-webhook-secret: <POCHI_WEBHOOK_SECRET>` (if the app cannot set headers, add `?secret=<POCHI_WEBHOOK_SECRET>` to the URL instead)
++   - Body: `{"from": "<sender>", "message": "<message text>"}` using the app's own placeholders
++   - Filter: only SMS from `MPESA`
++   Keep the phone on, charged, with data and with battery optimisation switched off for the forwarder app.
++4. **Test with a real payment of KSh 10** before launch. The SMS reader (`src/lib/payments/manual/sms.ts`) matches the wording "Confirmed. You have received Ksh…" loosely, but Safaricom changes wording from time to time. If a real Pochi SMS is not recognised, the webhook answers `ignored: not_a_payment` and the payment simply falls back to manual confirmation on `/admin/orders`. Send me the SMS text (hide the name) and the parser can be adjusted.
++
++## Day to day
++
++- `/admin/orders` → filter **pending**. Rows for Pochi/bank show method, amount, the code or reference the customer typed and your order reference.
++- **Confirm** only after you have seen the money in Pochi or the bank account. **Fail** closes the order and the open payment.
++- Every forwarded SMS is kept in `pochi_messages` (unclaimed ones are payments nobody has claimed yet, handy for reconciliation). Each stores the SMS text, which includes the payer's name: keep Supabase access tight.
++
++## Security notes
++
++- The webhook secret is the only thing protecting auto-confirmation. Use a long random value and rotate it if the forwarder phone is lost.
++- Anyone who learns another customer's valid, unclaimed M-Pesa code could try to submit it for their own order of equal or lower value. Risk is small (codes are not public), and both amounts and one-code-one-order are enforced. Keep the Pochi phone's SMS private.
++- Orders in currencies other than KES/USD are rejected, as with the crypto checkout.
++
++## Files
++
++New: `supabase/migrations/00013_manual_payments.sql`, `src/lib/payments/manual/*`, `src/app/api/payments/manual/*`, `src/app/api/webhooks/pochi/route.ts`, `src/components/ManualPayPanel.tsx`.
++Changed: `src/app/checkout/[orderId]/page.tsx` (method tabs), `src/app/api/admin/orders/route.ts` and `src/app/admin/orders/page.tsx` (show and settle Pochi/bank payments).
+diff --git a/src/app/admin/orders/page.tsx b/src/app/admin/orders/page.tsx
+index 6ab60d5..5190ed4 100644
+--- a/src/app/admin/orders/page.tsx
++++ b/src/app/admin/orders/page.tsx
+@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
+                 <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // ORDERS</div>
+                 <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">Order Reconciliation & Refunds</h1>
+                 <p className="text-xs font-mono text-terminal-muted mt-2">
+-                    Payments confirm themselves when the exact amount arrives on-chain. Use this page for the exceptions.
++                    Crypto payments confirm themselves when the exact amount arrives on-chain, and Pochi la Biashara payments when the M-Pesa SMS reaches the site. Bank transfers (and any Pochi payment still waiting) are confirmed here: check the money is in your account or Pochi, then confirm.
+                 </p>
+             </div>
+ 
+@@ -142,7 +142,9 @@ export default function AdminOrdersPage() {
+                                     <td className="p-3 text-right font-bold">{formatMoney(o.total_amount, o.currency)}</td>
+                                     <td className={`p-3 font-bold ${STATUS_COLOUR[o.status] || ""}`}>{o.status.toUpperCase()}</td>
+                                     <td className="p-3 text-terminal-muted">
+-                                        {o.payment
++                                        {o.payment?.label
++                                            ? o.payment.label
++                                            : o.payment
+                                             ? `${o.payment.status}${o.payment.token ? ` · ${o.payment.token}` : ""}${o.payment.network ? ` on ${o.payment.network}` : ""}`
+                                             : "none started"}
+                                     </td>
+diff --git a/src/app/api/admin/orders/route.ts b/src/app/api/admin/orders/route.ts
+index ac468af..00354bf 100644
+--- a/src/app/api/admin/orders/route.ts
++++ b/src/app/api/admin/orders/route.ts
+@@ -37,6 +37,30 @@ export async function GET(request: Request) {
+                 .in("order_id", ids)
+                 .order("created_at", { ascending: false });
+             for (const p of pays ?? []) if (!latestPayment.has(p.order_id)) latestPayment.set(p.order_id, p);
++
++            // Pochi la Biashara and bank-transfer payments: the newest of either kind is shown
++            const { data: manual } = await admin
++                .from("manual_payments")
++                .select("order_id, method, status, provider_ref, payer_name, reference, amount, currency, paid_at, created_at")
++                .in("order_id", ids)
++                .order("created_at", { ascending: false });
++            const seen = new Set<string>();
++            for (const m of manual ?? []) {
++                if (seen.has(m.order_id)) continue;
++                seen.add(m.order_id);
++                const existing = latestPayment.get(m.order_id);
++                if (existing && new Date(existing.created_at) > new Date(m.created_at)) continue;
++                const name = m.method === "pochi" ? "Pochi la Biashara" : "Bank transfer";
++                latestPayment.set(m.order_id, {
++                    order_id: m.order_id,
++                    status: m.status,
++                    paid_at: m.paid_at,
++                    created_at: m.created_at,
++                    label: `${m.status} · ${name} · ${Number(m.amount).toLocaleString("en-KE")} ${m.currency}${
++                        m.provider_ref ? ` · code/ref ${m.provider_ref}` : " · no code yet"
++                    }${m.payer_name ? ` · ${m.payer_name}` : ""} · ${m.reference}`,
++                });
++            }
+         }
+ 
+         const one = (v: any) => (Array.isArray(v) ? v[0] : v);
+@@ -53,7 +77,7 @@ export async function GET(request: Request) {
+                 customerName: one(o.profiles)?.full_name || null,
+                 course: one(o.courses)?.title || null,
+                 payment: pay
+-                    ? { status: pay.status, network: pay.paid_network, token: pay.paid_token, paidAt: pay.paid_at }
++                    ? { status: pay.status, network: pay.paid_network, token: pay.paid_token, paidAt: pay.paid_at, label: pay.label ?? null }
+                     : null,
+             };
+         });
+@@ -93,6 +117,12 @@ export async function POST(request: Request) {
+             if (order.status !== "pending") throw new HttpError(`Only pending orders can be confirmed (this one is ${order.status}).`, 409);
+             const result = await completeOrder(order.id);
+             if (!result.ok) throw new HttpError(result.message || "Could not confirm the order.", 422);
++            // Pochi / bank payments: the admin has seen the money, so close the open manual payment as paid
++            await admin
++                .from("manual_payments")
++                .update({ status: "succeeded", paid_at: now, updated_at: now })
++                .eq("order_id", order.id)
++                .in("status", ["awaiting", "submitted"]);
+             await logAudit(admin, { actorId: userId, action: "ORDER_RECONCILE", target: label, details: { note } });
+             return ok({ success: true });
+         }
+@@ -103,6 +133,7 @@ export async function POST(request: Request) {
+             if (error) throw dbError(error);
+             // Close any open payment so its amount can be reused
+             await admin.from("payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).eq("status", "pending");
++            await admin.from("manual_payments").update({ status: "expired", updated_at: now }).eq("order_id", order.id).in("status", ["awaiting", "submitted"]);
+             await logAudit(admin, { actorId: userId, action: "ORDER_FAIL", target: label, details: { note } });
+             return ok({ success: true });
+         }
+diff --git a/src/app/api/payments/manual/route.ts b/src/app/api/payments/manual/route.ts
+new file mode 100644
+index 0000000..6c70c38
+--- /dev/null
++++ b/src/app/api/payments/manual/route.ts
+@@ -0,0 +1,147 @@
++import { NextResponse } from "next/server";
++import { createAdminClient } from "@/lib/supabase/admin";
++import {
++    ManualPaymentError,
++    POCHI_MAX_KES,
++    getBankConfig,
++    getPochiConfig,
++    orderReference,
++    quoteManual,
++    type ManualMethod,
++} from "@/lib/payments/manual/config";
++import { loadPayableOrder } from "@/lib/payments/manual/order";
++import { buildManualView } from "@/lib/payments/manual/view";
++
++function fail(err: any) {
++    if (err instanceof ManualPaymentError) return NextResponse.json({ error: err.message }, { status: err.status });
++    console.error("Manual payment error:", err?.message);
++    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
++}
++
++/** Safe quote: returns null instead of throwing, so one unavailable method never hides the other */
++function safeQuote(order: any, target: "KES" | "USD", whole: boolean) {
++    try {
++        return quoteManual(Number(order.total_amount), order.currency, target, whole);
++    } catch {
++        return null;
++    }
++}
++
++// Which methods are on, what each would cost, and whether this order already has an open payment
++export async function GET(request: Request) {
++    try {
++        const { order } = await loadPayableOrder(new URL(request.url).searchParams.get("orderId"));
++
++        const pochi = getPochiConfig();
++        const bank = getBankConfig();
++        const pochiQuote = pochi ? safeQuote(order, "KES", true) : null;
++        const bankQuote = bank ? safeQuote(order, bank.currency, false) : null;
++
++        const { data: open } = await createAdminClient()
++            .from("manual_payments")
++            .select("*")
++            .eq("order_id", order.id)
++            .in("status", ["awaiting", "submitted"])
++            .maybeSingle();
++
++        return NextResponse.json({
++            pochi: {
++                available: !!pochiQuote && pochiQuote.amount <= POCHI_MAX_KES,
++                tooLarge: !!pochiQuote && pochiQuote.amount > POCHI_MAX_KES,
++                approxAmount: pochiQuote ? `${pochiQuote.amount.toFixed(0)} KES` : null,
++            },
++            bank: {
++                available: !!bankQuote,
++                approxAmount: bankQuote ? `${bankQuote.amount.toFixed(2)} ${bankQuote.currency}` : null,
++            },
++            payment: open ? buildManualView(open) : null,
++        });
++    } catch (err) {
++        return fail(err);
++    }
++}
++
++// Gives the order its payment instructions (or returns the ones it already has)
++export async function POST(request: Request) {
++    try {
++        let body: any = {};
++        try {
++            body = await request.json();
++        } catch {
++            // handled below
++        }
++        const method = body.method as ManualMethod;
++        if (method !== "pochi" && method !== "bank") throw new ManualPaymentError("Unknown payment method.");
++
++        const { user, order } = await loadPayableOrder(body.orderId);
++        const admin = createAdminClient();
++
++        const { data: open } = await admin
++            .from("manual_payments")
++            .select("*")
++            .eq("order_id", order.id)
++            .in("status", ["awaiting", "submitted"])
++            .maybeSingle();
++
++        if (open) {
++            if (open.method === method) return NextResponse.json({ payment: buildManualView(open) });
++            if (open.status === "submitted") {
++                const name = open.method === "pochi" ? "Pochi la Biashara" : "bank transfer";
++                throw new ManualPaymentError(
++                    `You already sent a ${name} payment for this order and it is being checked. Please wait for it to be confirmed.`,
++                    409
++                );
++            }
++            // Customer changed their mind before paying: close the unused one
++            await admin
++                .from("manual_payments")
++                .update({ status: "expired", updated_at: new Date().toISOString() })
++                .eq("id", open.id)
++                .eq("status", "awaiting");
++        }
++
++        let amount: number, currency: "KES" | "USD", rate: number | null;
++        if (method === "pochi") {
++            if (!getPochiConfig()) throw new ManualPaymentError("Pochi la Biashara is not available right now.", 503);
++            ({ amount, currency, rate } = quoteManual(Number(order.total_amount), order.currency, "KES", true));
++            if (amount > POCHI_MAX_KES) {
++                throw new ManualPaymentError("This amount is above the M-Pesa limit per transaction. Please use bank transfer.");
++            }
++        } else {
++            const bank = getBankConfig();
++            if (!bank) throw new ManualPaymentError("Bank transfer is not available right now.", 503);
++            ({ amount, currency, rate } = quoteManual(Number(order.total_amount), order.currency, bank.currency, false));
++        }
++
++        const { data: created, error } = await admin
++            .from("manual_payments")
++            .insert({
++                order_id: order.id,
++                user_id: user.id,
++                method,
++                reference: orderReference(order.id),
++                amount,
++                currency,
++                fx_rate: rate,
++            })
++            .select("*")
++            .single();
++
++        if (error) {
++            // A parallel click already created it: hand that one back
++            if (error.code === "23505") {
++                const { data: again } = await admin
++                    .from("manual_payments")
++                    .select("*")
++                    .eq("order_id", order.id)
++                    .in("status", ["awaiting", "submitted"])
++                    .maybeSingle();
++                if (again && again.method === method) return NextResponse.json({ payment: buildManualView(again) });
++            }
++            throw error;
++        }
++        return NextResponse.json({ payment: buildManualView(created) });
++    } catch (err) {
++        return fail(err);
++    }
++}
+diff --git a/src/app/api/payments/manual/status/route.ts b/src/app/api/payments/manual/status/route.ts
+new file mode 100644
+index 0000000..dde02f7
+--- /dev/null
++++ b/src/app/api/payments/manual/status/route.ts
+@@ -0,0 +1,37 @@
++import { NextResponse } from "next/server";
++import { createClient } from "@/lib/supabase/server";
++import { createAdminClient } from "@/lib/supabase/admin";
++import { redirectForOrder, trySettlePochi } from "@/lib/payments/manual/settle";
++
++// The checkout page asks this every few seconds while it waits for the payment to be confirmed
++export async function GET(request: Request) {
++    const supabase = await createClient();
++    const {
++        data: { user },
++    } = await supabase.auth.getUser();
++    if (!user) return NextResponse.json({ error: "Please sign in." }, { status: 401 });
++
++    const paymentId = new URL(request.url).searchParams.get("paymentId");
++    if (!paymentId) return NextResponse.json({ error: "Missing payment." }, { status: 400 });
++
++    const admin = createAdminClient();
++    const lookup = () =>
++        admin.from("manual_payments").select("id, order_id, method, status").eq("id", paymentId).eq("user_id", user.id).maybeSingle();
++
++    let { data: payment } = await lookup();
++    if (!payment) return NextResponse.json({ error: "Payment not found." }, { status: 404 });
++
++    // Covers the case where the SMS arrived but the webhook could not settle it at the time
++    if (payment.status === "submitted" && payment.method === "pochi") {
++        try {
++            await trySettlePochi(payment.id);
++            ({ data: payment } = await lookup());
++        } catch (err: any) {
++            console.error("Pochi status check failed:", err.message);
++        }
++    }
++
++    const body: Record<string, unknown> = { status: payment!.status };
++    if (payment!.status === "succeeded") body.redirectTo = await redirectForOrder(payment!.order_id);
++    return NextResponse.json(body);
++}
+diff --git a/src/app/api/payments/manual/submit/route.ts b/src/app/api/payments/manual/submit/route.ts
+new file mode 100644
+index 0000000..655d0b9
+--- /dev/null
++++ b/src/app/api/payments/manual/submit/route.ts
+@@ -0,0 +1,100 @@
++import { NextResponse } from "next/server";
++import { createClient } from "@/lib/supabase/server";
++import { createAdminClient } from "@/lib/supabase/admin";
++import { MPESA_CODE, normaliseMpesaCode } from "@/lib/payments/manual/sms";
++import { redirectForOrder, trySettlePochi } from "@/lib/payments/manual/settle";
++import { buildManualView } from "@/lib/payments/manual/view";
++
++const MAX_ATTEMPTS = 6;
++
++// The customer tells us what they paid with: the M-Pesa code (Pochi) or the bank reference (bank)
++export async function POST(request: Request) {
++    const supabase = await createClient();
++    const {
++        data: { user },
++    } = await supabase.auth.getUser();
++    if (!user) return NextResponse.json({ error: "Please sign in." }, { status: 401 });
++
++    let body: any = {};
++    try {
++        body = await request.json();
++    } catch {
++        // handled below
++    }
++    if (!body.paymentId) return NextResponse.json({ error: "Missing payment." }, { status: 400 });
++
++    const admin = createAdminClient();
++    const { data: payment } = await admin
++        .from("manual_payments")
++        .select("*")
++        .eq("id", body.paymentId)
++        .eq("user_id", user.id)
++        .maybeSingle();
++    if (!payment) return NextResponse.json({ error: "Payment not found." }, { status: 404 });
++    if (payment.status !== "awaiting" && payment.status !== "submitted") {
++        return NextResponse.json({ error: "This payment can no longer be changed." }, { status: 409 });
++    }
++    if (payment.attempts >= MAX_ATTEMPTS) {
++        return NextResponse.json({ error: "Too many attempts. Please contact support with your reference." }, { status: 429 });
++    }
++
++    // The order must still be open
++    const { data: order } = await admin.from("orders").select("status").eq("id", payment.order_id).maybeSingle();
++    if (!order || order.status !== "pending") {
++        return NextResponse.json({ error: "This order is not awaiting payment." }, { status: 409 });
++    }
++
++    let providerRef: string;
++    if (payment.method === "pochi") {
++        providerRef = normaliseMpesaCode(body.providerRef);
++        if (!MPESA_CODE.test(providerRef)) {
++            return NextResponse.json(
++                { error: "That does not look like an M-Pesa code. It has 10 letters and numbers, for example SGL4ABC12D." },
++                { status: 400 }
++            );
++        }
++    } else {
++        providerRef = String(body.providerRef || "").trim();
++        if (providerRef.length < 4 || providerRef.length > 64) {
++            return NextResponse.json({ error: "Enter the transaction reference from your bank (4 to 64 characters)." }, { status: 400 });
++        }
++    }
++    const payerName = String(body.payerName || "").trim().slice(0, 80) || null;
++
++    const { data: updated, error } = await admin
++        .from("manual_payments")
++        .update({
++            provider_ref: providerRef,
++            payer_name: payerName,
++            status: "submitted",
++            attempts: payment.attempts + 1,
++            submitted_at: new Date().toISOString(),
++            updated_at: new Date().toISOString(),
++        })
++        .eq("id", payment.id)
++        .in("status", ["awaiting", "submitted"])
++        .select("*")
++        .maybeSingle();
++
++    if (error) {
++        if (error.code === "23505") {
++            return NextResponse.json({ error: "That code has already been used for another payment." }, { status: 409 });
++        }
++        console.error("Manual payment submit failed:", error.message);
++        return NextResponse.json({ error: "Could not save your payment. Please try again." }, { status: 500 });
++    }
++    if (!updated) return NextResponse.json({ error: "This payment can no longer be changed." }, { status: 409 });
++
++    // Pochi: the SMS may already be here
++    let status = updated.status;
++    let redirectTo: string | undefined;
++    if (updated.method === "pochi") {
++        const result = await trySettlePochi(updated.id);
++        if (result === "settled") {
++            status = "succeeded";
++            redirectTo = await redirectForOrder(updated.order_id);
++        }
++    }
++
++    return NextResponse.json({ payment: { ...buildManualView(updated), status }, redirectTo });
++}
+diff --git a/src/app/api/webhooks/pochi/route.ts b/src/app/api/webhooks/pochi/route.ts
+new file mode 100644
+index 0000000..5a072cc
+--- /dev/null
++++ b/src/app/api/webhooks/pochi/route.ts
+@@ -0,0 +1,84 @@
++import { NextResponse } from "next/server";
++import { createHash, timingSafeEqual } from "crypto";
++import { createAdminClient } from "@/lib/supabase/admin";
++import { parsePochiSms } from "@/lib/payments/manual/sms";
++import { trySettlePochi } from "@/lib/payments/manual/settle";
++
++/**
++ * Receives the M-Pesa "you have received" SMS from the phone that owns the Pochi number
++ * (through an SMS-forwarding app, see docs/manual-payments.md), saves it, and confirms the matching order.
++ *
++ *   POST /api/webhooks/pochi
++ *   Header  x-webhook-secret: <POCHI_WEBHOOK_SECRET>   (or Authorization: Bearer <secret>, or ?secret=<secret>)
++ *   Body    JSON or form fields. The SMS text can be in "message", "text", "body" or "content".
++ */
++
++const sha = (s: string) => createHash("sha256").update(s).digest();
++
++function secretMatches(given: string, expected: string): boolean {
++    return timingSafeEqual(sha(given), sha(expected));
++}
++
++export async function POST(request: Request) {
++    const expected = process.env.POCHI_WEBHOOK_SECRET;
++    if (!expected || expected.length < 16) {
++        return NextResponse.json({ error: "Not configured." }, { status: 503 });
++    }
++
++    const bearer = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") || "";
++    // Some SMS-forwarder apps cannot set headers, so ?secret=... is accepted too (URLs can end up in logs: prefer the header)
++    const given = request.headers.get("x-webhook-secret") || bearer || new URL(request.url).searchParams.get("secret") || "";
++    if (!given || !secretMatches(given, expected)) {
++        return NextResponse.json({ error: "Unauthorised." }, { status: 401 });
++    }
++
++    let fields: Record<string, any> = {};
++    try {
++        const type = request.headers.get("content-type") || "";
++        if (type.includes("application/json")) {
++            fields = await request.json();
++        } else if (type.includes("form")) {
++            fields = Object.fromEntries((await request.formData()).entries());
++        } else {
++            fields = { message: await request.text() };
++        }
++    } catch {
++        return NextResponse.json({ error: "Unreadable body." }, { status: 400 });
++    }
++
++    const message = String(fields.message ?? fields.text ?? fields.body ?? fields.content ?? fields.sms ?? "");
++    const from = String(fields.from ?? fields.sender ?? fields.address ?? "");
++
++    // If the forwarder tells us who sent the SMS, it must be M-Pesa
++    if (from && !/m-?pesa/i.test(from)) return NextResponse.json({ received: true, ignored: "sender" });
++
++    const parsed = parsePochiSms(message);
++    // Return 200 for other SMS so the forwarder does not keep retrying them
++    if (!parsed) return NextResponse.json({ received: true, ignored: "not_a_payment" });
++
++    const admin = createAdminClient();
++    const { error } = await admin
++        .from("pochi_messages")
++        .upsert(
++            { mpesa_code: parsed.code, amount: parsed.amount, sender_name: parsed.sender, raw: message.slice(0, 600) },
++            { onConflict: "mpesa_code", ignoreDuplicates: true }
++        );
++    if (error) {
++        console.error("Pochi webhook: could not save SMS:", error.message);
++        return NextResponse.json({ error: "Could not save." }, { status: 500 });
++    }
++
++    // Is a customer already waiting on this code?
++    const { data: waiting } = await admin
++        .from("manual_payments")
++        .select("id")
++        .eq("method", "pochi")
++        .eq("status", "submitted")
++        .ilike("provider_ref", parsed.code)
++        .maybeSingle();
++
++    let settled = false;
++    if (waiting) settled = (await trySettlePochi(waiting.id)) === "settled";
++
++    return NextResponse.json({ received: true, matched: !!waiting, settled });
++}
+diff --git a/src/app/checkout/[orderId]/page.tsx b/src/app/checkout/[orderId]/page.tsx
+index 40c3fda..5c52f76 100644
+--- a/src/app/checkout/[orderId]/page.tsx
++++ b/src/app/checkout/[orderId]/page.tsx
+@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
+ import Link from "next/link";
+ import { createClient } from "@/lib/supabase/client";
+ import BrandMark from "@/components/BrandMark";
++import ManualPayPanel from "@/components/ManualPayPanel";
+ 
+ const POLL_EVERY_MS = 8000;
+ 
+@@ -35,6 +36,7 @@ export default function CheckoutPage() {
+     const [qr, setQr] = useState("");
+     const [copied, setCopied] = useState<"address" | "amount" | "">("");
+     const [paid, setPaid] = useState<string | null>(null);
++    const [method, setMethod] = useState<"pochi" | "bank" | "crypto">("pochi");
+ 
+     useEffect(() => {
+         async function load() {
+@@ -196,7 +198,24 @@ export default function CheckoutPage() {
+         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-12 max-w-4xl mx-auto">
+             <div className="mb-8 border-b border-terminal-border pb-6">
+                 <span className="font-mono text-xs text-terminal-gold tracking-widest uppercase">SECURE INSTITUTIONAL CHECKOUT</span>
+-                <h1 className="text-3xl font-bold mt-2">Pay with USDC or USDT</h1>
++                <h1 className="text-3xl font-bold mt-2">
++                    {method === "pochi" ? "Pay with Pochi la Biashara" : method === "bank" ? "Pay by bank transfer" : "Pay with USDC or USDT"}
++                </h1>
++                <div className="flex flex-wrap gap-2 mt-5">
++                    {([
++                        ["pochi", "POCHI LA BIASHARA"],
++                        ["bank", "BANK TRANSFER"],
++                        ["crypto", "USDC / USDT"],
++                    ] as const).map(([id, label]) => (
++                        <button
++                            key={id}
++                            onClick={() => setMethod(id)}
++                            className={`px-4 py-1.5 rounded border text-xs font-mono font-bold ${method === id ? "border-terminal-gold text-terminal-gold" : "border-terminal-border text-terminal-muted hover:text-terminal-text"}`}
++                        >
++                            {label}
++                        </button>
++                    ))}
++                </div>
+             </div>
+ 
+             <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+@@ -209,15 +228,20 @@ export default function CheckoutPage() {
+                         </div>
+                         <div className="flex justify-between items-center text-sm font-mono font-bold text-terminal-gold">
+                             <span>Total Payable</span>
+-                            <span>{payment ? payment.amountDue : info?.approxAmount || total}</span>
++                            <span>{method === "crypto" ? (payment ? payment.amountDue : info?.approxAmount || total) : `${total} ${order.currency}`}</span>
+                         </div>
+                         <p className="text-[11px] text-terminal-muted leading-relaxed">
+-                            USDC and USDT are dollar-pegged digital currencies: 1 coin is worth 1 US dollar.
++                            {method === "crypto"
++                                ? "USDC and USDT are dollar-pegged digital currencies: 1 coin is worth 1 US dollar."
++                                : "The exact amount to pay, in shillings or the bank account's currency, is shown with the payment details."}
+                         </p>
+                     </div>
+                 </div>
+ 
+                 <div className="md:col-span-3">
++                    {method !== "crypto" && <ManualPayPanel key={method} orderId={order.id} method={method} onPaid={(to) => setPaid(to)} />}
++
++                    {method === "crypto" && (<>
+                     {info && !info.available && (
+                         <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border text-xs font-mono text-terminal-gold">
+                             Crypto payments are not available yet. Please check back soon.
+@@ -323,6 +347,7 @@ export default function CheckoutPage() {
+                     )}
+ 
+                     {errorMessage && payment && <p className="mt-3 text-xs font-mono text-red-400">{errorMessage}</p>}
++                    </>)}
+ 
+                     {showDevSimulate && (
+                         <button onClick={simulate} disabled={starting} className="mt-4 w-full py-2 rounded border border-dashed border-terminal-border text-[10px] font-mono text-terminal-muted hover:text-terminal-text disabled:opacity-50">
+diff --git a/src/components/ManualPayPanel.tsx b/src/components/ManualPayPanel.tsx
+new file mode 100644
+index 0000000..302df02
+--- /dev/null
++++ b/src/components/ManualPayPanel.tsx
+@@ -0,0 +1,249 @@
++"use client";
++
++import { useCallback, useEffect, useRef, useState } from "react";
++
++const POLL_EVERY_MS = 8000;
++
++type Method = "pochi" | "bank";
++
++interface ManualView {
++    id: string;
++    method: Method;
++    status: "awaiting" | "submitted" | "succeeded" | "expired";
++    amount: string;
++    currency: string;
++    reference: string;
++    providerRef: string | null;
++    pochi?: { phone: string; displayPhone: string; accountName: string | null } | null;
++    bank?: { bankName: string; accountName: string; accountNumber: string; branch: string | null; swift: string | null; currency: string } | null;
++}
++interface Info {
++    pochi: { available: boolean; tooLarge: boolean; approxAmount: string | null };
++    bank: { available: boolean; approxAmount: string | null };
++    payment: ManualView | null;
++}
++
++const btn = "px-2 py-1 rounded border border-terminal-border text-[10px] font-mono hover:bg-terminal-bg";
++const gold = "w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-xs font-mono tracking-wider hover:bg-terminal-gold/90 disabled:opacity-50";
++const input = "w-full px-3 py-2 rounded bg-terminal-bg border border-terminal-border text-xs font-mono text-terminal-text placeholder:text-terminal-muted focus:outline-none focus:border-terminal-gold";
++
++/** Pays an order with Pochi la Biashara or a bank transfer. Reports back through onPaid when the order is confirmed. */
++export default function ManualPayPanel({ orderId, method, onPaid }: { orderId: string; method: Method; onPaid: (redirectTo: string) => void }) {
++    const [info, setInfo] = useState<Info | null>(null);
++    const [payment, setPayment] = useState<ManualView | null>(null);
++    const [busy, setBusy] = useState(false);
++    const [error, setError] = useState("");
++    const [code, setCode] = useState("");
++    const [name, setName] = useState("");
++    const [copied, setCopied] = useState("");
++    const onPaidRef = useRef(onPaid);
++    onPaidRef.current = onPaid;
++
++    useEffect(() => {
++        let cancelled = false;
++        (async () => {
++            const res = await fetch(`/api/payments/manual?orderId=${encodeURIComponent(orderId)}`);
++            const json = res.ok ? await res.json() : null;
++            if (cancelled) return;
++            setInfo(json);
++            setPayment(json?.payment ?? null);
++        })();
++        return () => {
++            cancelled = true;
++        };
++    }, [orderId]);
++
++    // A payment made with the other method stays open on the server: only show this method's own
++    const mine = payment && payment.method === method ? payment : null;
++    const other = payment && payment.method !== method ? payment : null;
++
++    const poll = useCallback(async () => {
++        if (!payment) return;
++        try {
++            const res = await fetch(`/api/payments/manual/status?paymentId=${encodeURIComponent(payment.id)}`);
++            const json = await res.json();
++            if (!res.ok) return;
++            setPayment((p) => (p ? { ...p, status: json.status } : p));
++            if (json.status === "succeeded") onPaidRef.current(json.redirectTo || "/dashboard");
++        } catch {
++            // network blip: try again next time
++        }
++    }, [payment?.id]);
++
++    useEffect(() => {
++        if (!payment || payment.status !== "submitted") return;
++        const timer = setInterval(poll, POLL_EVERY_MS);
++        return () => clearInterval(timer);
++    }, [payment?.id, payment?.status, poll]);
++
++    const start = async () => {
++        setBusy(true);
++        setError("");
++        try {
++            const res = await fetch("/api/payments/manual", {
++                method: "POST",
++                headers: { "Content-Type": "application/json" },
++                body: JSON.stringify({ orderId, method }),
++            });
++            const json = await res.json();
++            if (!res.ok) throw new Error(json.error || "Could not start the payment.");
++            setPayment(json.payment);
++        } catch (e: any) {
++            setError(e.message);
++        } finally {
++            setBusy(false);
++        }
++    };
++
++    const submit = async () => {
++        if (!mine) return;
++        setBusy(true);
++        setError("");
++        try {
++            const res = await fetch("/api/payments/manual/submit", {
++                method: "POST",
++                headers: { "Content-Type": "application/json" },
++                body: JSON.stringify({ paymentId: mine.id, providerRef: code, payerName: name }),
++            });
++            const json = await res.json();
++            if (!res.ok) throw new Error(json.error || "Could not save your payment.");
++            setPayment(json.payment);
++            if (json.payment.status === "succeeded") onPaidRef.current(json.redirectTo || "/dashboard");
++        } catch (e: any) {
++            setError(e.message);
++        } finally {
++            setBusy(false);
++        }
++    };
++
++    const copy = async (text: string, what: string) => {
++        try {
++            await navigator.clipboard.writeText(text);
++            setCopied(what);
++            setTimeout(() => setCopied(""), 1500);
++        } catch {
++            // clipboard blocked: the text is on screen to copy by hand
++        }
++    };
++
++    const box = "p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-5";
++    const Row = ({ label, value, id, big }: { label: string; value: string; id: string; big?: boolean }) => (
++        <div>
++            <span className="block font-mono text-[10px] uppercase tracking-wider text-terminal-muted mb-1">{label}</span>
++            <div className="flex items-center gap-2 flex-wrap">
++                <span className={`font-mono break-all ${big ? "text-2xl font-bold text-terminal-gold" : "text-sm text-terminal-text"}`}>{value}</span>
++                <button onClick={() => copy(value, id)} className={btn}>{copied === id ? "COPIED" : "COPY"}</button>
++            </div>
++        </div>
++    );
++
++    if (!info) return <div className={`${box} text-xs font-mono text-terminal-muted`}>Loading payment options…</div>;
++
++    const available = method === "pochi" ? info.pochi.available : info.bank.available;
++    if (!available && !mine) {
++        return (
++            <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border text-xs font-mono text-terminal-gold">
++                {method === "pochi" && info.pochi.tooLarge
++                    ? "This amount is above the M-Pesa limit for one transaction. Please pay by bank transfer instead."
++                    : method === "pochi"
++                    ? "Pochi la Biashara payments are not available right now."
++                    : "Bank transfer is not available right now."}
++            </div>
++        );
++    }
++
++    // Step 1: nothing started yet
++    if (!mine && !other) {
++        return (
++            <div className={box}>
++                <p className="text-xs text-terminal-muted leading-relaxed">
++                    {method === "pochi"
++                        ? "You will send the exact amount to our Pochi la Biashara number from M-Pesa, then enter the M-Pesa code from your confirmation SMS. Your access unlocks automatically once we see the payment."
++                        : "You will get our bank details and a reference. After you transfer, enter your bank's transaction reference. We confirm bank transfers by hand once the money reaches our account."}
++                </p>
++                <p className="text-xs font-mono text-terminal-gold">Amount: {method === "pochi" ? info.pochi.approxAmount : info.bank.approxAmount}</p>
++                {error && <p className="text-xs font-mono text-red-400">{error}</p>}
++                <button onClick={start} disabled={busy} className={gold}>{busy ? "PLEASE WAIT..." : "SHOW PAYMENT DETAILS"}</button>
++            </div>
++        );
++    }
++
++    // The other method already has a payment waiting
++    if (!mine && other) {
++        return (
++            <div className={box}>
++                <p className="text-xs text-terminal-muted leading-relaxed">
++                    {other.status === "submitted"
++                        ? "You already sent a payment for this order by another method and it is being checked. Please wait for it to be confirmed."
++                        : "You have payment details open for another method. You can switch to this one."}
++                </p>
++                {error && <p className="text-xs font-mono text-red-400">{error}</p>}
++                {other.status !== "submitted" && <button onClick={start} disabled={busy} className={gold}>{busy ? "PLEASE WAIT..." : "USE THIS METHOD INSTEAD"}</button>}
++            </div>
++        );
++    }
++
++    const p = mine!;
++    const money = `${p.currency === "KES" ? "KES" : p.currency} ${Number(p.amount).toLocaleString("en-KE", { minimumFractionDigits: p.currency === "KES" && method === "pochi" ? 0 : 2 })}`;
++
++    return (
++        <div className={box}>
++            {method === "pochi" && p.pochi && (
++                <>
++                    <Row label="Send exactly" value={money.replace("KES ", "KSh ")} id="amount" big />
++                    <Row label="To Pochi la Biashara number" value={p.pochi.displayPhone} id="phone" />
++                    {p.pochi.accountName && <p className="text-[11px] text-terminal-muted">M-Pesa will show the name <strong>{p.pochi.accountName}</strong> on the confirmation screen.</p>}
++                    <ul className="text-[11px] text-terminal-muted leading-relaxed space-y-1.5 list-disc pl-4">
++                        <li><strong>M-Pesa app:</strong> Pay → Pochi la Biashara → enter the number and amount → enter your PIN.</li>
++                        <li><strong>USSD:</strong> dial <strong>*334#</strong> → Pochi La Biashara → Send money → Pochi la Biashara → number, amount, Hakikisha, PIN.</li>
++                        <li>Normal M-Pesa charges apply and are paid by you. Send the full amount so that at least {money.replace("KES ", "KSh ")} arrives.</li>
++                    </ul>
++                </>
++            )}
++
++            {method === "bank" && p.bank && (
++                <>
++                    <Row label="Transfer exactly" value={money} id="amount" big />
++                    <Row label="Bank" value={p.bank.bankName} id="bank" />
++                    <Row label="Account name" value={p.bank.accountName} id="accname" />
++                    <Row label="Account number" value={p.bank.accountNumber} id="accno" />
++                    {p.bank.branch && <Row label="Branch" value={p.bank.branch} id="branch" />}
++                    {p.bank.swift && <Row label="SWIFT / BIC (international transfers)" value={p.bank.swift} id="swift" />}
++                    <Row label="Payment reference (put this in the narration)" value={p.reference} id="ref" />
++                    <ul className="text-[11px] text-terminal-muted leading-relaxed space-y-1.5 list-disc pl-4">
++                        <li>Always include the reference above so we can match your payment to this order.</li>
++                        <li>Your bank may charge a transfer fee. Make sure the full {money} arrives, otherwise we cannot confirm it automatically.</li>
++                    </ul>
++                </>
++            )}
++
++            {p.status === "awaiting" || (p.status === "submitted" && method === "pochi") ? (
++                <div className="space-y-3 border-t border-terminal-border pt-4">
++                    <label className="block font-mono text-[10px] uppercase tracking-wider text-terminal-muted">
++                        {method === "pochi" ? "M-Pesa confirmation code (from the SMS)" : "Bank transaction reference"}
++                    </label>
++                    <input
++                        className={input}
++                        value={code}
++                        onChange={(e) => setCode(method === "pochi" ? e.target.value.toUpperCase() : e.target.value)}
++                        placeholder={method === "pochi" ? "e.g. SGL4ABC12D" : "e.g. the reference on your bank receipt"}
++                        maxLength={method === "pochi" ? 10 : 64}
++                        autoCapitalize="characters"
++                    />
++                    {method === "bank" && <input className={input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name on the sending account (optional)" maxLength={80} />}
++                    {error && <p className="text-xs font-mono text-red-400">{error}</p>}
++                    <button onClick={submit} disabled={busy || !code.trim()} className={gold}>
++                        {busy ? "PLEASE WAIT..." : p.status === "submitted" ? "UPDATE CODE" : "I HAVE PAID"}
++                    </button>
++                    {p.status === "submitted" && p.providerRef && (
++                        <p className="text-[11px] font-mono text-terminal-muted">Code received: <strong>{p.providerRef}</strong>. Waiting for the payment to show up… this page updates by itself.</p>
++                    )}
++                </div>
++            ) : (
++                <div className="p-3 rounded bg-terminal-bg border border-terminal-border text-xs font-mono text-terminal-muted">
++                    Reference received: <strong>{p.providerRef}</strong>. We are checking for your transfer. Bank transfers are confirmed by hand once the money reaches our account, so this can take a while. You can leave this page: your access unlocks as soon as it is confirmed.
++                </div>
++            )}
++        </div>
++    );
++}
+diff --git a/src/lib/payments/manual/config.ts b/src/lib/payments/manual/config.ts
+new file mode 100644
+index 0000000..0dd38a9
+--- /dev/null
++++ b/src/lib/payments/manual/config.ts
+@@ -0,0 +1,103 @@
++import type { Env } from "@/lib/payments/stablecoin/networks";
++
++export type ManualMethod = "pochi" | "bank";
++export const MANUAL_METHODS: ManualMethod[] = ["pochi", "bank"];
++
++export class ManualPaymentError extends Error {
++    status: number;
++    constructor(message: string, status = 400) {
++        super(message);
++        this.status = status;
++    }
++}
++
++/** M-Pesa allows at most KSh 250,000 per transaction */
++export const POCHI_MAX_KES = 250_000;
++
++export interface PochiConfig {
++    phone: string; // as people dial it: 0700021380
++    displayPhone: string; // 0700 021 380
++    accountName: string | null; // the name M-Pesa shows on the "Hakikisha" confirmation screen
++}
++
++export interface BankConfig {
++    bankName: string;
++    accountName: string;
++    accountNumber: string;
++    branch: string | null;
++    swift: string | null;
++    currency: "KES" | "USD";
++}
++
++/** Pochi is on unless POCHI_ENABLED=false. The number defaults to the Savanna Pochi number. */
++export function getPochiConfig(env: Env = process.env): PochiConfig | null {
++    if (env.POCHI_ENABLED === "false") return null;
++    const phone = (env.POCHI_PHONE || "0700021380").replace(/[\s-]/g, "");
++    if (!/^(0|\+?254)[17]\d{8}$/.test(phone)) return null;
++    const national = phone.replace(/^\+?254/, "0");
++    return {
++        phone: national,
++        displayPhone: `${national.slice(0, 4)} ${national.slice(4, 7)} ${national.slice(7)}`,
++        accountName: env.POCHI_ACCOUNT_NAME?.trim() || null,
++    };
++}
++
++/** Bank transfer is on only when the three required details are set. Nothing is hard-coded. */
++export function getBankConfig(env: Env = process.env): BankConfig | null {
++    const bankName = env.BANK_NAME?.trim();
++    const accountName = env.BANK_ACCOUNT_NAME?.trim();
++    const accountNumber = env.BANK_ACCOUNT_NUMBER?.trim();
++    if (!bankName || !accountName || !accountNumber) return null;
++    return {
++        bankName,
++        accountName,
++        accountNumber,
++        branch: env.BANK_BRANCH?.trim() || null,
++        swift: env.BANK_SWIFT_CODE?.trim() || null,
++        currency: env.BANK_CURRENCY?.trim().toUpperCase() === "USD" ? "USD" : "KES",
++    };
++}
++
++/** The short reference that ties a payment to its order: SC-1A2B3C4D */
++export function orderReference(orderId: string): string {
++    return `SC-${orderId.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
++}
++
++function usdToKesRate(env: Env): number {
++    const rate = Number(env.USD_TO_KES_RATE);
++    if (!Number.isFinite(rate) || rate <= 0) {
++        throw new ManualPaymentError("Payments are not set up yet (missing exchange rate).", 503);
++    }
++    return rate;
++}
++
++/**
++ * What the customer must pay, in the currency of the chosen method.
++ * Conversions round UP so we are never short. Pochi (M-Pesa) only moves whole shillings.
++ */
++export function quoteManual(
++    total: number,
++    orderCurrency: string,
++    target: "KES" | "USD",
++    wholeUnits: boolean,
++    env: Env = process.env
++): { amount: number; currency: "KES" | "USD"; rate: number | null } {
++    const value = Number(total);
++    if (!Number.isFinite(value) || value <= 0) throw new ManualPaymentError("Invalid order amount.");
++    if (orderCurrency !== "KES" && orderCurrency !== "USD") {
++        throw new ManualPaymentError(`Orders in ${orderCurrency} are not supported.`);
++    }
++
++    let amount = value;
++    let rate: number | null = null;
++    if (orderCurrency !== target) {
++        rate = usdToKesRate(env);
++        amount = orderCurrency === "USD" ? value * rate : value / rate;
++    }
++
++    // Round up, ignoring floating-point dust (so 40.000000001 is not bumped a whole unit)
++    const scale = wholeUnits ? 1 : 100;
++    amount = Math.ceil(Math.round(amount * scale * 1e6) / 1e6) / scale;
++    if (amount < (wholeUnits ? 1 : 0.01)) throw new ManualPaymentError("Order amount is too small to charge.");
++    return { amount, currency: target, rate };
++}
+diff --git a/src/lib/payments/manual/order.ts b/src/lib/payments/manual/order.ts
+new file mode 100644
+index 0000000..58efe27
+--- /dev/null
++++ b/src/lib/payments/manual/order.ts
+@@ -0,0 +1,22 @@
++import { createClient } from "@/lib/supabase/server";
++import { ManualPaymentError } from "@/lib/payments/manual/config";
++
++/** The signed-in user's own pending order. Row-level security only returns orders that belong to them. */
++export async function loadPayableOrder(orderId: string | null | undefined) {
++    const supabase = await createClient();
++    const {
++        data: { user },
++    } = await supabase.auth.getUser();
++    if (!user) throw new ManualPaymentError("Please sign in.", 401);
++    if (!orderId) throw new ManualPaymentError("Missing order.", 400);
++
++    const { data: order } = await supabase
++        .from("orders")
++        .select("id, user_id, total_amount, currency, status")
++        .eq("id", orderId)
++        .maybeSingle();
++
++    if (!order) throw new ManualPaymentError("Order not found.", 404);
++    if (order.status !== "pending") throw new ManualPaymentError("This order is not awaiting payment.", 409);
++    return { user, order };
++}
+diff --git a/src/lib/payments/manual/settle.ts b/src/lib/payments/manual/settle.ts
+new file mode 100644
+index 0000000..532e295
+--- /dev/null
++++ b/src/lib/payments/manual/settle.ts
+@@ -0,0 +1,70 @@
++import { createAdminClient } from "@/lib/supabase/admin";
++import { completeOrder } from "@/lib/payments/fulfil";
++
++export type SettleResult = "settled" | "no_message" | "underpaid" | "not_eligible" | "failed";
++
++/**
++ * Confirms a submitted Pochi payment if the forwarded M-Pesa SMS for its code has arrived and the amount covers the price.
++ * Safe to call any number of times, from the customer's page, the webhook or both at once:
++ * the SMS is "claimed" with a conditional update, so it can pay for exactly one order.
++ */
++export async function trySettlePochi(paymentId: string): Promise<SettleResult> {
++    const admin = createAdminClient();
++
++    const { data: payment } = await admin
++        .from("manual_payments")
++        .select("id, order_id, method, status, amount, currency, provider_ref")
++        .eq("id", paymentId)
++        .maybeSingle();
++    if (!payment || payment.method !== "pochi" || payment.status !== "submitted" || !payment.provider_ref) {
++        return "not_eligible";
++    }
++
++    const { data: message } = await admin
++        .from("pochi_messages")
++        .select("id, amount, claimed_by")
++        .eq("mpesa_code", String(payment.provider_ref).toUpperCase())
++        .maybeSingle();
++    if (!message || message.claimed_by) return "no_message";
++
++    // The customer pays in KES; an SMS for less than the price never confirms anything by itself
++    if (!(Number(message.amount) >= Number(payment.amount))) return "underpaid";
++
++    // Claim the SMS. If another request got there first, this returns no row.
++    const { data: claimed } = await admin
++        .from("pochi_messages")
++        .update({ claimed_by: payment.id })
++        .eq("id", message.id)
++        .is("claimed_by", null)
++        .select("id")
++        .maybeSingle();
++    if (!claimed) return "no_message";
++
++    const result = await completeOrder(payment.order_id);
++    if (!result.ok) {
++        // Order cannot be paid (e.g. it was closed): give the SMS back so an admin can sort it out
++        await admin.from("pochi_messages").update({ claimed_by: null }).eq("id", message.id);
++        console.error("Pochi settle: could not complete order", payment.order_id, result.message);
++        return "failed";
++    }
++
++    const now = new Date().toISOString();
++    await admin
++        .from("manual_payments")
++        .update({ status: "succeeded", paid_at: now, updated_at: now })
++        .eq("id", payment.id)
++        .eq("status", "submitted");
++    return "settled";
++}
++
++/** Where to send the customer once an order is paid */
++export async function redirectForOrder(orderId: string): Promise<string> {
++    const admin = createAdminClient();
++    const { data: order } = await admin.from("orders").select("course_id, kind").eq("id", orderId).maybeSingle();
++    if (order?.kind === "community") return "/community/killzone";
++    if (order?.course_id) {
++        const { data: course } = await admin.from("courses").select("slug").eq("id", order.course_id).maybeSingle();
++        if (course?.slug) return `/learn/${course.slug}/lessons`;
++    }
++    return "/dashboard";
++}
+diff --git a/src/lib/payments/manual/sms.ts b/src/lib/payments/manual/sms.ts
+new file mode 100644
+index 0000000..d8b0529
+--- /dev/null
++++ b/src/lib/payments/manual/sms.ts
+@@ -0,0 +1,38 @@
++/**
++ * Reads the M-Pesa SMS that arrives on the Pochi phone when a customer pays, e.g.
++ *   "SGL4ABC12D Confirmed. You have received Ksh500.00 from JOHN DOE ..."
++ * Only the code, the amount and (if present) the sender's name are used.
++ * The wording of M-Pesa SMS changes now and then, so every part is matched loosely and anything that
++ * does not look like an incoming payment is ignored. TEST WITH A REAL SMS before going live.
++ */
++export interface ParsedPochiSms {
++    code: string;
++    amount: number;
++    sender: string | null;
++}
++
++export const MPESA_CODE = /^[A-Z][A-Z0-9]{9}$/;
++
++export function normaliseMpesaCode(input: string): string {
++    return String(input || "").trim().toUpperCase().replace(/\s+/g, "");
++}
++
++export function parsePochiSms(message: string): ParsedPochiSms | null {
++    const text = String(message || "").replace(/\s+/g, " ").trim();
++    if (!text) return null;
++
++    // Only incoming money: skip "you have sent", "paid to", "withdraw", balances, airtime and so on
++    if (!/\breceived\b/i.test(text)) return null;
++
++    const code = text.match(/\b([A-Z][A-Z0-9]{9})\b\s*(?:Confirmed|confirmed)/i)?.[1]?.toUpperCase();
++    if (!code || !MPESA_CODE.test(code)) return null;
++
++    const amountText = text.match(/received\s+(?:Ksh|KES)\.?\s*([\d,]+(?:\.\d{1,2})?)/i)?.[1];
++    if (!amountText) return null;
++    const amount = Number(amountText.replace(/,/g, ""));
++    if (!Number.isFinite(amount) || amount <= 0) return null;
++
++    const sender = text.match(/\bfrom\s+(.+?)(?:\s+\d{9,12}\b|\s+on\s+\d|\.\s|$)/i)?.[1]?.trim().slice(0, 80) || null;
++
++    return { code, amount, sender };
++}
+diff --git a/src/lib/payments/manual/view.ts b/src/lib/payments/manual/view.ts
+new file mode 100644
+index 0000000..d9bc034
+--- /dev/null
++++ b/src/lib/payments/manual/view.ts
+@@ -0,0 +1,30 @@
++import { getBankConfig, getPochiConfig, type ManualMethod } from "@/lib/payments/manual/config";
++
++/** What the browser is allowed to see about a manual payment */
++export function buildManualView(p: any) {
++    const method = p.method as ManualMethod;
++    const view: Record<string, unknown> = {
++        id: p.id,
++        method,
++        status: p.status,
++        amount: Number(p.amount).toFixed(2),
++        currency: p.currency,
++        reference: p.reference,
++        providerRef: p.provider_ref ?? null,
++    };
++    if (method === "pochi") {
++        const c = getPochiConfig();
++        view.pochi = c && { phone: c.phone, displayPhone: c.displayPhone, accountName: c.accountName };
++    } else {
++        const c = getBankConfig();
++        view.bank = c && {
++            bankName: c.bankName,
++            accountName: c.accountName,
++            accountNumber: c.accountNumber,
++            branch: c.branch,
++            swift: c.swift,
++            currency: c.currency,
++        };
++    }
++    return view;
++}
+diff --git a/supabase/migrations/00013_manual_payments.sql b/supabase/migrations/00013_manual_payments.sql
+new file mode 100644
+index 0000000..ee0496d
+--- /dev/null
++++ b/supabase/migrations/00013_manual_payments.sql
+@@ -0,0 +1,59 @@
++-- ================================================================
++-- 00013: Pochi la Biashara and bank-transfer payments
++-- Neither has a collection API, so the customer pays outside the site and then gives us the
++-- M-Pesa code (Pochi) or the bank transaction reference (bank). Pochi payments are confirmed
++-- automatically when the matching M-Pesa SMS reaches /api/webhooks/pochi. Bank payments (and
++-- any Pochi payment the SMS never confirms) are confirmed by an admin on /admin/orders.
++-- Browsers have no access to these tables.
++-- ================================================================
++
++create table public.manual_payments (
++  id uuid primary key default gen_random_uuid(),
++  order_id uuid not null references public.orders(id) on delete cascade,
++  user_id uuid not null references public.profiles(id) on delete cascade,
++  method text not null check (method in ('pochi', 'bank')),
++  reference text not null,                          -- short order reference shown to the customer, e.g. SC-1A2B3C4D
++  amount numeric(14, 2) not null check (amount > 0),  -- what the customer must pay, in `currency`
++  currency text not null check (currency in ('KES', 'USD')),
++  fx_rate numeric(12, 4),                           -- shillings per dollar, only when the order had to be converted
++  provider_ref text,                                -- M-Pesa code or bank reference typed in by the customer
++  payer_name text,
++  attempts int not null default 0,
++  status text not null default 'awaiting'
++    check (status in ('awaiting', 'submitted', 'succeeded', 'expired')),
++  submitted_at timestamptz,
++  paid_at timestamptz,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create index manual_payments_user_idx on public.manual_payments (user_id);
++create index manual_payments_status_idx on public.manual_payments (status, created_at);
++
++-- One open manual payment per order
++create unique index manual_payments_one_open_per_order
++  on public.manual_payments (order_id) where status in ('awaiting', 'submitted');
++
++-- A code or reference can only back one payment
++create unique index manual_payments_ref_unique
++  on public.manual_payments (method, upper(provider_ref))
++  where provider_ref is not null and status in ('submitted', 'succeeded');
++
++-- Every "you have received" M-Pesa SMS the phone forwards to us (your reconciliation record)
++create table public.pochi_messages (
++  id uuid primary key default gen_random_uuid(),
++  mpesa_code text not null unique,
++  amount numeric(14, 2) not null check (amount > 0),
++  sender_name text,
++  raw text not null,
++  claimed_by uuid unique references public.manual_payments(id),
++  received_at timestamptz not null default now()
++);
++create index pochi_messages_unclaimed_idx on public.pochi_messages (received_at) where claimed_by is null;
++
++alter table public.manual_payments enable row level security;
++alter table public.pochi_messages enable row level security;
++
++-- No policies on purpose: only the server (service role) can read or write these.
++revoke all on public.manual_payments from anon, authenticated;
++revoke all on public.pochi_messages from anon, authenticated;
