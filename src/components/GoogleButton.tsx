@@ -19,10 +19,16 @@ export default function GoogleButton({
         setLoading(true);
         onError?.("");
         try {
+            // Supabase only redirects back to a URL that matches its "Redirect URLs" list, and a URL
+            // with a ?next=... tail does NOT match an entry for plain /auth/callback (it then falls back
+            // to the Site URL and the sign-in never completes). So the default destination is sent
+            // without a query string; only a custom `next` needs the wildcard entry described in
+            // GOOGLE_SIGNIN_SETUP.md.
+            const callback = `${window.location.origin}/auth/callback`;
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: "google",
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+                    redirectTo: next === "/dashboard" ? callback : `${callback}?next=${encodeURIComponent(next)}`,
                     queryParams: { prompt: "select_account" }, // always let them pick which Google account
                 },
             });

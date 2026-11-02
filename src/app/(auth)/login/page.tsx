@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
 import GoogleButton from "@/components/GoogleButton";
+import { oauthErrorMessage } from "@/lib/auth/oauth-errors";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -20,9 +21,8 @@ export default function LoginPage() {
 
     // The Google callback sends people back here with ?error=... if something went wrong
     useEffect(() => {
-        const code = new URLSearchParams(window.location.search).get("error");
-        if (code === "oauth_cancelled") setError("Google sign-in was cancelled.");
-        else if (code) setError("Google sign-in failed. Please try again.");
+        const message = oauthErrorMessage(new URLSearchParams(window.location.search).get("error"));
+        if (message) setError(message);
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
