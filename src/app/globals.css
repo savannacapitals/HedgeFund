@@ -1720,3 +1720,16 @@ a.aio-card:hover, .aio-card.hover:hover { border-color: rgb(var(--sc-green-rgb) 
 @media (max-width: 860px) {
     .ai-feature-panel { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 32px 24px; }
 }
+
+/* ---------- Directory: members-only (locked) platforms ---------- */
+.aio-lockzone { margin-top: 20px; }
+.aio-locked-card { position: relative; pointer-events: none; user-select: none; opacity: .8; }
+.aio-locked-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.aio-locked-ico { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--sc-border-2); background: var(--sc-tint); font-size: 18px; }
+.aio-locked-cat { margin-top: 8px; font-size: 12px; color: var(--sc-fg-4); }
+.aio-bar { height: 10px; border-radius: 6px; background: var(--sc-border); margin-top: 8px; filter: blur(1.5px); }
+.aio-bar.w60 { width: 60%; height: 14px; margin-top: 0; } .aio-bar.w80 { width: 80%; } .aio-bar.w100 { width: 100%; }
+.aio-locked-tag { display: inline-block; margin-top: 16px; font-family: var(--font-jetbrains-mono), monospace; font-size: 10.5px; letter-spacing: .1em; color: var(--sc-gold); }
+.aio-lockcta { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; border-color: color-mix(in srgb, var(--sc-gold) 45%, transparent); }
+.aio-lockcta p { margin-top: 6px; max-width: 560px; font-size: 13.5px; }
+.aio-lockcta-actions { display: flex; flex-wrap: wrap; gap: 10px; }

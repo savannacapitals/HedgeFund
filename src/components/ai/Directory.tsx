@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from "react";
 import PlatformCard, { type PlatformSummary } from "@/components/ai/PlatformCard";
-import { CATEGORIES, KENYA_ELIGIBILITY, STATUSES } from "@/lib/ai/config";
+import MembershipButton from "@/components/ai/MembershipButton";
+import { CATEGORIES, DISPLAY_MEMBERSHIP, KENYA_ELIGIBILITY, STATUSES, categoryLabel } from "@/lib/ai/config";
 
 /** Searchable, filterable directory. Filtering happens in the browser on the public summary data. */
-export default function Directory({ platforms, savedIds = [], initialCategory = "all" }: { platforms: PlatformSummary[]; savedIds?: string[]; initialCategory?: string }) {
+export default function Directory({ platforms, savedIds = [], initialCategory = "all", lockedCategories = [], signedIn = false }: { platforms: PlatformSummary[]; savedIds?: string[]; initialCategory?: string; lockedCategories?: string[]; signedIn?: boolean }) {
     const [q, setQ] = useState("");
     const [category, setCategory] = useState(initialCategory);
     const [country, setCountry] = useState("all");
@@ -44,7 +45,7 @@ export default function Directory({ platforms, savedIds = [], initialCategory = 
             </div>
 
             <p aria-live="polite" style={{ fontSize: 12, color: "var(--sc-fg-4)", marginBottom: 16 }}>
-                Showing {shown.length} of {platforms.length} platforms
+                Showing {shown.length} of {platforms.length + lockedCategories.length} platforms{lockedCategories.length ? ` · ${lockedCategories.length} members-only` : ""}
             </p>
 
             {shown.length === 0 ? (
@@ -56,6 +57,37 @@ export default function Directory({ platforms, savedIds = [], initialCategory = 
             ) : (
                 <div className="aio-grid c3">
                     {shown.map((p) => <PlatformCard key={p.id} p={p} saved={saved.has(p.id)} />)}
+                </div>
+            )}
+
+            {lockedCategories.length > 0 && (
+                <div className="aio-lockzone">
+                    <div className="aio-grid c3" aria-hidden="true">
+                        {(category === "all" ? lockedCategories : lockedCategories.filter((c) => c === category)).slice(0, 6).map((c, i) => (
+                            <div key={i} className="aio-card aio-locked-card">
+                                <div className="aio-locked-top">
+                                    <span className="aio-locked-ico">🔒</span>
+                                    <div>
+                                        <div className="aio-bar w60" />
+                                        <div className="aio-locked-cat">{categoryLabel(c)}</div>
+                                    </div>
+                                </div>
+                                <div className="aio-bar w100" />
+                                <div className="aio-bar w80" />
+                                <span className="aio-locked-tag">MEMBERS ONLY</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="aio-card aio-lockcta">
+                        <div>
+                            <h3>{lockedCategories.length} more researched platform{lockedCategories.length === 1 ? "" : "s"} for members</h3>
+                            <p>Unlock the full directory with every platform&apos;s status, Kenya eligibility and step-by-step guide. Search and filters above cover your {platforms.length} free platform{platforms.length === 1 ? "" : "s"} only.</p>
+                        </div>
+                        <div className="aio-lockcta-actions">
+                            <MembershipButton label={`Unlock all — ${DISPLAY_MEMBERSHIP}`} />
+                            {!signedIn && <a href="/login" className="aio-btn ghost">Sign in</a>}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

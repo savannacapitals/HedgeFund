@@ -13,6 +13,11 @@ export function assistancePriceUsd(): number {
     const n = Number(process.env.AI_ASSISTANCE_PRICE_USD);
     return Number.isFinite(n) && n > 0 ? n : 15;
 }
+/** How many platforms people without an active membership can see. Override with AI_FREE_PLATFORM_LIMIT. */
+export function freePlatformLimit(): number {
+    const n = Number(process.env.AI_FREE_PLATFORM_LIMIT);
+    return Number.isInteger(n) && n >= 0 ? n : 3;
+}
 export function membershipDays(): number {
     const n = Number(process.env.AI_MEMBERSHIP_DAYS);
     return Number.isInteger(n) && n > 0 ? n : 30;

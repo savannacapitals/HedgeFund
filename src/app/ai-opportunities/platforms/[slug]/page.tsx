@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AI_BASE, DISPLAY_ASSISTANCE, DISPLAY_MEMBERSHIP, NOT_VERIFIED, categoryLabel, yesNoLabel } from "@/lib/ai/config";
-import { getGuide, getPlatformBySlug, getSignedInUser } from "@/lib/ai/data";
+import { getFreePlatformIds, getGuide, getPlatformBySlug, getSignedInUser, listPlatforms } from "@/lib/ai/data";
 import { getAiMembership } from "@/lib/ai/membership";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { KenyaBadge, PlatformMark, StatusBadge } from "@/components/ai/StatusBadge";
@@ -15,7 +15,13 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     const p = await getPlatformBySlug(slug);
-    return { title: p ? `${p.name} | Savanna AI Opportunities` : "Platform | Savanna AI Opportunities" };
+    if (!p) return { title: "Platform | Savanna AI Opportunities" };
+    const user = await getSignedInUser();
+    const m = user ? await getAiMembership(user.id).catch(() => null) : null;
+    const allowed = !!m?.active || (await getFreePlatformIds()).includes(p.id);
+    return allowed
+        ? { title: `${p.name} | Savanna AI Opportunities` }
+        : { title: "Members-only platform | Savanna AI Opportunities", robots: { index: false, follow: false } };
 }
 
 const val = (v: any) => (v === null || v === undefined || v === "" ? NOT_VERIFIED : v);
@@ -42,6 +48,31 @@ export default async function PlatformPage({ params }: { params: Promise<{ slug:
     const user = await getSignedInUser();
     const membership = user ? await getAiMembership(user.id) : null;
     const isMember = !!membership?.active;
+
+    // Visitors without a membership can open only the free sample platforms. Everything else shows no platform details at all.
+    if (!isMember && !(await getFreePlatformIds()).includes(p.id)) {
+        const total = (await listPlatforms()).length;
+        return (
+            <div className="aio-wrap" style={{ padding: "56px 0 88px" }}>
+                <Link href={`${AI_BASE}/platforms`} style={{ fontSize: 12, color: "var(--sc-fg-4)" }}>← Directory</Link>
+                <div className="aio-card aio-lock" style={{ marginTop: 28 }}>
+                    <span className="aio-eyebrow">Members only</span>
+                    <h1 className="aio-h2">This platform is part of the members&apos; directory</h1>
+                    <p className="aio-lede" style={{ margin: "14px auto 0" }}>
+                        Membership unlocks all {total} researched platforms, each with its verification status, Kenya eligibility and a step-by-step registration guide.
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 26 }}>
+                        <MembershipButton label={`Unlock the full directory — ${DISPLAY_MEMBERSHIP}`} />
+                        {!user && <Link href="/login" className="aio-btn ghost">Sign in</Link>}
+                    </div>
+                    <p style={{ fontSize: 12, marginTop: 14 }}>
+                        {user && membership?.expiresAt ? "Your membership has expired. Renew to see this platform." : `${DISPLAY_MEMBERSHIP} for 30 days. Paid to Savanna only, never to a platform.`}
+                    </p>
+                </div>
+                <div style={{ marginTop: 56 }}><Disclaimer /></div>
+            </div>
+        );
+    }
 
     let guide: any = null;
     let saved = false;

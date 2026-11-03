@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { AI_BASE, CATEGORIES, DISPLAY_ASSISTANCE, DISPLAY_MEMBERSHIP, membershipDays, membershipPriceKes } from "@/lib/ai/config";
-import { getSignedInUser, listPlatforms } from "@/lib/ai/data";
+import { getSignedInUser, listPlatformsForViewer } from "@/lib/ai/data";
 import { getAiMembership } from "@/lib/ai/membership";
 import PlatformCard from "@/components/ai/PlatformCard";
 import { KenyaBadge, StatusBadge } from "@/components/ai/StatusBadge";
@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 const FAQ: [string, string][] = [
+    ["What do I get without paying?", "You can explore a free sample of the directory, and see the totals for the whole directory. Membership unlocks every researched platform with its status, Kenya eligibility and full step-by-step guide."],
     ["Is Savanna AI Opportunities a job board or an employer?", "No. We are an independent research and guidance platform. We research third-party AI work platforms and explain how they work. We do not hire you, place you or represent any listed company."],
     ["Does the membership guarantee I get work?", "No. Membership pays for access to our research, guides and updates. Whether a platform accepts you, assigns you projects or pays you is decided only by that platform. Anyone who promises otherwise is a red flag."],
     ["Will I pay a platform when I register with it?", "You should not need to. Our membership fee is paid to Savanna only and is separate from anything a third-party platform asks. Treat any request to pay for access to work with caution and read our scam warnings."],
@@ -52,26 +53,28 @@ function Ico({ d }: { d: string }) {
 }
 
 export default async function AiOpportunitiesPage() {
-    const [platforms, user] = await Promise.all([listPlatforms(), getSignedInUser()]);
+    const user = await getSignedInUser();
     const membership = user ? await getAiMembership(user.id).catch(() => null) : null;
     const isMember = !!membership?.active;
+    const view = await listPlatformsForViewer(isMember);
+    const platforms = view.visible; // only what this visitor may see
+    const lockedCount = view.lockedCategories.length;
+    const limit = view.limit;
 
-    const featured = platforms.filter((p) => p.is_featured).slice(0, 3);
-    const recent = [...platforms].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 3);
-    const verifiedCount = platforms.filter((p) => p.verification_status === "verified").length;
-    const kenyaCount = platforms.filter((p) => p.kenya_eligibility === "yes" || p.kenya_eligibility === "conditional").length;
-    const countFor = (id: string) => platforms.filter((p) => p.category === id).length;
-    const sample = featured[0] ?? platforms[0] ?? null;
+    const featured = isMember ? platforms.filter((p) => p.is_featured).slice(0, 3) : platforms; // visitors see the free sample
+    const recent = isMember ? [...platforms].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 3) : [];
+    const countFor = (id: string) => view.totals.byCategory[id] ?? 0;
+    const sample = platforms.find((p) => p.is_featured) ?? platforms[0] ?? null;
     const days = membershipDays();
     const perDay = (membershipPriceKes() / days).toFixed(2);
 
     const stats = [
-        { n: platforms.length, l: "platforms researched" },
-        { n: verifiedCount, l: "marked Verified" },
-        { n: kenyaCount, l: "accept or conditionally accept Kenya" },
+        { n: view.totals.all, l: "platforms researched" },
+        { n: view.totals.verified, l: "marked Verified" },
+        { n: view.totals.kenya, l: "accept or conditionally accept Kenya" },
         { n: CATEGORIES.length, l: "categories of AI work" },
     ];
-    const showStats = platforms.length > 0;
+    const showStats = view.totals.all > 0;
 
     const primaryCta = isMember ? (
         <Link href={`${AI_BASE}/platforms`} className="aio-btn primary">Open the directory →</Link>
@@ -100,7 +103,7 @@ export default async function AiOpportunitiesPage() {
                         </p>
                         <div className="aio-actions">
                             {primaryCta}
-                            <Link href={`${AI_BASE}/platforms`} className="aio-btn ghost">Browse the directory free</Link>
+                            <Link href={`${AI_BASE}/platforms`} className="aio-btn ghost">{isMember ? "Browse the directory" : `See ${limit} free platform${limit === 1 ? "" : "s"}`}</Link>
                         </div>
                         <div className="aio-trust">
                             <span>{DISPLAY_MEMBERSHIP} for {days} days</span>
@@ -133,7 +136,7 @@ export default async function AiOpportunitiesPage() {
                             </div>
                         ))}
                         <div className="aio-preview-foot">
-                            <p>{isMember ? "Your membership is active. Open any platform to read the full guide." : "The directory and each platform's status are free. The full guides unlock with membership."}</p>
+                            <p>{isMember ? "Your membership is active. Open any platform to read the full guide." : "A few platforms are free to explore. The full directory and every guide unlock with membership."}</p>
                             {isMember ? (
                                 <Link href={`${AI_BASE}/dashboard`} className="aio-btn primary">Go to my dashboard</Link>
                             ) : (
@@ -252,8 +255,8 @@ export default async function AiOpportunitiesPage() {
                     <div className="aio-wrap">
                         {featured.length > 0 && (
                             <>
-                                <span className="aio-eyebrow">Featured platforms</span>
-                                <h2 className="aio-h2">Where our research starts.</h2>
+                                <span className="aio-eyebrow">{isMember ? "Featured platforms" : "Free sample"}</span>
+                                <h2 className="aio-h2">{isMember ? "Where our research starts." : `${limit} platform${limit === 1 ? "" : "s"} you can explore now.`}</h2>
                                 <p className="aio-lede" style={{ marginTop: 12 }}>Featured does not mean endorsed. Check each platform&apos;s verification status and Kenya eligibility before you spend time on it.</p>
                                 <div className="aio-grid c3" style={{ marginTop: 32 }}>{featured.map((p) => <PlatformCard key={p.id} p={p} />)}</div>
                             </>
@@ -265,7 +268,19 @@ export default async function AiOpportunitiesPage() {
                                 <div className="aio-grid c3" style={{ marginTop: 32 }}>{recent.map((p) => <PlatformCard key={p.id} p={p} />)}</div>
                             </div>
                         )}
-                        <div style={{ marginTop: 28 }}><Link href={`${AI_BASE}/platforms`} className="aio-btn ghost">View the full directory</Link></div>
+                        {!isMember && lockedCount > 0 && (
+                            <div className="aio-card aio-lockcta" style={{ marginTop: 28 }}>
+                                <div>
+                                    <h3>{lockedCount} more researched platform{lockedCount === 1 ? "" : "s"} are members-only</h3>
+                                    <p>Unlock every platform with its status, Kenya eligibility and step-by-step guide.</p>
+                                </div>
+                                <div className="aio-lockcta-actions">
+                                    <MembershipButton label={`Unlock all — ${DISPLAY_MEMBERSHIP}`} />
+                                    <Link href={`${AI_BASE}/platforms`} className="aio-btn ghost">See the directory</Link>
+                                </div>
+                            </div>
+                        )}
+                        {(isMember || lockedCount === 0) && <div style={{ marginTop: 28 }}><Link href={`${AI_BASE}/platforms`} className="aio-btn ghost">View the full directory</Link></div>}
                     </div>
                 </section>
             )}

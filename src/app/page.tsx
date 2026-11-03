@@ -1,4 +1,4 @@
-import { DISPLAY_MEMBERSHIP } from "@/lib/ai/config";
+import { DISPLAY_MEMBERSHIP, freePlatformLimit } from "@/lib/ai/config";
 
 const ArrowUpRight = () => (
     <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="h-4 w-4">
@@ -84,6 +84,7 @@ const capabilities = [
 ];
 
 export default function Home() {
+    const freeCount = freePlatformLimit();
     return (
         <div className="home-page">
             <section className="hero-section section-shell">
@@ -147,7 +148,7 @@ export default function Home() {
                         <p>We research AI training and data platforms, check whether they accept Kenyan applicants, and show you how to register and prepare, so you spend your time on the ones worth it.</p>
                         <div className="hero-actions">
                             <a href="/ai-opportunities" className="button button-primary">Explore AI Opportunities <ArrowUpRight /></a>
-                            <a href="/ai-opportunities/platforms" className="button button-secondary">Browse the free directory <ArrowRight /></a>
+                            <a href="/ai-opportunities/platforms" className="button button-secondary">See the free platforms <ArrowRight /></a>
                         </div>
                     </div>
                     <div className="ai-feature-card" aria-label="What is inside">
@@ -158,7 +159,7 @@ export default function Home() {
                             <li>Step-by-step registration guides</li>
                             <li>Assessment preparation and scam warnings</li>
                         </ul>
-                        <div className="ai-feature-card-foot">Directory free · Full guides {DISPLAY_MEMBERSHIP} for 30 days</div>
+                        <div className="ai-feature-card-foot">{freeCount} platform{freeCount === 1 ? "" : "s"} free · Full directory and guides {DISPLAY_MEMBERSHIP} for 30 days</div>
                     </div>
                 </div>
             </section>
