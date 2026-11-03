@@ -45,7 +45,7 @@ const navigation = [
     { label: "Platform", href: "/#platform" },
     { label: "Research", href: "/research" },
     { label: "Academy", href: "/academy" },
-    { label: "AI Opportunities", href: "/ai-opportunities", icon: "ai" },
+    { label: "AI Opportunities", href: "/ai-opportunities", highlight: true },
     { label: "About", href: "/#about" },
 ];
 
@@ -63,18 +63,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <span className="brand-name">SAVANNA<span>CAPITALS</span></span>
                         </a>
                         <nav className="desktop-nav" aria-label="Main navigation">
-                            {navigation.map((item) => (
-                                <a href={item.href} key={item.label} className={item.icon ? "nav-with-icon" : undefined}>
-                                    {item.icon && (
-                                        <svg aria-hidden="true" viewBox="0 0 20 20" width="14" height="14" fill="none">
-                                            <rect x="5" y="5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" />
-                                            <path d="M8 2v3M12 2v3M8 15v3M12 15v3M2 8h3M2 12h3M15 8h3M15 12h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                                            <circle cx="10" cy="10" r="1.6" fill="currentColor" />
-                                        </svg>
-                                    )}
-                                    {item.label}
-                                </a>
-                            ))}
+                            {navigation.map((item) =>
+                                item.highlight ? (
+                                    <a href={item.href} key={item.label} className="nav-ai-btn" aria-label="AI Opportunities">
+                                        <span className="nav-ai-chip" aria-hidden="true">
+                                            <svg viewBox="0 0 20 20" width="13" height="13" fill="none">
+                                                <rect x="5" y="5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                                                <path d="M8 2v3M12 2v3M8 15v3M12 15v3M2 8h3M2 12h3M15 8h3M15 12h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                                <circle cx="10" cy="10" r="1.7" fill="currentColor" />
+                                            </svg>
+                                            AI
+                                        </span>
+                                        <span className="nav-ai-text">Opportunities</span>
+                                        <span className="nav-ai-dot" aria-hidden="true" />
+                                    </a>
+                                ) : (
+                                    <a href={item.href} key={item.label}>{item.label}</a>
+                                ),
+                            )}
                         </nav>
                         <div className="header-actions">
                             <ThemeToggle />
