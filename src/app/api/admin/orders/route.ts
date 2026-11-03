@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
         let query = admin
             .from("orders")
-            .select("id, user_id, course_id, kind, total_amount, currency, status, created_at, updated_at, profiles(email, full_name), courses(title)")
+            .select("id, user_id, course_id, kind, total_amount, currency, status, created_at, updated_at")
             .order("created_at", { ascending: false })
             .limit(300);
         const status = url.searchParams.get("status");
@@ -29,6 +29,22 @@ export async function GET(request: Request) {
         if (error) throw dbError(error);
 
         const ids = (data ?? []).map((o) => o.id);
+
+        // Looked up separately (not embedded) so this page keeps working even if the database
+        // relationship between orders and profiles/courses is missing or the API cache is stale.
+        const userIds = Array.from(new Set((data ?? []).map((o: any) => o.user_id).filter(Boolean)));
+        const courseIds = Array.from(new Set((data ?? []).map((o: any) => o.course_id).filter(Boolean)));
+        const profileById = new Map<string, any>();
+        const courseById = new Map<string, any>();
+        if (userIds.length) {
+            const { data: profs } = await admin.from("profiles").select("id, email, full_name").in("id", userIds);
+            for (const p of profs ?? []) profileById.set(p.id, p);
+        }
+        if (courseIds.length) {
+            const { data: crs } = await admin.from("courses").select("id, title").in("id", courseIds);
+            for (const c of crs ?? []) courseById.set(c.id, c);
+        }
+
         const latestPayment = new Map<string, any>();
         if (ids.length) {
             const { data: pays } = await admin
@@ -63,7 +79,6 @@ export async function GET(request: Request) {
             }
         }
 
-        const one = (v: any) => (Array.isArray(v) ? v[0] : v);
         const orders = (data ?? []).map((o: any) => {
             const pay = latestPayment.get(o.id);
             return {
@@ -73,10 +88,10 @@ export async function GET(request: Request) {
                 currency: o.currency,
                 created_at: o.created_at,
                 updated_at: o.updated_at,
-                customer: one(o.profiles)?.email || "unknown",
-                customerName: one(o.profiles)?.full_name || null,
+                customer: profileById.get(o.user_id)?.email || "unknown",
+                customerName: profileById.get(o.user_id)?.full_name || null,
                 course:
-                    one(o.courses)?.title ||
+                    courseById.get(o.course_id)?.title ||
                     ({ ai_membership: "AI Opportunities · Membership", ai_assistance: "AI Opportunities · Account assistance", community: "Killzone Journal" } as Record<string, string>)[o.kind] ||
                     null,
                 payment: pay
@@ -107,12 +122,13 @@ export async function POST(request: Request) {
 
         const { data: order } = await admin
             .from("orders")
-            .select("id, user_id, course_id, status, total_amount, currency, profiles(email)")
+            .select("id, user_id, course_id, status, total_amount, currency")
             .eq("id", body.orderId)
             .maybeSingle();
         if (!order) throw new HttpError("Order not found.", 404);
 
-        const email = (Array.isArray((order as any).profiles) ? (order as any).profiles[0] : (order as any).profiles)?.email || "unknown";
+        const { data: profile } = await admin.from("profiles").select("email").eq("id", order.user_id).maybeSingle();
+        const email = profile?.email || "unknown";
         const label = `Order ${order.id.slice(0, 8)} (${Number(order.total_amount).toFixed(2)} ${order.currency}, ${email})`;
         const now = new Date().toISOString();
 
