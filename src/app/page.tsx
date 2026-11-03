@@ -1,3 +1,5 @@
+import { DISPLAY_MEMBERSHIP } from "@/lib/ai/config";
+
 const ArrowUpRight = () => (
     <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="h-4 w-4">
         <path d="M5 15 15 5M6 5h9v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -95,6 +97,11 @@ export default function Home() {
                         <a href="/research" className="button button-primary">Explore our research <ArrowUpRight /></a>
                         <a href="/academy" className="button button-secondary">Discover the Academy <ArrowRight /></a>
                     </div>
+                    <a href="/ai-opportunities" className="hero-ai-pill">
+                        <span className="hero-ai-chip">AI</span>
+                        <span>Looking for AI work? Explore AI Opportunities</span>
+                        <ArrowRight />
+                    </a>
                     <div className="hero-footnote"><span className="footnote-dot" /> RESEARCH-LED <span className="footnote-divider">/</span> AFRICA-FOCUSED <span className="footnote-divider">/</span> GLOBALLY AWARE</div>
                 </div>
                 <div className="hero-art"><MarketVisual /></div>
@@ -129,6 +136,30 @@ export default function Home() {
                             <span className="card-link">Explore <ArrowRight /></span>
                         </a>
                     ))}
+                </div>
+            </section>
+
+            <section className="ai-feature-section section-shell" id="ai-opportunities">
+                <div className="ai-feature-panel">
+                    <div className="ai-feature-copy">
+                        <span className="eyebrow">SAVANNA AI OPPORTUNITIES</span>
+                        <h2>Online AI work is real. <span>So are the scams.</span></h2>
+                        <p>We research AI training and data platforms, check whether they accept Kenyan applicants, and show you how to register and prepare, so you spend your time on the ones worth it.</p>
+                        <div className="hero-actions">
+                            <a href="/ai-opportunities" className="button button-primary">Explore AI Opportunities <ArrowUpRight /></a>
+                            <a href="/ai-opportunities/platforms" className="button button-secondary">Browse the free directory <ArrowRight /></a>
+                        </div>
+                    </div>
+                    <div className="ai-feature-card" aria-label="What is inside">
+                        <span className="ai-feature-card-title">INSIDE EVERY LISTING</span>
+                        <ul>
+                            <li>Verification status, clearly labelled</li>
+                            <li>Kenya eligibility, checked separately</li>
+                            <li>Step-by-step registration guides</li>
+                            <li>Assessment preparation and scam warnings</li>
+                        </ul>
+                        <div className="ai-feature-card-foot">Directory free · Full guides {DISPLAY_MEMBERSHIP} for 30 days</div>
+                    </div>
                 </div>
             </section>
 

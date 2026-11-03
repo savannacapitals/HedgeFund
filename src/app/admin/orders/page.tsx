@@ -18,9 +18,9 @@ const ACTIONS: Record<string, { label: string; help: string; cta: string }> = {
         cta: "CONFIRM ORDER",
     },
     fail: {
-        label: "Mark failed",
-        help: "Closes the order and its open payment. The customer would have to place a new order.",
-        cta: "MARK FAILED",
+        label: "Cancel order (marks it failed)",
+        help: "Cancels the order and its open payment. It will show as FAILED in the list. The customer would have to place a new order.",
+        cta: "CANCEL ORDER",
     },
     refund: {
         label: "Record refund",
@@ -161,7 +161,7 @@ export default function AdminOrdersPage() {
                                                         setError(null);
                                                     }}
                                                 >
-                                                    {a === "confirm" ? "CONFIRM" : a === "fail" ? "FAIL" : "REFUND"}
+                                                    {a === "confirm" ? "CONFIRM" : a === "fail" ? "CANCEL ORDER" : "REFUND"}
                                                 </button>
                                             ))}
                                         </div>
@@ -181,11 +181,13 @@ export default function AdminOrdersPage() {
                                                     value={note}
                                                     onChange={(e) => setNote(e.target.value)}
                                                 />
+                                                {error && <div className="p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400">{error}</div>}
+                                                {note.trim().length < 5 && <p className="text-terminal-muted">Type a reason of at least 5 characters to enable the button.</p>}
                                                 <div className="flex gap-3">
                                                     <button className={open.action === "refund" ? dangerBtnCls : primaryBtnCls} disabled={busy || note.trim().length < 5} onClick={submit}>
                                                         {busy ? "WORKING..." : ACTIONS[open.action].cta}
                                                     </button>
-                                                    <button className={btnCls} onClick={() => setOpen(null)}>CANCEL</button>
+                                                    <button className={btnCls} onClick={() => setOpen(null)}>CLOSE</button>
                                                 </div>
                                             </div>
                                         </td>
