@@ -42,7 +42,7 @@ function renderInline(text: string): ReactNode[] {
 
 export default function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
     return (
-        <div className="font-editorial text-[1.0625rem] leading-[1.8] text-terminal-text/90 sm:text-[1.1875rem] sm:leading-[1.85]">
+        <div className="font-sans text-[1.0625rem] leading-[1.8] text-terminal-text/90 sm:text-[1.1875rem] sm:leading-[1.85]">
             {blocks.map((block, index) => {
                 switch (block.type) {
                     case "heading":
@@ -50,7 +50,7 @@ export default function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
                             <h2
                                 key={index}
                                 id={block.id}
-                                className="mb-5 mt-14 scroll-mt-28 border-t border-terminal-border pt-8 font-headline text-[1.6rem] leading-[1.25] tracking-[-0.01em] text-terminal-text first:mt-0 first:border-t-0 first:pt-0 sm:text-[1.9rem]"
+                                className="mb-5 mt-14 scroll-mt-28 border-t border-terminal-border pt-8 font-sans text-[1.6rem] leading-[1.25] tracking-[-0.01em] text-terminal-text first:mt-0 first:border-t-0 first:pt-0 sm:text-[1.9rem]"
                             >
                                 {block.text}
                             </h2>
@@ -58,7 +58,7 @@ export default function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
                             <h3
                                 key={index}
                                 id={block.id}
-                                className="mb-3 mt-10 scroll-mt-28 font-editorial text-[1.2rem] font-semibold leading-snug text-terminal-text sm:text-[1.35rem]"
+                                className="mb-3 mt-10 scroll-mt-28 font-sans text-[1.2rem] font-semibold leading-snug text-terminal-text sm:text-[1.35rem]"
                             >
                                 {block.text}
                             </h3>

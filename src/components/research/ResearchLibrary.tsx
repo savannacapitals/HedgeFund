@@ -163,7 +163,7 @@ export default function ResearchLibrary({ articles, featuredSlug, initialCategor
                                     <span aria-hidden="true">&middot;</span>
                                     <span>{article.readingMinutes} min read</span>
                                 </div>
-                                <h3 className="font-headline text-[1.3rem] leading-snug text-terminal-text">
+                                <h3 className="font-sans text-[1.3rem] leading-snug text-terminal-text">
                                     <Link
                                         href={`/research/${encodeURIComponent(article.slug)}`}
                                         className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none group-hover:text-terminal-gold"
@@ -183,7 +183,7 @@ export default function ResearchLibrary({ articles, featuredSlug, initialCategor
 
             {visible.length === 0 && filtering && (
                 <div className="rounded-md border border-terminal-border bg-terminal-surface px-6 py-12 text-center">
-                    <p className="font-headline text-xl text-terminal-text">No publications match.</p>
+                    <p className="font-sans text-xl text-terminal-text">No publications match.</p>
                     <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-terminal-muted">
                         {category !== ALL && !tokens.length
                             ? `There is nothing published under ${category} yet. New reports appear here as soon as they are released.`

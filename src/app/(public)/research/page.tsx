@@ -73,7 +73,7 @@ export default async function ResearchLibraryPage({
                             <span className="h-px w-8 bg-terminal-gold" aria-hidden="true" />
                             Savanna Research
                         </p>
-                        <h1 className="font-headline text-[2.75rem] leading-[1.06] tracking-[-0.02em] text-terminal-text sm:text-6xl lg:text-[4.5rem]">
+                        <h1 className="font-sans text-[2.75rem] leading-[1.06] tracking-[-0.02em] text-terminal-text sm:text-6xl lg:text-[4.5rem]">
                             See <span className="text-terminal-gold">beyond</span> the headline.
                         </h1>
                         <p className="mt-7 max-w-xl text-base leading-8 text-terminal-muted sm:text-lg">
@@ -111,7 +111,7 @@ export default async function ResearchLibraryPage({
                                         >
                                             <span className="w-5 font-mono text-[10px] text-terminal-gold">{String(index + 1).padStart(2, "0")}</span>
                                             <span className="min-w-0 flex-1">
-                                                <span className="block font-headline text-lg leading-tight text-terminal-text group-hover:text-terminal-gold">
+                                                <span className="block font-sans text-lg leading-tight text-terminal-text group-hover:text-terminal-gold">
                                                     {category}
                                                 </span>
                                                 <span className="mt-1 block text-xs leading-5 text-terminal-muted">{CATEGORY_SCOPE[category]}</span>
@@ -157,7 +157,7 @@ export default async function ResearchLibraryPage({
                                     <span aria-hidden="true">&middot;</span>
                                     <span>{featured.readingMinutes} min read</span>
                                 </div>
-                                <h2 className="font-headline text-3xl leading-[1.15] tracking-[-0.01em] text-terminal-text sm:text-4xl">
+                                <h2 className="font-sans text-3xl leading-[1.15] tracking-[-0.01em] text-terminal-text sm:text-4xl">
                                     <Link
                                         href={`/research/${encodeURIComponent(featured.slug)}`}
                                         className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none group-hover:text-terminal-gold"
@@ -166,7 +166,7 @@ export default async function ResearchLibraryPage({
                                     </Link>
                                 </h2>
                                 {featured.summary && (
-                                    <p className="mt-5 line-clamp-5 max-w-2xl font-editorial text-lg leading-8 text-terminal-muted">{featured.summary}</p>
+                                    <p className="mt-5 line-clamp-5 max-w-2xl font-sans text-lg leading-8 text-terminal-muted">{featured.summary}</p>
                                 )}
                                 <p className="mt-8 flex items-center gap-4 text-xs text-terminal-muted">
                                     <span className="font-semibold tracking-wide text-terminal-gold">
@@ -189,21 +189,21 @@ export default async function ResearchLibraryPage({
                             <span className="h-px w-8 bg-terminal-gold" aria-hidden="true" />
                             Publication library
                         </p>
-                        <h2 id="library-heading" className="font-headline text-3xl leading-tight tracking-[-0.01em] text-terminal-text sm:text-4xl">
+                        <h2 id="library-heading" className="font-sans text-3xl leading-tight tracking-[-0.01em] text-terminal-text sm:text-4xl">
                             Every report, in one place.
                         </h2>
                     </div>
 
                     {failed ? (
                         <div className="rounded-md border border-terminal-border bg-terminal-surface px-6 py-12 text-center">
-                            <p className="font-headline text-xl text-terminal-text">The library is temporarily unavailable.</p>
+                            <p className="font-sans text-xl text-terminal-text">The library is temporarily unavailable.</p>
                             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-terminal-muted">
                                 We could not load the publications just now. Please refresh the page in a moment.
                             </p>
                         </div>
                     ) : articles.length === 0 ? (
                         <div className="rounded-md border border-terminal-border bg-terminal-surface px-6 py-14 text-center">
-                            <p className="font-headline text-xl text-terminal-text">No publications are live yet.</p>
+                            <p className="font-sans text-xl text-terminal-text">No publications are live yet.</p>
                             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-terminal-muted">
                                 Reports appear here as soon as the research desk publishes them.
                             </p>
@@ -228,10 +228,10 @@ export default async function ResearchLibraryPage({
                             <span className="h-px w-8 bg-terminal-gold" aria-hidden="true" />
                             Research philosophy
                         </p>
-                        <h2 id="philosophy-heading" className="font-headline text-3xl leading-[1.15] tracking-[-0.01em] text-terminal-text sm:text-4xl lg:text-[2.6rem]">
+                        <h2 id="philosophy-heading" className="font-sans text-3xl leading-[1.15] tracking-[-0.01em] text-terminal-text sm:text-4xl lg:text-[2.6rem]">
                             Rigour before narrative.
                         </h2>
-                        <p className="mt-6 max-w-md font-editorial text-lg leading-8 text-terminal-muted">
+                        <p className="mt-6 max-w-md font-sans text-lg leading-8 text-terminal-muted">
                             African markets are too often read through borrowed frameworks. Our research starts from how institutions, liquidity and
                             policy actually work on the ground, and holds every conclusion to a global standard of evidence.
                         </p>
@@ -241,7 +241,7 @@ export default async function ResearchLibraryPage({
                             <li key={principle.title} className={`grid grid-cols-[2.5rem_1fr] gap-4 py-7 sm:grid-cols-[3.5rem_1fr] ${index === 0 ? "border-t" : ""} border-b border-terminal-border`}>
                                 <span className="pt-1 font-mono text-xs text-terminal-gold">{String(index + 1).padStart(2, "0")}</span>
                                 <div>
-                                    <h3 className="font-headline text-xl leading-snug text-terminal-text">{principle.title}</h3>
+                                    <h3 className="font-sans text-xl leading-snug text-terminal-text">{principle.title}</h3>
                                     <p className="mt-2 max-w-xl text-sm leading-7 text-terminal-muted">{principle.body}</p>
                                 </div>
                             </li>
