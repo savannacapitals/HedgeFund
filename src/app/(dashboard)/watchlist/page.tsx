@@ -46,12 +46,11 @@ export default function WatchlistPage() {
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="border-b border-terminal-border pb-6 mb-8">
-                <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-2">
-                    <span>ANALYTICS // WATCHLIST</span>
-                </div>
-                <h1 className="text-2xl md:text-4xl font-bold text-terminal-text tracking-tight">
-                    Market Watchlist
-                </h1>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Preview</p>
+                <h1 className="text-2xl font-semibold tracking-tight text-terminal-text md:text-4xl">Market watchlist</h1>
+                <p className="mt-3 max-w-2xl text-sm text-terminal-muted">
+                    Illustrative layout only. These figures are not live market data and should not be used for decisions.
+                </p>
             </div>
 
             <div className="bg-terminal-surface rounded-lg border border-terminal-border overflow-x-auto">

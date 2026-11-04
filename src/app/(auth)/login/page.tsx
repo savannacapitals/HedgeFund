@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
 import GoogleButton from "@/components/GoogleButton";
 import { oauthErrorMessage } from "@/lib/auth/oauth-errors";
+import { safeNextPath } from "@/lib/auth/next-path";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -52,8 +53,8 @@ export default function LoginPage() {
                 return;
             }
 
-            // Signed in: go to the dashboard and refresh so server pages see the new session
-            router.push("/dashboard");
+            const next = safeNextPath(new URLSearchParams(window.location.search).get("next"));
+            router.push(next);
             router.refresh();
         } catch (err: any) {
             console.error("Sign-in failed:", err);
@@ -74,9 +75,9 @@ export default function LoginPage() {
             <div className="w-full max-w-md p-8 rounded-lg bg-terminal-surface border border-terminal-border">
                 <div className="text-center mb-8">
                     <BrandMark height={72} centered className="mb-5" />
-                    <span className="font-mono text-xs text-terminal-gold">TERMINAL ACCESS</span>
-                    <h1 className="text-2xl font-bold text-terminal-text mt-1">Sign In to Savanna</h1>
-                    <p className="text-xs text-terminal-muted mt-2">Access your research subscriptions and academy portal</p>
+                    <span className="font-mono text-xs text-terminal-gold">SAVANNA CAPITALS</span>
+                    <h1 className="text-2xl font-bold text-terminal-text mt-1">Sign in</h1>
+                    <p className="text-xs text-terminal-muted mt-2">Academy, AI Opportunities membership and your dashboard</p>
                 </div>
 
                 {error && (
@@ -106,7 +107,7 @@ export default function LoginPage() {
                             autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="analyst@institution.com"
+                            placeholder="you@email.com"
                             className="w-full px-4 py-2.5 rounded bg-terminal-bg border border-terminal-border text-terminal-text placeholder-terminal-muted/50 text-sm focus:outline-none focus:border-terminal-gold font-mono"
                         />
                     </div>
@@ -134,14 +135,14 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-sm hover:bg-terminal-gold/90 transition-colors disabled:opacity-50"
                     >
-                        {loading ? "AUTHENTICATING..." : "SIGN IN"}
+                        {loading ? "Signing in…" : "Sign in"}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center text-xs text-terminal-muted font-mono">
                     Don&apos;t have an account?{" "}
                     <Link href="/register" className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
-                        Register Account
+                        Create one
                     </Link>
                 </div>
             </div>

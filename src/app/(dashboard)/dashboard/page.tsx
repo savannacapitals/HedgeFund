@@ -122,11 +122,9 @@ export default function DashboardPage() {
             {/* Overview Header */}
             <div className="border-b border-terminal-border pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-2">
-                        <span>USER TERMINAL // OVERVIEW</span>
-                    </div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-terminal-text tracking-tight">
-                        Account Dashboard
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Your Savanna</p>
+                    <h1 className="text-2xl font-semibold tracking-[-.03em] text-terminal-text md:text-4xl">
+                        Dashboard
                     </h1>
                 </div>
 
@@ -227,28 +225,26 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Quick Tools & Shortcuts */}
-                <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <h2 className="text-lg font-bold text-terminal-text mb-4">Quantitative Workflows <span className="text-xs font-mono text-terminal-muted">(preview)</span></h2>
-
-                    <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                        <Link
-                            href="/watchlist"
-                            className="p-4 rounded bg-terminal-bg border border-terminal-border hover:border-terminal-gold/50 transition-colors block text-center"
-                        >
-                            <span className="text-terminal-gold text-lg block mb-1">📊</span>
-                            <span className="text-terminal-text font-bold block">Asset Watchlist</span>
-                            <span className="text-terminal-muted text-[10px]">Sample preview · not live data</span>
-                        </Link>
-
-                        <Link
-                            href="/journal"
-                            className="p-4 rounded bg-terminal-bg border border-terminal-border hover:border-terminal-gold/50 transition-colors block text-center"
-                        >
-                            <span className="text-terminal-gold text-lg block mb-1">📓</span>
-                            <span className="text-terminal-text font-bold block">Trading Journal</span>
-                            <span className="text-terminal-muted text-[10px]">Sample preview · not your trades</span>
-                        </Link>
+                <div className="p-6 rounded-lg border border-terminal-border bg-terminal-surface">
+                    <h2 className="mb-4 text-lg font-semibold text-terminal-text">The rest of the platform</h2>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {[
+                            ["/ai-opportunities/dashboard", "AI Opportunities", "Directory, membership and assistance"],
+                            ["/research", "Research library", "Published market notes"],
+                            ["/community/killzone", "Killzone Journal", "Private trading community"],
+                            ["/academy", "Academy catalogue", "Enrol in another course"],
+                            ["/watchlist", "Watchlist preview", "Sample layout · not live prices"],
+                            ["/journal", "Journal preview", "Sample layout · not your trades"],
+                        ].map(([href, title, detail]) => (
+                            <Link
+                                key={href}
+                                href={href}
+                                className="rounded-xl border border-terminal-border bg-terminal-bg p-4 transition hover:border-terminal-gold/50"
+                            >
+                                <span className="block text-sm font-semibold text-terminal-text">{title}</span>
+                                <span className="mt-1 block text-xs text-terminal-muted">{detail}</span>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AuthButtons from "@/components/AuthButtons";
-
-type NavItem = { label: string; href: string; highlight?: boolean };
+import { navItemIsActive, type NavItem } from "@/lib/nav";
 
 // Hamburger menu for screens narrower than 900px, where the desktop navigation is hidden.
 // On very small phones (480px and below) the Sign in / Get started buttons move in here too.
@@ -68,15 +68,15 @@ export default function MobileMenu({ navigation }: { navigation: NavItem[] }) {
                     <nav id="mobile-menu" className="mobile-menu" aria-label="Mobile navigation">
                         {navigation.map((item) =>
                             item.highlight ? (
-                                <a href={item.href} key={item.label} className="menu-ai-btn" onClick={() => setOpen(false)}>
+                                <Link href={item.href} key={item.label} className={`menu-ai-btn${navItemIsActive(item.href, pathname) ? " is-active" : ""}`} onClick={() => setOpen(false)}>
                                     <span className="nav-ai-chip" aria-hidden="true">AI</span>
                                     <span className="menu-ai-label">Opportunities<small>Platforms, guides and scam checks</small></span>
                                     <span className="nav-ai-dot" aria-hidden="true" />
-                                </a>
+                                </Link>
                             ) : (
-                                <a href={item.href} key={item.label} className="menu-link" onClick={() => setOpen(false)}>
+                                <Link href={item.href} key={item.label} className={`menu-link${navItemIsActive(item.href, pathname) ? " is-active" : ""}`} onClick={() => setOpen(false)}>
                                     {item.label}
-                                </a>
+                                </Link>
                             ),
                         )}
                         <div className="menu-auth">

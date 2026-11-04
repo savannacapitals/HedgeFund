@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-// Always show what is published right now
 export const dynamic = "force-dynamic";
 
 interface ResearchArticle {
@@ -15,53 +14,34 @@ interface ResearchArticle {
     readTime: string;
 }
 
-const SAMPLE_ARTICLES: ResearchArticle[] = [
+const CATEGORIES = ["All", "Macroeconomics", "Fixed Income", "Equities", "Policy"] as const;
+
+const FORTHCOMING: { title: string; summary: string; category: string }[] = [
     {
-        id: "1",
-        title: "Sub-Saharan Africa Macroeconomic Outlook Q4 2026: Monetary Divergence and Currency Dynamics",
-        slug: "sub-saharan-africa-macroeconomic-outlook-q4-2026",
-        summary: "An analysis of central bank interest rate trajectories across East and West Africa, foreign exchange reserves, and debt sustainability frameworks.",
+        title: "Sub-Saharan Africa macroeconomic outlook: monetary divergence and currency dynamics",
+        summary: "Central bank rate paths across East and West Africa, reserves, and debt sustainability — published when the desk completes verification.",
         category: "Macroeconomics",
-        author: "Savanna Research Team",
-        publishedAt: "2026-10-15",
-        readTime: "8 min read",
     },
     {
-        id: "2",
-        title: "Kenyan Infrastructure Bonds & Yield Curve Mechanics: Secondary Market Pricing Analysis",
-        slug: "kenyan-infrastructure-bonds-yield-curve-mechanics",
-        summary: "Evaluating tax-free yield differentials across Central Bank of Kenya auctions, real yields against domestic inflation, and institutional liquidity flows.",
+        title: "Kenyan infrastructure bonds and yield-curve mechanics",
+        summary: "Auction differentials, real yields against domestic inflation, and institutional liquidity on the secondary market.",
         category: "Fixed Income",
-        author: "Quantitative Research Group",
-        publishedAt: "2026-10-02",
-        readTime: "12 min read",
     },
     {
-        id: "3",
-        title: "Banking Sector Earnings Review: Asset Quality, NPL Ratios & Digital Banking Margins",
-        slug: "banking-sector-earnings-review-q3-2026",
-        summary: "Comparative financial performance analysis of major listed financial institutions across the Nairobi Securities Exchange (NSE).",
+        title: "Banking sector earnings: asset quality, NPLs and digital margins",
+        summary: "A comparative look at listed financials on the Nairobi Securities Exchange.",
         category: "Equities",
-        author: "Equity Strategy Desk",
-        publishedAt: "2026-09-24",
-        readTime: "10 min read",
     },
     {
-        id: "4",
-        title: "Central Bank Policy Rate Transmission & Domestic Credit Growth",
-        slug: "cbk-policy-rate-transmission-credit-growth",
-        summary: "Empirical study on how CBR adjustment cycles influence commercial lending rates, private sector credit extension, and Money Market Fund yields.",
+        title: "Policy-rate transmission and domestic credit growth",
+        summary: "How CBR cycles move lending rates, private-sector credit and money-market fund yields.",
         category: "Policy",
-        author: "Savanna Research Team",
-        publishedAt: "2026-09-10",
-        readTime: "15 min read",
     },
 ];
 
 async function getPublishedArticles(): Promise<ResearchArticle[]> {
     try {
         const supabase = await createClient();
-        // Row-level security only lets visitors read published articles
         const { data, error } = await supabase
             .from("research_articles")
             .select("id, title, slug, summary, category, body, published_at")
@@ -69,7 +49,7 @@ async function getPublishedArticles(): Promise<ResearchArticle[]> {
             .order("published_at", { ascending: false })
             .limit(100);
         if (error || !data) return [];
-        return data.map((a: any) => ({
+        return data.map((a: { id: string; title: string; slug: string; summary: string | null; category: string; body: string | null; published_at: string | null }) => ({
             id: a.id,
             title: a.title,
             slug: a.slug,
@@ -84,75 +64,96 @@ async function getPublishedArticles(): Promise<ResearchArticle[]> {
     }
 }
 
-export default async function ResearchLibraryPage() {
-    // Articles published from /admin/content. Until the first one is published,
-    // the original sample reports stay on the page so it is never empty.
+export default async function ResearchLibraryPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ category?: string }>;
+}) {
+    const { category: rawCategory } = await searchParams;
+    const category = CATEGORIES.includes(rawCategory as (typeof CATEGORIES)[number]) ? (rawCategory as string) : "All";
     const published = await getPublishedArticles();
-    const articles = published.length ? published : SAMPLE_ARTICLES;
+    const articles = category === "All" ? published : published.filter((article) => article.category === category);
+    const forthcoming = category === "All" ? FORTHCOMING : FORTHCOMING.filter((item) => item.category === category);
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12">
-            {/* Header */}
-            <div className="border-b border-terminal-border pb-8 mb-10">
-                <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-3">
-                    <span>MODULE // RESEARCH & INTELLIGENCE</span>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-terminal-text tracking-tight mb-4">
-                    Institutional Research Library
+        <div className="mx-auto max-w-7xl px-6 py-12">
+            <div className="mb-10 border-b border-terminal-border pb-8">
+                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Research &amp; intelligence</p>
+                <h1 className="mb-4 text-3xl font-semibold tracking-[-.04em] text-terminal-text md:text-5xl">
+                    See beyond the headline.
                 </h1>
-                <p className="text-terminal-muted max-w-3xl text-base md:text-lg">
-                    Rigorous, empirical macroeconomic analysis, fixed income commentary, and market intelligence tailored for regional institutional investors and analysts.
+                <p className="max-w-3xl text-base text-terminal-muted md:text-lg">
+                    Independent analysis of African and global markets — policy, rates, credit and listed companies — written for people who allocate capital carefully.
                 </p>
             </div>
 
-            {/* Filter / Search Bar Header */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-terminal-surface p-4 rounded-lg border border-terminal-border mb-8">
-                <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-                    <span className="text-terminal-muted mr-2">CATEGORY:</span>
-                    <button className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-semibold">ALL</button>
-                    <button className="px-3 py-1.5 rounded bg-terminal-bg text-terminal-muted hover:text-terminal-text border border-terminal-border">MACROECONOMICS</button>
-                    <button className="px-3 py-1.5 rounded bg-terminal-bg text-terminal-muted hover:text-terminal-text border border-terminal-border">FIXED INCOME</button>
-                    <button className="px-3 py-1.5 rounded bg-terminal-bg text-terminal-muted hover:text-terminal-text border border-terminal-border">EQUITIES</button>
-                    <button className="px-3 py-1.5 rounded bg-terminal-bg text-terminal-muted hover:text-terminal-text border border-terminal-border">POLICY</button>
+            <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-terminal-border bg-terminal-surface p-4 md:flex-row md:items-center">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="mr-1 text-terminal-muted">Category</span>
+                    {CATEGORIES.map((item) => (
+                        <Link
+                            key={item}
+                            href={item === "All" ? "/research" : `/research?category=${encodeURIComponent(item)}`}
+                            className={`rounded-full px-3 py-1.5 ${category === item ? "bg-terminal-gold font-semibold text-terminal-bg" : "border border-terminal-border bg-terminal-bg text-terminal-muted hover:text-terminal-text"}`}
+                        >
+                            {item}
+                        </Link>
+                    ))}
                 </div>
-                <div className="font-mono text-xs text-terminal-muted">
-                    SHOWING: <span className="text-terminal-gold font-bold">{articles.length}</span> REPORTS
-                </div>
+                <p className="text-xs text-terminal-muted">
+                    {articles.length} published{forthcoming.length && articles.length === 0 ? ` · ${forthcoming.length} forthcoming` : ""}
+                </p>
             </div>
 
-            {/* Article Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {articles.map((article) => (
-                    <article
-                        key={article.id}
-                        className="p-6 rounded-lg bg-terminal-surface border border-terminal-border hover:border-terminal-gold/50 transition-all flex flex-col justify-between group"
-                    >
-                        <div>
-                            <div className="flex items-center justify-between text-xs font-mono text-terminal-muted mb-3">
-                                <span className="px-2 py-0.5 rounded bg-terminal-bg border border-terminal-border text-terminal-gold">
-                                    {article.category}
-                                </span>
-                                <span>{article.readTime}</span>
+            {articles.length > 0 && (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {articles.map((article) => (
+                        <article
+                            key={article.id}
+                            className="group flex flex-col justify-between rounded-2xl border border-terminal-border bg-terminal-surface p-6 transition hover:border-terminal-gold/50"
+                        >
+                            <div>
+                                <div className="mb-3 flex items-center justify-between text-xs text-terminal-muted">
+                                    <span className="rounded-full border border-terminal-border bg-terminal-bg px-2 py-0.5 text-terminal-gold">{article.category}</span>
+                                    <span>{article.readTime}</span>
+                                </div>
+                                <h2 className="mb-3 text-xl font-semibold leading-snug text-terminal-text transition group-hover:text-terminal-gold">
+                                    <Link href={`/research/${article.slug}`}>{article.title}</Link>
+                                </h2>
+                                <p className="mb-6 line-clamp-3 text-sm text-terminal-muted">{article.summary}</p>
                             </div>
+                            <div className="flex items-center justify-between border-t border-terminal-border/50 pt-4 text-xs text-terminal-muted">
+                                <span>{article.author}</span>
+                                <span>{article.publishedAt}</span>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            )}
 
-                            <h2 className="text-xl font-bold text-terminal-text group-hover:text-terminal-gold transition-colors mb-3 leading-snug">
-                                <Link href={`/research/${article.slug}`}>
-                                    {article.title}
-                                </Link>
-                            </h2>
+            {articles.length === 0 && (
+                <div className="mb-8 rounded-2xl border border-terminal-border bg-terminal-surface px-6 py-10">
+                    <h2 className="text-lg font-semibold text-terminal-text">The live library is still being filled</h2>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-terminal-muted">
+                        Published reports appear here as soon as the desk marks them live. Until then, these are the briefs in preparation — they are not clickable articles.
+                    </p>
+                </div>
+            )}
 
-                            <p className="text-sm text-terminal-muted line-clamp-3 mb-6">
-                                {article.summary}
-                            </p>
-                        </div>
-
-                        <div className="pt-4 border-t border-terminal-border/50 flex items-center justify-between text-xs font-mono text-terminal-muted">
-                            <span>AUTH: {article.author}</span>
-                            <span>PUB: {article.publishedAt}</span>
-                        </div>
-                    </article>
-                ))}
-            </div>
+            {articles.length === 0 && forthcoming.length > 0 && (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {forthcoming.map((item) => (
+                        <article key={item.title} className="rounded-2xl border border-dashed border-terminal-border bg-terminal-surface/60 p-6">
+                            <div className="mb-3 flex items-center justify-between text-xs">
+                                <span className="rounded-full border border-terminal-border px-2 py-0.5 text-terminal-gold">{item.category}</span>
+                                <span className="text-terminal-muted">Forthcoming</span>
+                            </div>
+                            <h2 className="mb-3 text-xl font-semibold leading-snug text-terminal-text">{item.title}</h2>
+                            <p className="text-sm text-terminal-muted">{item.summary}</p>
+                        </article>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

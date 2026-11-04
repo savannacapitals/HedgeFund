@@ -40,16 +40,15 @@ export default function JournalPage() {
         <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="border-b border-terminal-border pb-6 mb-8 flex flex-wrap justify-between items-center gap-4">
                 <div>
-                    <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-2">
-                        <span>ANALYTICS // PAPER TRADING JOURNAL</span>
-                    </div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-terminal-text tracking-tight">
-                        Trading Journal
-                    </h1>
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Preview</p>
+                    <h1 className="text-2xl font-semibold tracking-tight text-terminal-text md:text-4xl">Trading journal</h1>
+                    <p className="mt-3 max-w-xl text-sm text-terminal-muted">
+                        Sample entries so you can see the layout. They are not your trades, and new entries are not saved yet.
+                    </p>
                 </div>
 
-                <button className="px-4 py-2 rounded bg-terminal-gold text-terminal-bg font-semibold font-mono text-xs hover:bg-terminal-gold/90">
-                    + NEW ENTRY
+                <button type="button" disabled className="cursor-not-allowed rounded-lg bg-terminal-gold/50 px-4 py-2 text-xs font-semibold text-terminal-bg">
+                    New entry coming soon
                 </button>
             </div>
 

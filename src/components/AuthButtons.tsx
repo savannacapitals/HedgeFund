@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -48,8 +49,8 @@ export default function AuthButtons() {
     if (signedIn) {
         return (
             <>
-                {isStaff && <a href="/admin/dashboard" className="sign-in-link">Admin</a>}
-                <a href="/dashboard" className="sign-in-link">Dashboard</a>
+                {isStaff && <Link href="/admin/dashboard" className="sign-in-link">Admin</Link>}
+                <Link href="/dashboard" className="sign-in-link">Dashboard</Link>
                 <a href="/" onClick={handleSignOut} className="header-cta">Sign out</a>
             </>
         );
@@ -57,8 +58,8 @@ export default function AuthButtons() {
 
     return (
         <>
-            <a href="/login" className="sign-in-link">Sign in</a>
-            <a href="/register" className="header-cta">Get started <span>↗</span></a>
+            <Link href="/login" className="sign-in-link">Sign in</Link>
+            <Link href="/register" className="header-cta">Get started <span>↗</span></Link>
         </>
     );
 }

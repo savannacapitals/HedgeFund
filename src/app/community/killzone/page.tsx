@@ -1,7 +1,7 @@
 import Link from "next/link";
 import KillzoneCard from "@/components/KillzoneCard";
 
-export const metadata = { title: "The Killzone Journal | Savanna Capital" };
+export const metadata = { title: "The Killzone Journal | Savanna Capitals" };
 
 export default function KillzonePage() {
     return (

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
 import GoogleButton from "@/components/GoogleButton";
+import { safeNextPath } from "@/lib/auth/next-path";
 
 export default function RegisterPage() {
     const [fullName, setFullName] = useState("");
@@ -47,8 +48,7 @@ export default function RegisterPage() {
                 return;
             }
 
-            // Registered and signed in: go to the dashboard
-            router.push("/dashboard");
+            router.push(safeNextPath(new URLSearchParams(window.location.search).get("next")));
             router.refresh();
         } catch (err: any) {
             setError(err.message || "An unexpected error occurred.");
@@ -61,9 +61,9 @@ export default function RegisterPage() {
             <div className="w-full max-w-md p-8 rounded-lg bg-terminal-surface border border-terminal-border">
                 <div className="text-center mb-8">
                     <BrandMark height={72} centered className="mb-5" />
-                    <span className="font-mono text-xs text-terminal-gold">NEW REGISTRATION</span>
-                    <h1 className="text-2xl font-bold text-terminal-text mt-1">Create Account</h1>
-                    <p className="text-xs text-terminal-muted mt-2">Join Savanna Capitals for intelligence and education</p>
+                    <span className="font-mono text-xs text-terminal-gold">SAVANNA CAPITALS</span>
+                    <h1 className="text-2xl font-bold text-terminal-text mt-1">Create an account</h1>
+                    <p className="text-xs text-terminal-muted mt-2">One account for Academy, research and AI Opportunities</p>
                 </div>
 
                 {error && (
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="analyst@institution.com"
+                            placeholder="you@email.com"
                             className="w-full px-4 py-2.5 rounded bg-terminal-bg border border-terminal-border text-terminal-text placeholder-terminal-muted/50 text-sm focus:outline-none focus:border-terminal-gold font-mono"
                         />
                     </div>
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                         disabled={loading}
                         className="w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-sm hover:bg-terminal-gold/90 transition-colors disabled:opacity-50 mt-2"
                     >
-                        {loading ? "INITIALIZING ACCOUNT..." : "CREATE ACCOUNT"}
+                        {loading ? "Creating account…" : "Create account"}
                     </button>
                 </form>
 

@@ -1,131 +1,118 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { DISPLAY_ASSISTANCE, DISPLAY_MEMBERSHIP, membershipDays } from "@/lib/ai/config";
 
-interface PricingTier {
-    id: string;
-    name: string;
-    price: string;
-    cadence: string;
-    description: string;
-    features: string[];
-    isPopular?: boolean;
-    ctaText: string;
-    ctaLink: string;
-}
+export const metadata: Metadata = {
+    title: "Pricing | Savanna Capitals",
+    description: "What is free on Savanna Capitals, what you pay for, and how checkout works.",
+};
 
-const PRICING_TIERS: PricingTier[] = [
+const TIERS = [
     {
-        id: "tier-research",
-        name: "Research Intelligence Pass",
-        price: "$49",
-        cadence: "per month",
-        description: "Full access to institutional macroeconomic research reports, yield curve analysis, and fixed income commentaries.",
+        id: "ai",
+        name: "AI Opportunities",
+        price: DISPLAY_MEMBERSHIP,
+        cadence: `${membershipDays()} days`,
+        description: "Unlock the full researched directory of AI work platforms, Kenya eligibility notes and step-by-step registration guides.",
         features: [
-            "All Macroeconomic & Fixed Income Reports",
-            "Weekly Market Intelligence Briefs",
-            "Watchlist & Portfolio Tracking Tools",
-            "Secure Crypto & Fiat Checkout",
+            "Full platform directory and status labels",
+            "Kenya eligibility checked separately from “verified”",
+            "Registration, assessment and payout notes",
+            "Scam warnings and member dashboard",
+            `Optional account assistance: ${DISPLAY_ASSISTANCE}`,
         ],
-        ctaText: "Subscribe to Research",
-        ctaLink: "/register?plan=research",
+        popular: true,
+        cta: `Become a member — ${DISPLAY_MEMBERSHIP}`,
+        href: "/ai-opportunities/membership",
     },
     {
-        id: "tier-academy",
-        name: "Savanna Academy Access",
-        price: "$199",
-        cadence: "one-time per course",
-        description: "Comprehensive professional education modules covering quantitative finance, python modeling, and market structure.",
+        id: "academy",
+        name: "Savanna Academy",
+        price: "Per course",
+        cadence: "one-time",
+        description: "Structured financial education. Each course has its own price, shown on the catalogue. Free courses stay free.",
         features: [
-            "Full Course Video & Text Curriculum",
-            "Downloadable Python & Excel Models",
-            "Quizzes & Progress Tracking",
-            "Certificate of Completion",
+            "Self-paced lessons and quizzes",
+            "Progress saved to your dashboard",
+            "Certificate of completion where offered",
+            "Killzone Journal access with paid courses",
         ],
-        isPopular: true,
-        ctaText: "Browse Academy Courses",
-        ctaLink: "/academy",
+        popular: false,
+        cta: "Browse Academy courses",
+        href: "/academy",
     },
     {
-        id: "tier-institutional",
-        name: "Institutional Desk",
-        price: "Custom",
-        cadence: "annual license",
-        description: "Dedicated research support, customized quantitative data feeds, and advisory access for corporate entities and funds.",
+        id: "research",
+        name: "Research library",
+        price: "Free to read",
+        cadence: "published briefs",
+        description: "Independent market notes published on this site. There is no research paywall today. Institutional work is scoped separately.",
         features: [
-            "Custom Macroeconomic Data Feeds",
-            "Direct Analyst Q&A Sessions",
-            "Multi-User Team Entitlements",
-            "Invoice & Bank Wire Support",
+            "Published macroeconomic and market notes",
+            "Africa-first lens with global context",
+            "No live trading signals or managed accounts",
+            "Custom desk work by conversation, not a listed SKU",
         ],
-        ctaText: "Contact Sales",
-        ctaLink: "/contact",
+        popular: false,
+        cta: "Open the library",
+        href: "/research",
     },
 ];
 
 export default function PricingPage() {
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12">
-            {/* Header */}
-            <div className="text-center max-w-3xl mx-auto mb-16">
-                <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-3">
-                    <span>CATALOGUE // PRICING & ENTITLEMENTS</span>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-terminal-text tracking-tight mb-4">
-                    Transparent Research & Education Pricing
+        <div className="mx-auto max-w-7xl px-6 py-12">
+            <div className="mx-auto mb-16 max-w-3xl text-center">
+                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Pricing</p>
+                <h1 className="mb-4 text-3xl font-semibold tracking-[-.04em] text-terminal-text md:text-5xl">
+                    Pay only for what is actually for sale.
                 </h1>
-                <p className="text-terminal-muted text-base md:text-lg">
-                    Clear subscription tiers and course access packages. Digital payments and crypto accepted strictly for educational products and research publications.
+                <p className="text-base text-terminal-muted md:text-lg">
+                    Membership and courses are confirmed after payment. We never take investment deposits. Checkout accepts Pochi la Biashara (M-Pesa), bank transfer, and USDC/USDT.
                 </p>
             </div>
 
-            {/* Pricing Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-16">
-                {PRICING_TIERS.map((tier) => (
+            <div className="mb-16 grid grid-cols-1 items-stretch gap-8 md:grid-cols-3">
+                {TIERS.map((tier) => (
                     <div
                         key={tier.id}
-                        className={`p-8 rounded-lg bg-terminal-surface border flex flex-col justify-between relative ${tier.isPopular ? "border-terminal-gold shadow-xl shadow-terminal-gold/5" : "border-terminal-border"
-                            }`}
+                        className={`relative flex flex-col justify-between rounded-2xl border bg-terminal-surface p-8 ${tier.popular ? "border-terminal-gold shadow-xl shadow-terminal-gold/5" : "border-terminal-border"}`}
                     >
-                        {tier.isPopular && (
-                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-terminal-gold text-terminal-bg text-[10px] font-mono font-bold px-3 py-1 rounded">
-                                MOST POPULAR
+                        {tier.popular && (
+                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-terminal-gold px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-terminal-bg">
+                                Live product
                             </span>
                         )}
-
                         <div>
-                            <h2 className="text-xl font-bold text-terminal-text mb-2">{tier.name}</h2>
-                            <p className="text-sm text-terminal-muted mb-6">{tier.description}</p>
-
-                            <div className="flex items-baseline mb-6">
-                                <span className="text-4xl font-bold font-mono text-terminal-text mr-2">{tier.price}</span>
-                                <span className="text-xs font-mono text-terminal-muted">/ {tier.cadence}</span>
+                            <h2 className="mb-2 text-xl font-semibold text-terminal-text">{tier.name}</h2>
+                            <p className="mb-6 text-sm text-terminal-muted">{tier.description}</p>
+                            <div className="mb-6 flex items-baseline gap-2">
+                                <span className="text-4xl font-semibold tracking-tight text-terminal-text">{tier.price}</span>
+                                <span className="text-xs text-terminal-muted">/ {tier.cadence}</span>
                             </div>
-
-                            <ul className="space-y-3 mb-8 text-sm text-terminal-muted font-mono">
-                                {tier.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-center">
-                                        <span className="text-terminal-gold mr-2">✓</span>
-                                        <span className="text-terminal-text">{feature}</span>
+                            <ul className="mb-8 space-y-3 text-sm text-terminal-text">
+                                {tier.features.map((feature) => (
+                                    <li key={feature} className="flex gap-2">
+                                        <span className="text-terminal-gold">✓</span>
+                                        <span>{feature}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-
                         <Link
-                            href={tier.ctaLink}
-                            className={`w-full py-3 rounded text-center font-semibold text-sm transition-colors block ${tier.isPopular
-                                    ? "bg-terminal-gold text-terminal-bg hover:bg-terminal-gold/90"
-                                    : "bg-terminal-bg border border-terminal-border text-terminal-text hover:border-terminal-gold/50"
-                                }`}
+                            href={tier.href}
+                            className={`block rounded-lg py-3 text-center text-sm font-semibold transition ${tier.popular ? "bg-terminal-gold text-terminal-bg hover:bg-terminal-gold/90" : "border border-terminal-border bg-terminal-bg text-terminal-text hover:border-terminal-gold/50"}`}
                         >
-                            {tier.ctaText}
+                            {tier.cta}
                         </Link>
                     </div>
                 ))}
             </div>
 
-            {/* Regulatory Disclaimer Notice */}
-            <div className="p-6 rounded-lg bg-terminal-surface/50 border border-terminal-border max-w-4xl mx-auto text-xs font-mono text-terminal-muted leading-relaxed text-center">
-                <span className="text-terminal-gold font-bold">COMPLIANCE NOTICE:</span> Savanna Capitals provides financial research, market intelligence, and educational courses only. We do not accept investment deposits, pool investor capital, manage live investment accounts, or custody customer assets. Crypto payments are restricted exclusively to educational products and research subscriptions.
+            <div className="mx-auto max-w-4xl rounded-2xl border border-terminal-border bg-terminal-surface/50 p-6 text-center text-xs leading-relaxed text-terminal-muted">
+                <span className="font-semibold text-terminal-gold">Please note: </span>
+                Savanna Capitals provides research, education and independent guidance only. We do not accept investment deposits, pool capital, manage live accounts or custody assets. AI Opportunities does not hire you, sell you a platform account, or guarantee work.
+                Need a custom conversation? <Link href="/contact" className="text-terminal-gold hover:underline">Contact us</Link>.
             </div>
         </div>
     );

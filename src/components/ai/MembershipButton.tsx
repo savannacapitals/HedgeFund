@@ -14,7 +14,7 @@ export default function MembershipButton({ label, className = "aio-btn primary" 
         setError("");
         try {
             const res = await fetch("/api/ai/membership", { method: "POST" });
-            if (res.status === 401) return router.push("/login");
+            if (res.status === 401) return router.push("/login?next=/ai-opportunities/membership");
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Could not start checkout.");
             router.push(json.redirectTo);

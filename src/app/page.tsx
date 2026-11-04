@@ -126,10 +126,24 @@ export default function Home() {
                     </div>
                     <p>We bring research, learning and market context into one connected environment — built for people who take capital and its allocation seriously.</p>
                 </div>
+                <div className="product-rail">
+                    {[
+                        ["01", "Research", "Independent briefs on African and global markets.", "/research"],
+                        ["02", "Academy", "Structured courses from markets to risk.", "/academy"],
+                        ["03", "AI Opportunities", "Verified platforms, Kenya checks and registration guides.", "/ai-opportunities"],
+                        ["04", "Pricing", "What is free, what is paid, and what you actually get.", "/pricing"],
+                    ].map(([n, title, detail, href]) => (
+                        <a className="product-tile" href={href} key={title}>
+                            <span>{n}</span>
+                            <strong>{title}</strong>
+                            <p>{detail}</p>
+                        </a>
+                    ))}
+                </div>
                 <div className="capability-grid">
                     {capabilities.map((item) => (
                         <a href={item.href} className="capability-card" key={item.number}>
-                            <div className="card-top"><span>{item.number} / 03</span><ArrowUpRight /></div>
+                            <div className="card-top"><span>{item.number} / 0{capabilities.length}</span><ArrowUpRight /></div>
                             <div className="card-icon"><span /></div>
                             <span className="card-tag">{item.tag}</span>
                             <h3>{item.title}</h3>
@@ -174,16 +188,16 @@ export default function Home() {
                     </div>
                     <div className="research-topics">
                         {[
-                            ["A", "African capital markets", "Equities, fixed income and market development"],
-                            ["M", "Macroeconomic analysis", "Rates, inflation, currencies and policy"],
-                            ["G", "Global investment themes", "Cross-border trends and asset allocation"],
-                            ["Q", "Quantitative research", "Data, models and evidence-led analysis"],
-                        ].map(([letter, title, detail]) => (
-                            <div className="topic-row" key={title}>
+                            ["A", "African capital markets", "Equities, fixed income and market development", "Equities"],
+                            ["M", "Macroeconomic analysis", "Rates, inflation, currencies and policy", "Macroeconomics"],
+                            ["G", "Global investment themes", "Cross-border trends and asset allocation", "Policy"],
+                            ["Q", "Quantitative research", "Data, models and evidence-led analysis", "Fixed Income"],
+                        ].map(([letter, title, detail, category]) => (
+                            <a className="topic-row" href={`/research?category=${encodeURIComponent(category)}`} key={title}>
                                 <span className="topic-letter">{letter}</span>
                                 <div><h3>{title}</h3><p>{detail}</p></div>
                                 <ArrowUpRight />
-                            </div>
+                            </a>
                         ))}
                     </div>
                 </div>
@@ -211,7 +225,11 @@ export default function Home() {
                 <span className="eyebrow">THE LONG VIEW</span>
                 <h2>Better insight is the beginning<br />of <span>better capital decisions.</span></h2>
                 <p>Explore a more thoughtful approach to understanding markets, building expertise and evaluating opportunity.</p>
-                <a href="/research" className="button button-primary">Start exploring <ArrowUpRight /></a>
+                <div className="closing-actions">
+                    <a href="/research" className="button button-primary">Start with research <ArrowUpRight /></a>
+                    <a href="/academy" className="button button-secondary">Open the Academy <ArrowRight /></a>
+                    <a href="/ai-opportunities" className="button button-secondary">AI Opportunities <ArrowRight /></a>
+                </div>
             </section>
         </div>
     );
