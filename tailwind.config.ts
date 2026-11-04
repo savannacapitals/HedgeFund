@@ -34,6 +34,9 @@ const config: Config = {
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],
                 mono: ["var(--font-jetbrains-mono)", "monospace"],
+                // Research section only (variables are set in app/(public)/research/layout.tsx)
+                headline: ["var(--font-headline)", "Georgia", "serif"],
+                editorial: ["var(--font-editorial)", "Georgia", "serif"],
             },
         },
     },

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { adminApi, btnCls, dangerBtnCls, inputCls, primaryBtnCls, shortDate } from "@/lib/admin/client";
 
-const CATEGORIES = ["Macroeconomics", "Fixed Income", "Equities", "Policy"];
+const CATEGORIES = ["Macroeconomics", "Fixed Income", "Equities", "Policy", "Digital Assets"];
 const FILTERS = ["all", "draft", "review", "published", "archived"];
 
 const STATUS_COLOUR: Record<string, string> = {
