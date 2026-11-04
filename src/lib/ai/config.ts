@@ -3,6 +3,8 @@
 export const AI_NAME = "Savanna AI Opportunities";
 export const AI_TAGLINE = "Discover. Qualify. Apply. Earn.";
 export const AI_BASE = "/ai-opportunities";
+/** Signed-in visitors hitting this are sent straight to their membership checkout. */
+export const MEMBERSHIP_START_PATH = "/ai-opportunities/membership/start";
 
 /** Server-side prices. The browser never sends a price. Override in hosting with AI_MEMBERSHIP_PRICE_KES / AI_ASSISTANCE_PRICE_USD. */
 export function membershipPriceKes(): number {

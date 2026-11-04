@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
 import GoogleButton from "@/components/GoogleButton";
-import { safeNextPath } from "@/lib/auth/next-path";
+import { rememberNextPath, safeNextPath } from "@/lib/auth/next-path";
 
 export default function RegisterPage() {
     const [fullName, setFullName] = useState("");
@@ -15,8 +15,17 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [next, setNext] = useState("/dashboard");
     const router = useRouter();
     const supabase = createClient();
+
+    // Where to send them once the account exists (for example the membership checkout they were heading to)
+    useEffect(() => {
+        const n = safeNextPath(new URLSearchParams(window.location.search).get("next"));
+        setNext(n);
+        rememberNextPath(n); // survives Google sign-in and the confirmation email
+    }, []);
+    const wantsCheckout = next !== "/dashboard";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,6 +41,8 @@ export default function RegisterPage() {
                     data: {
                         full_name: fullName,
                     },
+                    // Confirmation link signs them in and carries on to where they were going (the sc-next cookie)
+                    ...(wantsCheckout ? { emailRedirectTo: `${window.location.origin}/auth/callback` } : {}),
                 },
             });
 
@@ -43,12 +54,12 @@ export default function RegisterPage() {
 
             // With email confirmation switched on, there is no session until the link is clicked
             if (!data.session) {
-                setNotice("Account created. Check your email and click the confirmation link, then sign in.");
+                setNotice(wantsCheckout ? "Account created. Check your email and click the confirmation link. You will be signed in and taken straight to checkout." : "Account created. Check your email and click the confirmation link, then sign in.");
                 setLoading(false);
                 return;
             }
 
-            router.push(safeNextPath(new URLSearchParams(window.location.search).get("next")));
+            router.push(next);
             router.refresh();
         } catch (err: any) {
             setError(err.message || "An unexpected error occurred.");
@@ -128,7 +139,7 @@ export default function RegisterPage() {
 
                 <div className="mt-6 text-center text-xs text-terminal-muted font-mono">
                     Already have an account?{" "}
-                    <Link href="/login" className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
+                    <Link href={wantsCheckout ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
                         Sign In
                     </Link>
                 </div>

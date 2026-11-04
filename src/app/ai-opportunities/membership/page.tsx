@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AI_BASE, DISPLAY_MEMBERSHIP, membershipDays } from "@/lib/ai/config";
+import { AI_BASE, DISPLAY_MEMBERSHIP, MEMBERSHIP_START_PATH, membershipDays } from "@/lib/ai/config";
 import { getSignedInUser } from "@/lib/ai/data";
 import { getAiMembership } from "@/lib/ai/membership";
 import { niceDate } from "@/lib/ai/format";
@@ -46,7 +46,7 @@ export default async function MembershipPage() {
                 <div style={{ marginTop: 26 }}>
                     <MembershipButton label={m?.active ? `Renew now — ${DISPLAY_MEMBERSHIP}` : m?.expiresAt ? `Renew — ${DISPLAY_MEMBERSHIP}` : `Become a Member — ${DISPLAY_MEMBERSHIP}`} />
                 </div>
-                {!user && <p style={{ fontSize: 12.5, marginTop: 12 }}>You will be asked to <Link href="/login" style={{ color: "var(--sc-green)" }}>sign in</Link> or <Link href="/register" style={{ color: "var(--sc-green)" }}>create an account</Link> first.</p>}
+                {!user && <p style={{ fontSize: 12.5, marginTop: 12 }}>You will be asked to <Link href={`/login?next=${encodeURIComponent(MEMBERSHIP_START_PATH)}`} style={{ color: "var(--sc-green)" }}>sign in</Link> or <Link href={`/register?next=${encodeURIComponent(MEMBERSHIP_START_PATH)}`} style={{ color: "var(--sc-green)" }}>create an account</Link> first.</p>}
             </div>
 
             <div className="aio-grid c2" style={{ marginTop: 20 }}>

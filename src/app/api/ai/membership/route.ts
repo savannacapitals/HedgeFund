@@ -1,5 +1,5 @@
-import { createAdminClient, handle, json, requireUser } from "@/lib/ai/server";
-import { membershipPriceKes } from "@/lib/ai/config";
+import { handle, json, requireUser } from "@/lib/ai/server";
+import { openMembershipOrder } from "@/lib/ai/membership-order";
 
 export const dynamic = "force-dynamic";
 
@@ -9,29 +9,8 @@ export const dynamic = "force-dynamic";
 export async function POST() {
     try {
         const user = await requireUser();
-        const admin = createAdminClient();
-        const price = membershipPriceKes();
-
-        // Reuse an open order at the current price instead of piling up new ones
-        const { data: open } = await admin
-            .from("orders")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("kind", "ai_membership")
-            .eq("status", "pending")
-            .eq("total_amount", price)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-        if (open) return json({ redirectTo: `/checkout/${open.id}` });
-
-        const { data: order, error } = await admin
-            .from("orders")
-            .insert({ user_id: user.id, kind: "ai_membership", total_amount: price, currency: "KES", status: "pending" })
-            .select("id")
-            .single();
-        if (error || !order) throw new Error(error?.message || "Could not create the order.");
-        return json({ redirectTo: `/checkout/${order.id}` });
+        const orderId = await openMembershipOrder(user.id);
+        return json({ redirectTo: `/checkout/${orderId}` });
     } catch (err) {
         return handle(err);
     }

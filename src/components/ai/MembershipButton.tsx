@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { MEMBERSHIP_START_PATH } from "@/lib/ai/config";
 
-/** Starts the KES membership checkout. Signed-out visitors are sent to sign in first. */
+/**
+ * Starts the KES membership checkout. Signed-out visitors are sent to create an account first, and are
+ * brought back to the checkout automatically afterwards (via /ai-opportunities/membership/start).
+ */
 export default function MembershipButton({ label, className = "aio-btn primary" }: { label: string; className?: string }) {
     const router = useRouter();
     const [busy, setBusy] = useState(false);
@@ -14,7 +18,7 @@ export default function MembershipButton({ label, className = "aio-btn primary" 
         setError("");
         try {
             const res = await fetch("/api/ai/membership", { method: "POST" });
-            if (res.status === 401) return router.push("/login?next=/ai-opportunities/membership");
+            if (res.status === 401) return router.push(`/register?next=${encodeURIComponent(MEMBERSHIP_START_PATH)}`);
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || "Could not start checkout.");
             router.push(json.redirectTo);

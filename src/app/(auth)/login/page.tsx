@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import BrandMark from "@/components/BrandMark";
 import GoogleButton from "@/components/GoogleButton";
 import { oauthErrorMessage } from "@/lib/auth/oauth-errors";
-import { safeNextPath } from "@/lib/auth/next-path";
+import { rememberNextPath, safeNextPath } from "@/lib/auth/next-path";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -19,11 +19,17 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [needsConfirmation, setNeedsConfirmation] = useState(false);
+    const [next, setNext] = useState("/dashboard");
 
     // The Google callback sends people back here with ?error=... if something went wrong
     useEffect(() => {
         const message = oauthErrorMessage(new URLSearchParams(window.location.search).get("error"));
         if (message) setError(message);
+
+        // Keep the destination (for example the membership checkout) through Google sign-in
+        const n = safeNextPath(new URLSearchParams(window.location.search).get("next"));
+        setNext(n);
+        rememberNextPath(n);
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -53,8 +59,7 @@ export default function LoginPage() {
                 return;
             }
 
-            const next = safeNextPath(new URLSearchParams(window.location.search).get("next"));
-            router.push(next);
+            router.push(safeNextPath(new URLSearchParams(window.location.search).get("next")));
             router.refresh();
         } catch (err: any) {
             console.error("Sign-in failed:", err);
@@ -141,7 +146,7 @@ export default function LoginPage() {
 
                 <div className="mt-6 text-center text-xs text-terminal-muted font-mono">
                     Don&apos;t have an account?{" "}
-                    <Link href="/register" className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
+                    <Link href={next !== "/dashboard" ? `/register?next=${encodeURIComponent(next)}` : "/register"} className="inline-block py-2 -my-2 text-terminal-gold hover:underline">
                         Create one
                     </Link>
                 </div>

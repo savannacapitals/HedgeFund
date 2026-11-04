@@ -16,7 +16,16 @@ function safeNext(value: string | null): string {
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get("code");
-    const next = safeNext(searchParams.get("next"));
+    // The destination arrives as ?next=..., or (for Google and email-confirmation links, which must use the
+    // plain /auth/callback address) in the short-lived sc-next cookie set by the sign-in / register pages.
+    const cookieNext = request.headers.get("cookie")?.match(/(?:^|;\s*)sc-next=([^;]+)/)?.[1];
+    let fromCookie: string | null = null;
+    try {
+        fromCookie = cookieNext ? decodeURIComponent(cookieNext) : null;
+    } catch {
+        fromCookie = null;
+    }
+    const next = safeNext(searchParams.get("next") ?? fromCookie);
 
     // Google or Supabase reported a problem. Only a real "access_denied" means the visitor pressed
     // Cancel; anything else (for example "Database error saving new user") used to be shown as
@@ -43,7 +52,9 @@ export async function GET(request: Request) {
                 const forwardedHost = request.headers.get("x-forwarded-host");
                 const isLocal = process.env.NODE_ENV === "development";
                 const base = isLocal ? origin : forwardedHost ? `https://${forwardedHost}` : origin;
-                return NextResponse.redirect(`${base}${next}`);
+                const res = NextResponse.redirect(`${base}${next}`);
+                res.cookies.set("sc-next", "", { path: "/", maxAge: 0 });
+                return res;
             }
             // Usually "PKCE code verifier not found": sign-in started on one address (www / no www,
             // localhost) and finished on another, or cookies were blocked
