@@ -194,6 +194,8 @@ export default function CheckoutPage() {
     }
 
     const total = Number(order.total_amount).toFixed(2);
+    const discount = Number(order.discount_amount || 0);
+    const subtotal = Number(order.subtotal_amount ?? order.total_amount).toFixed(2);
     const showDevSimulate = process.env.NODE_ENV !== "production";
     const unlockWord =
         order.kind === "ai_membership" ? "AI Opportunities membership" : order.kind === "ai_assistance" ? "assistance request" : order.kind === "community" ? "Killzone Journal access" : "course";
@@ -228,8 +230,14 @@ export default function CheckoutPage() {
                         <h2 className="font-bold text-sm">Order Summary</h2>
                         <div className="flex justify-between items-center text-xs font-mono text-terminal-muted border-b border-terminal-border/40 pb-3">
                             <span>{order.kind === "ai_membership" ? "Savanna AI Opportunities · Membership (30 days)" : order.kind === "ai_assistance" ? "Savanna AI Opportunities · Account assistance" : order.kind === "community" ? "The Killzone Journal · Community Access" : order.courses?.title || "Academy Course Access"}</span>
-                            <span className="text-terminal-text font-bold">{total} {order.currency}</span>
+                            <span className="text-terminal-text font-bold">{discount > 0 ? subtotal : total} {order.currency}</span>
                         </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between items-center text-xs font-mono text-terminal-emerald border-b border-terminal-border/40 pb-3">
+                                <span>{order.promotion_code ? `Promo code ${order.promotion_code}` : "Opening offer"}</span>
+                                <span className="font-bold">−{discount.toFixed(2)} {order.currency}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between items-center text-sm font-mono font-bold text-terminal-gold">
                             <span>Total Payable</span>
                             <span>{method === "crypto" ? (payment ? payment.amountDue : info?.approxAmount || total) : `${total} ${order.currency}`}</span>

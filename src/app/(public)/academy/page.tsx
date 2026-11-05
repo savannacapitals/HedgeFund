@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "../../../lib/supabase/client";
+import { computeDiscount, formatPrice, type PromotionTerms } from "@/lib/promotions/pricing";
+
+type Offer = { id: string; autoApply: boolean; scope: string; courseId: string | null; label: string; terms: PromotionTerms };
 
 type Course = {
   id: string;
@@ -13,6 +16,7 @@ type Course = {
   level?: string | null;
   duration_hours?: number | null;
   price?: number | string | null;
+  currency?: string | null;
 };
 
 const DEFAULT_CATEGORIES = ["Trading", "Financial Markets", "Investment Analysis", "Macroeconomics", "Portfolio Management", "Risk Management"];
@@ -48,8 +52,34 @@ function priceLabel(price: Course["price"]) {
   return amount === 0 ? "Free" : `$${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
 
+// The price shown on a card. Offers that apply automatically are shown here because they are what
+// will be charged; code-only offers are not, since the customer has to enter the code.
+function CoursePrice({ course, offers }: { course: Course; offers: Offer[] }) {
+  const amount = Number(course.price ?? 0);
+  const currency = course.currency || "USD";
+  if (amount === 0) return <>Free</>;
+  let best = 0;
+  let label = "";
+  for (const offer of offers) {
+    if (!offer.autoApply) continue;
+    if (offer.scope === "course" && offer.courseId !== course.id) continue;
+    if (offer.scope !== "course" && offer.scope !== "all_courses") continue;
+    const off = computeDiscount(offer.terms, amount, currency);
+    if (off > best) { best = off; label = offer.label; }
+  }
+  if (!best) return <><CoursePrice course={course} offers={offers} /></>;
+  return (
+    <span className="inline-flex items-baseline gap-2">
+      <s className="text-[11px] font-normal text-terminal-muted">{formatPrice(amount, currency)}</s>
+      <span>{formatPrice(amount - best, currency)}</span>
+      <span className="rounded-full border border-terminal-gold/40 bg-terminal-gold/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.1em]">{label}</span>
+    </span>
+  );
+}
+
 export default function AcademyCataloguePage() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -71,6 +101,10 @@ export default function AcademyCataloguePage() {
       setLoading(false);
     }
     loadCourses();
+    fetch("/api/promotions/active")
+      .then((res) => (res.ok ? res.json() : { offers: [] }))
+      .then((json) => { if (active) setOffers(json.offers ?? []); })
+      .catch(() => {});
     return () => { active = false; };
   }, [supabase]);
 
@@ -127,7 +161,7 @@ export default function AcademyCataloguePage() {
           {loading ? <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{[1, 2, 3].map((item) => <div key={item} className="h-[350px] animate-pulse rounded-2xl border border-terminal-border bg-terminal-text/[0.05]" />)}</div> :
             filtered.length === 0 ? <div className="mt-8 rounded-2xl border border-terminal-border bg-terminal-surface px-6 py-20 text-center"><div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-terminal-border bg-terminal-text/[0.04] text-terminal-gold">◈</div><h3 className="mt-5 text-lg font-semibold">No courses match those filters</h3><p className="mt-2 text-sm text-terminal-muted">Try another keyword or reset the selected category and level.</p><button type="button" onClick={() => { setSearch(""); setCategory("All"); setLevel("All"); }} className="mt-6 text-xs font-semibold text-terminal-gold underline underline-offset-4">Clear all filters</button></div> :
               <>
-                {featured && <Link href={`/academy/courses/${featured.slug}`} className="group mt-8 grid overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface transition duration-300 hover:border-terminal-emerald/40 lg:grid-cols-[.95fr_1.05fr]"><Artwork category={featured.category} large /><div className="flex flex-col justify-center p-6 sm:p-9 lg:p-11"><div className="flex flex-wrap items-center gap-2"><span className="rounded-full border border-terminal-gold/25 bg-terminal-gold/[0.08] px-3 py-1 text-[9px] font-bold uppercase tracking-[.16em] text-terminal-gold">Featured programme</span><span className="text-[10px] text-terminal-muted">{featured.category || "Finance"}</span></div><h3 className="mt-5 max-w-xl text-2xl font-semibold leading-tight tracking-[-.03em] transition group-hover:text-terminal-emerald sm:text-3xl">{featured.title}</h3><p className="mt-4 line-clamp-3 max-w-xl text-sm leading-7 text-terminal-muted">{featured.description || "A structured programme designed to develop practical knowledge and analytical capability."}</p><div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-terminal-border pt-5"><span className="text-[10px] uppercase tracking-[.12em] text-terminal-muted">{featured.level || "All levels"}</span><span className="text-[10px] uppercase tracking-[.12em] text-terminal-muted">{featured.duration_hours ? `${featured.duration_hours} hours` : "Self-paced"}</span><span className="ml-auto text-sm font-semibold text-terminal-gold">{priceLabel(featured.price)}</span><span className="inline-flex items-center gap-2 text-xs font-semibold text-terminal-text">View programme <Arrow /></span></div></div></Link>}
+                {featured && <Link href={`/academy/courses/${featured.slug}`} className="group mt-8 grid overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface transition duration-300 hover:border-terminal-emerald/40 lg:grid-cols-[.95fr_1.05fr]"><Artwork category={featured.category} large /><div className="flex flex-col justify-center p-6 sm:p-9 lg:p-11"><div className="flex flex-wrap items-center gap-2"><span className="rounded-full border border-terminal-gold/25 bg-terminal-gold/[0.08] px-3 py-1 text-[9px] font-bold uppercase tracking-[.16em] text-terminal-gold">Featured programme</span><span className="text-[10px] text-terminal-muted">{featured.category || "Finance"}</span></div><h3 className="mt-5 max-w-xl text-2xl font-semibold leading-tight tracking-[-.03em] transition group-hover:text-terminal-emerald sm:text-3xl">{featured.title}</h3><p className="mt-4 line-clamp-3 max-w-xl text-sm leading-7 text-terminal-muted">{featured.description || "A structured programme designed to develop practical knowledge and analytical capability."}</p><div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-terminal-border pt-5"><span className="text-[10px] uppercase tracking-[.12em] text-terminal-muted">{featured.level || "All levels"}</span><span className="text-[10px] uppercase tracking-[.12em] text-terminal-muted">{featured.duration_hours ? `${featured.duration_hours} hours` : "Self-paced"}</span><span className="ml-auto text-sm font-semibold text-terminal-gold"><CoursePrice course={featured} offers={offers} /></span><span className="inline-flex items-center gap-2 text-xs font-semibold text-terminal-text">View programme <Arrow /></span></div></div></Link>}
                 {others.length > 0 && <div className="mt-12"><div className="mb-5 flex items-center justify-between"><h3 className="text-sm font-semibold text-terminal-text">More programmes</h3><span className="font-mono text-[10px] text-terminal-muted">{String(filtered.length).padStart(2, "0")} RESULTS</span></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{others.map((course) => <Link key={course.id} href={`/academy/courses/${course.slug}`} className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-terminal-border bg-terminal-surface transition duration-300 hover:-translate-y-1 hover:border-terminal-emerald/40"><Artwork category={course.category} /><div className="flex flex-1 flex-col p-5"><div className="flex items-center justify-between gap-3"><span className="truncate text-[9px] font-semibold uppercase tracking-[.16em] text-terminal-gold">{course.category || "Finance"}</span><span className="shrink-0 rounded-full border border-terminal-border px-2.5 py-1 text-[9px] text-terminal-muted">{course.level || "All levels"}</span></div><h4 className="mt-4 text-lg font-semibold leading-snug tracking-[-.02em] transition group-hover:text-terminal-emerald">{course.title}</h4><p className="mt-2 line-clamp-3 text-xs leading-6 text-terminal-muted">{course.description || "Explore the core concepts, frameworks and practical skills in this programme."}</p><div className="mt-6 flex items-center justify-between border-t border-terminal-border pt-5"><span className="text-[10px] text-terminal-muted">{course.duration_hours ? `${course.duration_hours} hrs` : "Self-paced"}</span><span className="text-sm font-semibold text-terminal-gold">{priceLabel(course.price)}</span></div></div></Link>)}</div></div>}
               </>
           }

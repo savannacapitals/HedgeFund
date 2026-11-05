@@ -11,7 +11,7 @@ export const ALL_ROLES = [
     "finance_operator",
 ] as const;
 
-export type SectionKey = "overview" | "content" | "academy" | "users" | "orders" | "ai";
+export type SectionKey = "overview" | "content" | "academy" | "users" | "orders" | "promotions" | "ai";
 
 export const SECTION_ROLES: Record<SectionKey, string[]> = {
     overview: ["researcher", "editor", "finance_operator", "administrator"],
@@ -19,6 +19,7 @@ export const SECTION_ROLES: Record<SectionKey, string[]> = {
     academy: ["editor", "administrator"],
     users: ["administrator"],
     orders: ["finance_operator", "administrator"],
+    promotions: ["finance_operator", "administrator"], // discounts change revenue, so they sit with the money roles
     ai: ["editor", "administrator"], // AI Opportunities: platforms, assistance requests, announcements
 };
 

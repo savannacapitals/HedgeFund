@@ -1,4 +1,8 @@
 import { DISPLAY_MEMBERSHIP, freePlatformLimit } from "@/lib/ai/config";
+import PromoBanner from "@/components/promotions/PromoBanner";
+
+// Refresh the offer strip at least once a minute (staff changes clear it immediately)
+export const revalidate = 60;
 
 const ArrowUpRight = () => (
     <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="h-4 w-4">
@@ -87,6 +91,7 @@ export default function Home() {
     const freeCount = freePlatformLimit();
     return (
         <div className="home-page">
+            <PromoBanner />
             <section className="hero-section section-shell">
                 <div className="hero-copy">
                     <div className="hero-kicker"><span className="kicker-line" /> INDEPENDENT FINANCIAL INTELLIGENCE</div>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { PromoError, openPurchaseOrder } from "@/lib/promotions/server";
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -13,8 +14,9 @@ export async function POST(request: Request) {
     }
 
     let courseId: string | undefined;
+    let promoCode: string | undefined;
     try {
-        ({ courseId } = await request.json());
+        ({ courseId, promoCode } = await request.json());
     } catch {
         // fall through to the validation below
     }
@@ -67,40 +69,22 @@ export async function POST(request: Request) {
         return NextResponse.json({ redirectTo: learnUrl });
     }
 
-    // Paid course: reuse an open order at the current price, otherwise create one
-    const { data: openOrder } = await admin
-        .from("orders")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("course_id", course.id)
-        .eq("status", "pending")
-        .eq("total_amount", course.price)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-    if (openOrder) {
-        return NextResponse.json({ redirectTo: `/checkout/${openOrder.id}` });
-    }
-
-    const { data: order, error: orderError } = await admin
-        .from("orders")
-        .insert({
-            user_id: user.id,
-            course_id: course.id,
-            total_amount: course.price,
+    // Paid course. The price comes from the database; any automatic offer or typed code is applied
+    // by the server, and a discounted order is created together with its redemption in one step.
+    try {
+        const { orderId, notice } = await openPurchaseOrder({
+            admin,
+            userId: user.id,
+            target: { kind: "course", courseId: course.id },
+            subtotal: Number(course.price),
             currency: course.currency ?? "USD",
-            status: "pending",
-        })
-        .select("id")
-        .single();
-
-    if (orderError || !order) {
-        return NextResponse.json(
-            { error: orderError?.message || "Could not create order." },
-            { status: 500 }
-        );
+            code: promoCode,
+        });
+        return NextResponse.json({ redirectTo: `/checkout/${orderId}`, notice });
+    } catch (err: any) {
+        if (err instanceof PromoError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        return NextResponse.json({ error: err?.message || "Could not create order." }, { status: 500 });
     }
-
-    return NextResponse.json({ redirectTo: `/checkout/${order.id}` });
 }

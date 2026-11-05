@@ -4,6 +4,15 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../../../../../lib/supabase/client";
+import { formatPrice } from "@/lib/promotions/pricing";
+
+interface Quote {
+    subtotal: number;
+    discount: number;
+    total: number;
+    currency: string;
+    promotion: { id: string; headline: string; code: string | null; endsAt: string | null } | null;
+}
 
 export default function CourseLandingPage() {
     const params = useParams();
@@ -16,8 +25,42 @@ export default function CourseLandingPage() {
     const [enrolling, setEnrolling] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [isEnrolled, setIsEnrolled] = useState(false);
+    const [quote, setQuote] = useState<Quote | null>(null);
+    const [codeInput, setCodeInput] = useState("");
+    const [appliedCode, setAppliedCode] = useState("");
+    const [codeError, setCodeError] = useState("");
+    const [applying, setApplying] = useState(false);
 
     const supabase = createClient();
+
+    // The server works out the price (including any automatic offer) so what is shown is what is charged
+    async function fetchQuote(courseId: string, code?: string) {
+        try {
+            const res = await fetch("/api/promotions/quote", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ courseId, code }),
+            });
+            const json = await res.json();
+            if (res.ok) {
+                setQuote(json.quote);
+                setCodeError(json.codeError || "");
+                setAppliedCode(code && !json.codeError && json.quote?.promotion?.code === code.toUpperCase() ? code.toUpperCase() : "");
+            } else if (code) {
+                setCodeError(json.error || "Could not check that code.");
+            }
+        } catch {
+            if (code) setCodeError("Could not check that code. Please try again.");
+        }
+    }
+
+    async function applyCode() {
+        if (!course || !codeInput.trim()) return;
+        setApplying(true);
+        setCodeError("");
+        await fetchQuote(course.id, codeInput.trim());
+        setApplying(false);
+    }
 
     useEffect(() => {
         async function loadCourseData() {
@@ -42,6 +85,7 @@ export default function CourseLandingPage() {
             }
 
             setCourse(courseData);
+            if (Number(courseData.price) > 0) fetchQuote(courseData.id);
             // 3. Fetch modules, then lessons from the safe curriculum view
             const { data: modulesData } = await supabase
                 .from("course_modules")
@@ -98,7 +142,7 @@ export default function CourseLandingPage() {
             const res = await fetch("/api/academy/enrol", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ courseId: course.id }),
+                body: JSON.stringify({ courseId: course.id, promoCode: appliedCode || undefined }),
             });
             const result = await res.json();
 
@@ -186,9 +230,24 @@ export default function CourseLandingPage() {
                 {/* Right Column: Pricing & Enrolment Card */}
                 <div>
                     <div className="sticky top-6 p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-6">
-                        <div className="flex justify-between items-center border-b border-terminal-border pb-4">
-                            <span className="font-mono text-xs text-terminal-muted">PROGRAM TUITION</span>
-                            <span className="text-2xl font-mono font-bold text-terminal-gold">{Number(course.price) === 0 ? "FREE" : `$${Number(course.price)}`}</span>
+                        <div className="border-b border-terminal-border pb-4">
+                            <div className="flex justify-between items-center">
+                                <span className="font-mono text-xs text-terminal-muted">PROGRAM TUITION</span>
+                                <span className="text-right">
+                                    {quote && quote.discount > 0 && (
+                                        <span className="block font-mono text-xs text-terminal-muted line-through">{formatPrice(quote.subtotal, quote.currency)}</span>
+                                    )}
+                                    <span className="text-2xl font-mono font-bold text-terminal-gold">
+                                        {Number(course.price) === 0 ? "FREE" : formatPrice(quote ? quote.total : Number(course.price), quote?.currency || course.currency || "USD")}
+                                    </span>
+                                </span>
+                            </div>
+                            {quote && quote.discount > 0 && quote.promotion && (
+                                <p className="mt-3 rounded border border-terminal-gold/30 bg-terminal-gold/10 px-3 py-2 text-[11px] leading-relaxed text-terminal-gold">
+                                    <span className="font-bold">{quote.promotion.headline}</span>
+                                    <span className="block font-mono text-terminal-muted">You save {formatPrice(quote.discount, quote.currency)}</span>
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-3 text-xs font-mono text-terminal-muted">
@@ -214,13 +273,43 @@ export default function CourseLandingPage() {
                                 CONTINUE LEARNING
                             </Link>
                         ) : (
+                            <>
+                            {Number(course.price) > 0 && (
+                                <div>
+                                    <label htmlFor="promo-code" className="block font-mono text-[10px] uppercase tracking-wider text-terminal-muted mb-1">Promo code</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            id="promo-code"
+                                            value={codeInput}
+                                            onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+                                            onKeyDown={(e) => e.key === "Enter" && applyCode()}
+                                            maxLength={24}
+                                            autoComplete="off"
+                                            spellCheck={false}
+                                            placeholder="Enter code"
+                                            className="min-w-0 flex-1 px-3 py-2 rounded bg-terminal-bg border border-terminal-border text-xs font-mono tracking-wider uppercase focus:outline-none focus:border-terminal-gold"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={applyCode}
+                                            disabled={applying || !codeInput.trim()}
+                                            className="px-3 py-2 rounded border border-terminal-border text-xs font-mono font-bold hover:border-terminal-gold disabled:opacity-40"
+                                        >
+                                            {applying ? "..." : "APPLY"}
+                                        </button>
+                                    </div>
+                                    {codeError && <p role="alert" className="mt-2 text-[11px] text-red-400">{codeError}</p>}
+                                    {appliedCode && !codeError && <p className="mt-2 text-[11px] text-terminal-emerald">Code {appliedCode} applied.</p>}
+                                </div>
+                            )}
                             <button
                                 onClick={handleEnrol}
                                 disabled={enrolling}
                                 className="w-full py-3 rounded bg-terminal-gold text-terminal-bg font-semibold text-xs font-mono tracking-wider hover:bg-terminal-gold/90 transition-colors disabled:opacity-50"
                             >
-                                {enrolling ? "PROCESSING..." : Number(course.price) === 0 ? "ENROL FREE" : `ENROL FOR $${Number(course.price)}`}
+                                {enrolling ? "PROCESSING..." : Number(course.price) === 0 ? "ENROL FREE" : `ENROL FOR ${formatPrice(quote ? quote.total : Number(course.price), quote?.currency || course.currency || "USD")}`}
                             </button>
+                            </>
                         )}
                     </div>
                 </div>

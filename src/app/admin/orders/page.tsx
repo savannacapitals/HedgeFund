@@ -139,7 +139,12 @@ export default function AdminOrdersPage() {
                                     <td className="p-3 text-terminal-gold">{o.id.slice(0, 8)}</td>
                                     <td className="p-3">{o.customer}</td>
                                     <td className="p-3 text-terminal-muted">{o.course || "—"}</td>
-                                    <td className="p-3 text-right font-bold">{formatMoney(o.total_amount, o.currency)}</td>
+                                    <td className="p-3 text-right font-bold">
+                                        {formatMoney(o.total_amount, o.currency)}
+                                        {o.discount_amount > 0 && (
+                                            <div className="font-normal text-terminal-emerald">−{formatMoney(o.discount_amount, o.currency)}{o.promotion_code ? ` · ${o.promotion_code}` : " · offer"}</div>
+                                        )}
+                                    </td>
                                     <td className={`p-3 font-bold ${STATUS_COLOUR[o.status] || ""}`}>{o.status.toUpperCase()}</td>
                                     <td className="p-3 text-terminal-muted">
                                         {o.payment?.label

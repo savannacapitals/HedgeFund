@@ -11,6 +11,7 @@ const ITEMS: { section: SectionKey; label: string; href: string }[] = [
     { section: "ai", label: "AI OPPORTUNITIES", href: "/admin/ai" },
     { section: "users", label: "USERS & ROLES", href: "/admin/users" },
     { section: "orders", label: "ORDERS", href: "/admin/orders" },
+    { section: "promotions", label: "PROMOTIONS", href: "/admin/promotions" },
 ];
 
 /** The tab bar across the top of every /admin page. Only shows what the role can open. */

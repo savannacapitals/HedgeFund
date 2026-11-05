@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
         let query = admin
             .from("orders")
-            .select("id, user_id, course_id, kind, total_amount, currency, status, created_at, updated_at")
+            .select("id, user_id, course_id, kind, subtotal_amount, discount_amount, promotion_code, total_amount, currency, status, created_at, updated_at")
             .order("created_at", { ascending: false })
             .limit(300);
         const status = url.searchParams.get("status");
@@ -85,6 +85,8 @@ export async function GET(request: Request) {
                 id: o.id,
                 status: o.status,
                 total_amount: Number(o.total_amount),
+                discount_amount: Number(o.discount_amount || 0),
+                promotion_code: o.promotion_code || null,
                 currency: o.currency,
                 created_at: o.created_at,
                 updated_at: o.updated_at,

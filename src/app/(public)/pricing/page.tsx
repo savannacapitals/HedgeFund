@@ -1,6 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { DISPLAY_ASSISTANCE, DISPLAY_MEMBERSHIP, membershipDays } from "@/lib/ai/config";
+import PromoBanner from "@/components/promotions/PromoBanner";
+
+// Refresh the offer strip at least once a minute (staff changes clear it immediately)
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: "Pricing | Savanna Capitals",
@@ -61,6 +65,8 @@ const TIERS = [
 
 export default function PricingPage() {
     return (
+        <>
+        <PromoBanner />
         <div className="mx-auto max-w-7xl px-6 py-12">
             <div className="mx-auto mb-16 max-w-3xl text-center">
                 <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Pricing</p>
@@ -115,5 +121,6 @@ export default function PricingPage() {
                 Need a custom conversation? <Link href="/contact" className="text-terminal-gold hover:underline">Contact us</Link>.
             </div>
         </div>
+        </>
     );
 }
