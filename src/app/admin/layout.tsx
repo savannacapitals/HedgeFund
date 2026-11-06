@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getStaffAccess } from "@/lib/auth/staff";
 import { ADMIN_AREA_ROLES } from "@/lib/auth/roles";
-import AdminNav from "@/components/admin/AdminNav";
+import AdminShell from "@/components/admin/AdminShell";
 
 export const metadata: Metadata = {
     robots: { index: false, follow: false },
 };
 
-// Everything under /admin is for editors and administrators only.
-// This runs on the server before any admin page is sent to the browser.
+// Everything under /admin is for staff roles only.
+// Auth runs on the server before any admin page is sent to the browser.
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const access = await getStaffAccess(ADMIN_AREA_ROLES);
 
@@ -28,10 +28,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         );
     }
 
-    return (
-        <>
-            <AdminNav role={access.role} />
-            {children}
-        </>
-    );
+    return <AdminShell role={access.role}>{children}</AdminShell>;
 }

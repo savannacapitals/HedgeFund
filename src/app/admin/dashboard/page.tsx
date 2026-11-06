@@ -2,8 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getStaffAccess } from "@/lib/auth/staff";
 import { ADMIN_AREA_ROLES, canAccess } from "@/lib/auth/roles";
-import { getAdminMetrics, monthOverMonth } from "@/lib/admin/metrics";
+import { getAdminMetrics, monthOverMonth, type RevenueLine } from "@/lib/admin/metrics";
 import LiveRefresh from "@/components/LiveRefresh";
+import { Card, MetricCard } from "@/components/ui/Card";
 
 // Always read fresh figures. Never cache this page.
 export const dynamic = "force-dynamic";
@@ -12,6 +13,19 @@ const nf = new Intl.NumberFormat("en-US");
 const num = (n: number | null) => (n === null ? "—" : nf.format(n));
 const money = (amount: number, currency: string) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 2 }).format(amount);
+
+/** Prefer USD then KES then others; always list both USD and KES when showing platform totals. */
+function formatLines(lines: RevenueLine[], ensureCurrencies: string[] = ["USD", "KES"]) {
+    const map = new Map(lines.map((l) => [l.currency.toUpperCase(), l.amount]));
+    for (const c of ensureCurrencies) {
+        if (!map.has(c)) map.set(c, 0);
+    }
+    const ordered = [
+        ...ensureCurrencies.filter((c) => map.has(c)),
+        ...[...map.keys()].filter((c) => !ensureCurrencies.includes(c)).sort(),
+    ];
+    return ordered.map((c) => ({ currency: c, amount: map.get(c) ?? 0 }));
+}
 
 function ago(iso: string | null) {
     if (!iso) return "never";
@@ -23,8 +37,6 @@ function ago(iso: string | null) {
 }
 
 export default async function AdminDashboardPage() {
-    // The admin layout already checks this; checking again here keeps the page safe
-    // even if it is ever moved out of /admin.
     const access = await getStaffAccess(ADMIN_AREA_ROLES);
     if (access.status === "anonymous") redirect("/login");
     if (access.status === "forbidden") redirect("/");
@@ -36,227 +48,274 @@ export default async function AdminDashboardPage() {
 
     const growth = monthOverMonth(m.users.newThisMonth, m.users.newLastMonth);
     const growthDown = growth?.startsWith("-");
-    const usd = m.revenue.lines.find((l) => l.currency === "USD");
-    const otherRevenue = m.revenue.lines.filter((l) => l.currency !== "USD");
+
+    const totals = showMoney && m.revenue.ok ? formatLines(m.revenue.lines) : [];
+    const usdTotal = totals.find((l) => l.currency === "USD")?.amount ?? 0;
+    const kesTotal = totals.find((l) => l.currency === "KES")?.amount ?? 0;
 
     const paymentsLive = m.payments.networks.length > 0;
     const scanStale =
-        paymentsLive && (!m.payments.lastScanAt || Date.now() - new Date(m.payments.lastScanAt).getTime() > 60 * 60 * 1000);
+        paymentsLive &&
+        (!m.payments.lastScanAt || Date.now() - new Date(m.payments.lastScanAt).getTime() > 60 * 60 * 1000);
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            {/* Admin Header */}
-            <div className="border-b border-terminal-border pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
-                    <div className="inline-flex items-center space-x-2 text-xs font-mono text-terminal-gold mb-2">
-                        <span>PRIVILEGED PORTAL // ADMINISTRATION</span>
-                    </div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-terminal-text tracking-tight">
-                        System Control & Operations
-                    </h1>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">
+                        Operations · Control Centre
+                    </p>
+                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">
+                        Platform Overview
+                    </h2>
+                    <p className="mt-1 text-sm text-terminal-muted">
+                        Live institutional snapshot of users, academy, research and revenue.
+                    </p>
                 </div>
+                <LiveRefresh generatedAt={m.generatedAt} />
+            </div>
 
-                <div className="flex flex-col items-start md:items-end gap-3">
-                    <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-                        {canAccess(role, "academy") && (
-                            <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
-                                ACADEMY ADMIN
+            {/* Primary metrics */}
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${showMoney ? "xl:grid-cols-4" : "xl:grid-cols-3"} gap-4`}>
+                <MetricCard
+                    label="Total Users"
+                    value={num(m.users.total)}
+                    delta={growth ?? "Growth unavailable"}
+                    deltaTone={growth === null ? "neutral" : growthDown ? "negative" : "positive"}
+                    footnote={`${num(m.users.newThisMonth)} new this month`}
+                />
+                <MetricCard
+                    label="Active Enrolments"
+                    value={num(m.enrolments.active)}
+                    footnote={`${num(m.enrolments.completed)} completed`}
+                />
+                {showMoney && (
+                    <MetricCard
+                        label={`Revenue · ${m.revenue.monthLabel || "This month"}`}
+                        value={!m.revenue.ok ? "—" : money(usdTotal, "USD")}
+                        footnote={
+                            m.revenue.ok
+                                ? `${money(kesTotal, "KES")} · ${num(m.revenue.confirmedOrders)} confirmed orders`
+                                : "Revenue unavailable"
+                        }
+                    />
+                )}
+                <MetricCard
+                    label="Published Research"
+                    value={num(m.articles.published)}
+                    footnote={`${num(m.articles.drafts)} drafts · ${num(m.articles.inReview)} awaiting review`}
+                />
+            </div>
+
+            {/* Revenue breakdown by product */}
+            {showMoney && m.revenue.ok && (
+                <Card>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 className="text-sm font-semibold text-terminal-text">Revenue by product</h3>
+                            <p className="text-[11px] font-mono text-terminal-muted mt-0.5">
+                                Confirmed orders this month · USD and KES always shown
+                            </p>
+                        </div>
+                        <Link
+                            href="/admin/orders"
+                            className="text-[11px] font-mono text-terminal-gold hover:underline"
+                        >
+                            Open orders →
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {(m.revenue.buckets.length
+                            ? m.revenue.buckets
+                            : [
+                                  { key: "academy", label: "Academy", orderCount: 0, lines: [] as RevenueLine[] },
+                                  { key: "ai_membership", label: "AI membership", orderCount: 0, lines: [] as RevenueLine[] },
+                                  { key: "ai_assistance", label: "AI assistance", orderCount: 0, lines: [] as RevenueLine[] },
+                              ]
+                        ).map((bucket) => {
+                            const lines = formatLines(bucket.lines);
+                            return (
+                                <div
+                                    key={bucket.key}
+                                    className="rounded-md border border-terminal-border bg-terminal-bg/40 p-4"
+                                >
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="text-xs font-semibold text-terminal-text">{bucket.label}</span>
+                                        <span className="text-[10px] font-mono text-terminal-muted">
+                                            {bucket.orderCount} order{bucket.orderCount === 1 ? "" : "s"}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        {lines.map((l) => (
+                                            <div key={l.currency} className="flex justify-between text-sm font-mono">
+                                                <span className="text-terminal-muted">{l.currency}</span>
+                                                <span
+                                                    className={
+                                                        l.amount > 0
+                                                            ? "text-terminal-text tabular-nums font-semibold"
+                                                            : "text-terminal-muted tabular-nums"
+                                                    }
+                                                >
+                                                    {money(l.amount, l.currency)}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Platform totals */}
+                    <div className="mt-4 pt-4 border-t border-terminal-border flex flex-wrap gap-x-8 gap-y-2 text-sm font-mono">
+                        <span className="text-terminal-muted">Platform total</span>
+                        {totals.map((l) => (
+                            <span key={l.currency} className="text-terminal-text">
+                                <span className="text-terminal-muted mr-2">{l.currency}</span>
+                                <span className="font-semibold tabular-nums">{money(l.amount, l.currency)}</span>
+                            </span>
+                        ))}
+                    </div>
+                </Card>
+            )}
+
+            {/* Secondary status + quick links */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <Card className="lg:col-span-2">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-terminal-text">Operational Status</h3>
+                        <span className="text-[10px] font-mono text-terminal-muted">REAL-TIME</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-terminal-muted">Open payments</span>
+                                <span className="font-mono tabular-nums">{num(m.payments.openPayments)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-terminal-muted">Unmatched transfers</span>
+                                <span className="font-mono tabular-nums text-red-400">
+                                    {num(m.payments.unmatchedTransfers)}
+                                </span>
+                            </div>
+                            {paymentsLive && (
+                                <div className="flex justify-between">
+                                    <span className="text-terminal-muted">Last payment scan</span>
+                                    <span
+                                        className={`font-mono ${scanStale ? "text-red-400" : "text-terminal-emerald"}`}
+                                    >
+                                        {ago(m.payments.lastScanAt)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-terminal-muted">Scan errors</span>
+                                <span className="font-mono tabular-nums">{num(m.payments.scanErrors)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-terminal-muted">Networks live</span>
+                                <span className="font-mono tabular-nums">
+                                    {m.payments.networks.length ? m.payments.networks.join(", ") : "—"}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+
+                <Card>
+                    <h3 className="text-sm font-semibold text-terminal-text mb-4">Quick Actions</h3>
+                    <div className="flex flex-col gap-2">
+                        {canAccess(role, "users") && (
+                            <Link
+                                href="/admin/users"
+                                className="px-3 py-2 rounded-md text-sm border border-terminal-border hover:border-terminal-gold/50 hover:bg-terminal-gold/5 transition-colors"
+                            >
+                                Manage users & roles
                             </Link>
                         )}
-                        <Link
-                            href="/dashboard"
-                            className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-text hover:border-terminal-gold/50"
-                        >
-                            MEMBER DASHBOARD
-                        </Link>
-                        <Link
-                            href="/"
-                            className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-text hover:border-terminal-gold/50"
-                        >
-                            VIEW SITE
-                        </Link>
-                        <span className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-gold font-bold">
-                            ROLE: {(access.role || "").toUpperCase()}
-                        </span>
-                    </div>
-                    <LiveRefresh generatedAt={m.generatedAt} />
-                </div>
-            </div>
-
-            {/* Metrics Row (live) */}
-            <div className={`grid grid-cols-1 ${showMoney ? "md:grid-cols-4" : "md:grid-cols-3"} gap-6 mb-10`}>
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">TOTAL USERS</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">{num(m.users.total)}</span>
-                    <span
-                        className={`text-xs font-mono block mt-2 ${
-                            growth === null ? "text-terminal-muted" : growthDown ? "text-red-400" : "text-terminal-emerald"
-                        }`}
-                    >
-                        {growth ?? "Growth unavailable"}
-                    </span>
-                    <span className="text-[10px] font-mono text-terminal-muted block">
-                        {num(m.users.newThisMonth)} new this month
-                    </span>
-                </div>
-
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">ACTIVE ENROLLMENTS</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-gold">{num(m.enrolments.active)}</span>
-                    <span className="text-xs font-mono text-terminal-muted block mt-2">
-                        {num(m.enrolments.completed)} completed
-                    </span>
-                </div>
-
-                {showMoney && (
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">
-                        REVENUE · {m.revenue.monthLabel.toUpperCase() || "THIS MONTH"}
-                    </span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">
-                        {!m.revenue.ok ? "—" : money(usd?.amount ?? 0, "USD")}
-                    </span>
-                    {otherRevenue.map((l) => (
-                        <span key={l.currency} className="text-xs font-mono text-terminal-text block mt-1">
-                            + {money(l.amount, l.currency)}
-                        </span>
-                    ))}
-                    <span className="text-xs font-mono text-terminal-muted block mt-2">
-                        {m.revenue.ok ? `${num(m.revenue.confirmedOrders)} confirmed orders` : "Revenue unavailable"}
-                    </span>
-                </div>
-                )}
-
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">PUBLISHED ARTICLES</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">{num(m.articles.published)}</span>
-                    <span className="text-xs font-mono text-terminal-gold block mt-2">
-                        {m.articles.inReview === null
-                            ? "Review queue unavailable"
-                            : `${m.articles.inReview} pending review`}
-                    </span>
-                    <span className="text-[10px] font-mono text-terminal-muted block">
-                        {num(m.articles.drafts)} drafts
-                    </span>
-                </div>
-            </div>
-
-            {/* Admin Modules Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-                {/* Management Quick Navigation (only what this role can open) */}
-                <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border space-y-3">
-                    <h2 className="text-lg font-bold text-terminal-text mb-4">Content & User Controls</h2>
-
-                    {[
-                        { section: "content", href: "/admin/content", title: "📝 Article Publishing & Editorial", sub: "Write, edit and publish research" },
-                        { section: "academy", href: "/admin/academy", title: "🎓 Academy Courses & Lessons", sub: "Courses, lessons, quizzes" },
-                        { section: "users", href: "/admin/users", title: "👥 User Management & Roles", sub: "Decide who can do what" },
-                        { section: "orders", href: "/admin/orders", title: "💳 Order Reconciliation & Refunds", sub: "Confirm, fail or refund orders" },
-                    ]
-                        .filter((l) => canAccess(role, l.section as any))
-                        .map((l) => (
+                        {canAccess(role, "academy") && (
                             <Link
-                                key={l.href}
-                                href={l.href}
-                                className="p-3 rounded bg-terminal-bg border border-terminal-border hover:border-terminal-gold/50 transition-colors flex items-center justify-between text-xs font-mono block"
+                                href="/admin/academy"
+                                className="px-3 py-2 rounded-md text-sm border border-terminal-border hover:border-terminal-gold/50 hover:bg-terminal-gold/5 transition-colors"
                             >
-                                <span>
-                                    <span className="text-terminal-text font-bold block">{l.title}</span>
-                                    <span className="text-[10px] text-terminal-muted">{l.sub}</span>
-                                </span>
-                                <span className="text-terminal-gold">&rarr;</span>
+                                Academy management
                             </Link>
-                        ))}
-                </div>
-
-                {/* System Health Status (money roles only) */}
-                {showMoney && (
-                <div className="lg:col-span-2 p-6 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <h2 className="text-lg font-bold text-terminal-text mb-4">System Operations & Payments</h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                        <div className="p-4 rounded bg-terminal-bg border border-terminal-border">
-                            <span className="text-terminal-muted block mb-1">STABLECOIN PAYMENTS</span>
-                            <span
-                                className={`font-bold text-sm block ${
-                                    !paymentsLive ? "text-red-400" : scanStale || m.payments.scanErrors ? "text-terminal-gold" : "text-terminal-emerald"
-                                }`}
+                        )}
+                        {canAccess(role, "content") && (
+                            <Link
+                                href="/admin/content"
+                                className="px-3 py-2 rounded-md text-sm border border-terminal-border hover:border-terminal-gold/50 hover:bg-terminal-gold/5 transition-colors"
                             >
-                                {!paymentsLive ? "NOT CONFIGURED" : scanStale ? "SCANNER STALE" : m.payments.scanErrors ? "SCAN ERRORS" : "ACTIVE"}
-                            </span>
-                            <span className="text-[10px] text-terminal-muted block">
-                                {paymentsLive
-                                    ? `${m.payments.networks.length} networks · last scan ${ago(m.payments.lastScanAt)}`
-                                    : "No deposit addresses are set, so checkout cannot take payments"}
-                            </span>
-                        </div>
-
-                        <div className="p-4 rounded bg-terminal-bg border border-terminal-border">
-                            <span className="text-terminal-muted block mb-1">OPEN PAYMENTS</span>
-                            <span className="text-terminal-gold font-bold text-sm block">{num(m.payments.openPayments)}</span>
-                            <span className="text-[10px] text-terminal-muted">Orders waiting for a transfer</span>
-                        </div>
-
-                        <div className="p-4 rounded bg-terminal-bg border border-terminal-border md:col-span-2">
-                            <span className="text-terminal-muted block mb-1">UNMATCHED TRANSFERS</span>
-                            <span
-                                className={`font-bold text-sm block ${
-                                    m.payments.unmatchedTransfers ? "text-terminal-gold" : "text-terminal-emerald"
-                                }`}
+                                Research & editorial
+                            </Link>
+                        )}
+                        {canAccess(role, "orders") && (
+                            <Link
+                                href="/admin/orders"
+                                className="px-3 py-2 rounded-md text-sm border border-terminal-border hover:border-terminal-gold/50 hover:bg-terminal-gold/5 transition-colors"
                             >
-                                {num(m.payments.unmatchedTransfers)}
-                            </span>
-                            <span className="text-[10px] text-terminal-muted">
-                                Money received that did not match an open order (check by hand)
-                            </span>
-                        </div>
+                                Orders & payments
+                            </Link>
+                        )}
+                        {canAccess(role, "ai") && (
+                            <Link
+                                href="/admin/ai"
+                                className="px-3 py-2 rounded-md text-sm border border-terminal-border hover:border-terminal-gold/50 hover:bg-terminal-gold/5 transition-colors"
+                            >
+                                AI Opportunities
+                            </Link>
+                        )}
                     </div>
-                </div>
-                )}
+                </Card>
             </div>
 
-            {/* Append-Only Audit Log (administrators only) */}
             {showAudit && (
-            <div className="bg-terminal-surface rounded-lg border border-terminal-border p-6 font-mono text-xs">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                    <h2 className="text-base font-bold text-terminal-text">Immutable System Audit Log</h2>
-                    <span className="text-terminal-gold text-[10px]">APPEND-ONLY RECORD · LATEST 10</span>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-terminal-bg border-b border-terminal-border text-terminal-muted">
-                            <tr>
-                                <th className="p-3">ID</th>
-                                <th className="p-3">ACTOR</th>
-                                <th className="p-3">ACTION</th>
-                                <th className="p-3">TARGET</th>
-                                <th className="p-3">TIMESTAMP</th>
-                                <th className="p-3 text-right">IP ADDRESS</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-terminal-border text-terminal-text">
-                            {m.audit.rows.map((log) => (
-                                <tr key={log.id} className="hover:bg-terminal-bg/50">
-                                    <td className="p-3 text-terminal-gold">{log.id.slice(0, 8)}</td>
-                                    <td className="p-3">{log.actor}</td>
-                                    <td className="p-3 font-bold">{log.action}</td>
-                                    <td className="p-3 text-terminal-muted">{log.target}</td>
-                                    <td className="p-3">{log.timestamp}</td>
-                                    <td className="p-3 text-right">{log.ipAddress}</td>
-                                </tr>
-                            ))}
-                            {m.audit.rows.length === 0 && (
+                <Card padding="none">
+                    <div className="px-5 py-4 border-b border-terminal-border flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-terminal-text">Audit Log</h3>
+                        <span className="text-[10px] font-mono text-terminal-gold uppercase tracking-wider">
+                            Append-only · Latest 10
+                        </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs font-mono">
+                            <thead className="bg-terminal-bg/60 text-terminal-muted">
                                 <tr>
-                                    <td colSpan={6} className="p-6 text-center text-terminal-muted">
-                                        {m.audit.ok ? "No audit events recorded yet." : "Audit log could not be loaded."}
-                                    </td>
+                                    <th className="px-5 py-3 font-medium">ID</th>
+                                    <th className="px-5 py-3 font-medium">Actor</th>
+                                    <th className="px-5 py-3 font-medium">Action</th>
+                                    <th className="px-5 py-3 font-medium">Target</th>
+                                    <th className="px-5 py-3 font-medium">Timestamp</th>
+                                    <th className="px-5 py-3 font-medium text-right">IP</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            </thead>
+                            <tbody className="divide-y divide-terminal-border">
+                                {m.audit.rows.map((log) => (
+                                    <tr key={log.id} className="hover:bg-terminal-surface/50">
+                                        <td className="px-5 py-3 text-terminal-gold">{log.id.slice(0, 8)}</td>
+                                        <td className="px-5 py-3">{log.actor}</td>
+                                        <td className="px-5 py-3 font-semibold text-terminal-text">{log.action}</td>
+                                        <td className="px-5 py-3 text-terminal-muted">{log.target}</td>
+                                        <td className="px-5 py-3">{log.timestamp}</td>
+                                        <td className="px-5 py-3 text-right">{log.ipAddress}</td>
+                                    </tr>
+                                ))}
+                                {m.audit.rows.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-5 py-10 text-center text-terminal-muted">
+                                            {m.audit.ok
+                                                ? "No audit events recorded yet."
+                                                : "Audit log could not be loaded."}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </Card>
             )}
         </div>
     );

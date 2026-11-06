@@ -21,11 +21,25 @@ export interface RevenueLine {
     amount: number;
 }
 
+/** One product bucket (Academy, AI membership, AI assistance, etc.) with per-currency totals. */
+export interface RevenueBucket {
+    key: string;
+    label: string;
+    orderCount: number;
+    lines: RevenueLine[];
+}
+
 export interface AdminMetrics {
     generatedAt: string;
     users: { total: number | null; newThisMonth: number | null; newLastMonth: number | null };
     enrolments: { active: number | null; completed: number | null };
-    revenue: { lines: RevenueLine[]; confirmedOrders: number | null; monthLabel: string; ok: boolean };
+    revenue: {
+        lines: RevenueLine[];
+        buckets: RevenueBucket[];
+        confirmedOrders: number | null;
+        monthLabel: string;
+        ok: boolean;
+    };
     articles: { published: number | null; inReview: number | null; drafts: number | null };
     payments: {
         networks: string[];
@@ -101,33 +115,62 @@ export async function getAdminMetrics(scope: MetricScope = { money: true, audit:
         safe(
             "revenue",
             async () => {
-                if (!scope.money) return { lines: [], confirmedOrders: null, monthLabel: "", ok: false };
+                if (!scope.money) {
+                    return { lines: [], buckets: [], confirmedOrders: null, monthLabel: "", ok: false };
+                }
                 // orders has no paid_at column; updated_at is stamped when an order flips to "confirmed".
                 const { data, error } = await admin
                     .from("orders")
-                    .select("total_amount, currency")
+                    .select("total_amount, currency, kind")
                     .eq("status", "confirmed")
                     .gte("updated_at", monthStart.toISOString());
                 if (error) throw error;
 
-                const totals = new Map<string, number>();
-                for (const o of data ?? []) {
-                    const cur = (o.currency || "USD").toUpperCase();
-                    // Sum in cents to avoid floating point drift
-                    totals.set(cur, (totals.get(cur) ?? 0) + Math.round(Number(o.total_amount) * 100));
+                const bucketMeta: { key: string; label: string; match: (kind: string | null) => boolean }[] = [
+                    { key: "academy", label: "Academy", match: (k) => !k || k === "course" },
+                    { key: "ai_membership", label: "AI membership", match: (k) => k === "ai_membership" },
+                    { key: "ai_assistance", label: "AI assistance", match: (k) => k === "ai_assistance" },
+                    { key: "community", label: "Community", match: (k) => k === "community" },
+                    { key: "other", label: "Other", match: (k) => !!k && !["course", "ai_membership", "ai_assistance", "community"].includes(k) },
+                ];
+
+                const toLines = (centsByCurrency: Map<string, number>): RevenueLine[] =>
+                    [...centsByCurrency.entries()]
+                        .map(([currency, cents]) => ({ currency, amount: cents / 100 }))
+                        .sort((a, b) =>
+                            a.currency === "USD" ? -1 : b.currency === "USD" ? 1 : a.currency.localeCompare(b.currency)
+                        );
+
+                const overall = new Map<string, number>();
+                const buckets: RevenueBucket[] = [];
+
+                for (const meta of bucketMeta) {
+                    const cents = new Map<string, number>();
+                    let orderCount = 0;
+                    for (const o of data ?? []) {
+                        const kind = (o.kind as string | null) ?? null;
+                        if (!meta.match(kind)) continue;
+                        orderCount += 1;
+                        const cur = (o.currency || "USD").toUpperCase();
+                        const add = Math.round(Number(o.total_amount) * 100);
+                        cents.set(cur, (cents.get(cur) ?? 0) + add);
+                        overall.set(cur, (overall.get(cur) ?? 0) + add);
+                    }
+                    // Always surface core product buckets (even at zero) so KES / USD gaps are obvious
+                    if (orderCount > 0 || ["academy", "ai_membership", "ai_assistance"].includes(meta.key)) {
+                        buckets.push({ key: meta.key, label: meta.label, orderCount, lines: toLines(cents) });
+                    }
                 }
-                const lines = [...totals.entries()]
-                    .map(([currency, cents]) => ({ currency, amount: cents / 100 }))
-                    .sort((a, b) => (a.currency === "USD" ? -1 : b.currency === "USD" ? 1 : a.currency.localeCompare(b.currency)));
 
                 return {
-                    lines,
+                    lines: toLines(overall),
+                    buckets,
                     confirmedOrders: data?.length ?? 0,
                     monthLabel: monthStart.toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" }),
                     ok: true,
                 };
             },
-            { lines: [], confirmedOrders: null, monthLabel: "", ok: false }
+            { lines: [], buckets: [], confirmedOrders: null, monthLabel: "", ok: false }
         ),
 
         safe(

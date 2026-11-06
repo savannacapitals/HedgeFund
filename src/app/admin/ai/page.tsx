@@ -84,10 +84,10 @@ export default function AdminAiPage() {
     );
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="space-y-6">
             <div className="border-b border-terminal-border pb-6 mb-6">
-                <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // AI OPPORTUNITIES</div>
-                <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">AI Opportunities management</h1>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">Administration · AI OPPORTUNITIES</p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">AI Opportunities management</h2>
                 <p className="text-xs font-mono text-terminal-muted mt-2">Platforms, guides, assistance requests, memberships and announcements. Every change is written to the audit log. Paid memberships and assistance are activated only from confirmed orders (see Orders).</p>
             </div>
 

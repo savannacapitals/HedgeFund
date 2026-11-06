@@ -89,10 +89,10 @@ export default function AdminOrdersPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="space-y-6">
             <div className="border-b border-terminal-border pb-6 mb-6">
-                <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // ORDERS</div>
-                <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">Order Reconciliation & Refunds</h1>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">Administration · ORDERS</p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">Order Reconciliation & Refunds</h2>
                 <p className="text-xs font-mono text-terminal-muted mt-2">
                     Crypto payments confirm themselves when the exact amount arrives on-chain, and Pochi la Biashara payments when the M-Pesa SMS reaches the site. Bank transfers (and any Pochi payment still waiting) are confirmed here: check the money is in your account or Pochi, then confirm.
                 </p>

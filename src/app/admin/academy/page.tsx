@@ -566,7 +566,7 @@ export default function AcademyAdminPage() {
 
     return (
         <div className="min-h-screen bg-terminal-bg text-terminal-text px-6 py-8">
-            <div className="max-w-7xl mx-auto">
+            <div className="space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-terminal-border pb-5 mb-6">
                     <div>
                         <span className="font-mono text-xs text-terminal-gold tracking-widest uppercase">ACADEMY ADMIN</span>

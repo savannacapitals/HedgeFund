@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { Card, MetricCard } from "@/components/ui/Card";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 interface CourseProgress {
     courseId: string;
@@ -22,6 +24,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<CourseProgress[]>([]);
     const [role, setRole] = useState<string>("");
+    const [displayName, setDisplayName] = useState<string>("");
 
     useEffect(() => {
         async function load() {
@@ -32,6 +35,13 @@ export default function DashboardPage() {
                 router.push("/login");
                 return;
             }
+
+            setDisplayName(
+                (user.user_metadata?.full_name as string) ||
+                    (user.user_metadata?.name as string) ||
+                    user.email?.split("@")[0] ||
+                    "Member"
+            );
 
             const { data: profile } = await supabase
                 .from("profiles")
@@ -46,9 +56,11 @@ export default function DashboardPage() {
                 .eq("user_id", user.id)
                 .neq("status", "revoked");
 
-            // Unpublished courses come back with no course row, so they are skipped
             const rows = (enrolments ?? [])
-                .map((e: any) => ({ courseId: e.course_id as string, course: Array.isArray(e.courses) ? e.courses[0] : e.courses }))
+                .map((e: any) => ({
+                    courseId: e.course_id as string,
+                    course: Array.isArray(e.courses) ? e.courses[0] : e.courses,
+                }))
                 .filter((r) => r.course);
 
             if (rows.length === 0) {
@@ -86,10 +98,14 @@ export default function DashboardPage() {
 
             const doneIds = new Set((progress ?? []).map((p: any) => p.lesson_id));
             const courseOfModule = new Map((modules ?? []).map((m) => [m.id, m.course_id]));
-            const certByCourse = new Map((certificates ?? []).map((c) => [c.course_id, c.verification_code]));
+            const certByCourse = new Map(
+                (certificates ?? []).map((c) => [c.course_id, c.verification_code])
+            );
 
             const built: CourseProgress[] = rows.map((r) => {
-                const courseLessons = (lessons ?? []).filter((l: any) => courseOfModule.get(l.module_id) === r.courseId);
+                const courseLessons = (lessons ?? []).filter(
+                    (l: any) => courseOfModule.get(l.module_id) === r.courseId
+                );
                 const total = courseLessons.length;
                 const done = courseLessons.filter((l: any) => doneIds.has(l.id)).length;
                 return {
@@ -103,149 +119,238 @@ export default function DashboardPage() {
                 };
             });
 
+            built.sort((a, b) => {
+                const aDone = a.percent === 100 ? 1 : 0;
+                const bDone = b.percent === 100 ? 1 : 0;
+                if (aDone !== bDone) return aDone - bDone;
+                return b.percent - a.percent;
+            });
+
             setCourses(built);
             setLoading(false);
         }
         load();
     }, [supabase, router]);
 
-    const inProgress = courses.filter((c) => c.percent < 100).length;
-    const completedCourses = courses.filter((c) => c.total > 0 && c.percent === 100).length;
+    const inProgress = courses.filter((c) => c.percent < 100);
+    const completedCourses = courses.filter((c) => c.total > 0 && c.percent === 100);
     const certificateCount = courses.filter((c) => c.certificateCode).length;
     const totalLessons = courses.reduce((n, c) => n + c.total, 0);
     const doneLessons = courses.reduce((n, c) => n + c.done, 0);
     const overallPercent = totalLessons ? Math.round((doneLessons / totalLessons) * 100) : 0;
     const isStaff = role === "editor" || role === "administrator";
+    const continueCourse = inProgress[0] ?? null;
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            {/* Overview Header */}
-            <div className="border-b border-terminal-border pb-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Your Savanna</p>
-                    <h1 className="text-2xl font-semibold tracking-[-.03em] text-terminal-text md:text-4xl">
-                        Dashboard
-                    </h1>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">
+                        Academy · Your progress
+                    </p>
+                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">
+                        {loading ? "Welcome back" : `Welcome back, ${displayName.split(" ")[0]}`}
+                    </h2>
+                    <p className="mt-1 text-sm text-terminal-muted">
+                        Resume learning, track completion, and access your certificates.
+                    </p>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-                    {isStaff && (
-                        <Link href="/admin/academy" className="px-3 py-1.5 rounded bg-terminal-gold text-terminal-bg font-bold">
-                            ACADEMY ADMIN
-                        </Link>
-                    )}
-                    <span className="px-3 py-1.5 rounded bg-terminal-surface border border-terminal-border text-terminal-muted">
-                        ACCOUNT: <span className="text-terminal-emerald font-bold">{loading ? "..." : (role || "member").replace("_", " ").toUpperCase()}</span>
-                    </span>
-                </div>
+                {isStaff && (
+                    <Link
+                        href="/admin/academy"
+                        className="inline-flex items-center px-3 py-1.5 rounded-md bg-terminal-gold text-terminal-bg text-xs font-bold"
+                    >
+                        Academy Admin
+                    </Link>
+                )}
             </div>
 
-            {/* Metrics Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">ENROLLED COURSES</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">{loading ? "–" : courses.length}</span>
-                    <span className="text-xs font-mono text-terminal-emerald block mt-2">
-                        {loading ? "Loading..." : courses.length === 0 ? "Not enrolled yet" : `${inProgress} in progress`}
-                    </span>
-                </div>
-
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">LESSONS COMPLETED</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-gold">{loading ? "–" : `${doneLessons}/${totalLessons}`}</span>
-                    <span className="text-xs font-mono text-terminal-muted block mt-2">
-                        {loading ? "Loading..." : totalLessons === 0 ? "Enrol in a course to begin" : `${overallPercent}% across your courses`}
-                    </span>
-                </div>
-
-                <div className="p-5 rounded-lg bg-terminal-surface border border-terminal-border">
-                    <span className="text-xs font-mono text-terminal-muted block mb-1">CERTIFICATES EARNED</span>
-                    <span className="text-3xl font-bold font-mono text-terminal-text">{loading ? "–" : certificateCount}</span>
-                    <span className="text-xs font-mono text-terminal-emerald block mt-2">
-                        {loading ? "Loading..." : `${completedCourses} course${completedCourses === 1 ? "" : "s"} completed`}
-                    </span>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <MetricCard
+                    label="Enrolled courses"
+                    value={loading ? "–" : courses.length}
+                    footnote={
+                        loading
+                            ? "Loading…"
+                            : courses.length === 0
+                              ? "Not enrolled yet"
+                              : `${inProgress.length} in progress`
+                    }
+                />
+                <MetricCard
+                    label="Lessons completed"
+                    value={loading ? "–" : `${doneLessons}/${totalLessons || 0}`}
+                    footnote={loading ? "Loading…" : `${overallPercent}% overall`}
+                />
+                <MetricCard
+                    label="Completed courses"
+                    value={loading ? "–" : completedCourses.length}
+                    footnote={loading ? "Loading…" : "Fully finished"}
+                />
+                <MetricCard
+                    label="Certificates"
+                    value={loading ? "–" : certificateCount}
+                    footnote={loading ? "Loading…" : "Earned"}
+                />
             </div>
 
-            {/* Quick Navigation & Active Workflows */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Active Learning Progress */}
-                <div className="p-6 rounded-lg bg-terminal-surface border border-terminal-border">
+            {!loading && continueCourse && (
+                <Card className="border-terminal-gold/30">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-terminal-gold mb-2">
+                                Continue learning
+                            </p>
+                            <h3 className="text-lg font-semibold text-terminal-text truncate">
+                                {continueCourse.title}
+                            </h3>
+                            <p className="mt-1 text-sm text-terminal-muted font-mono">
+                                {continueCourse.done} of {continueCourse.total} lessons · {continueCourse.percent}%
+                            </p>
+                            <div className="mt-4 max-w-md">
+                                <ProgressBar value={continueCourse.percent} size="md" />
+                            </div>
+                        </div>
+                        <div className="shrink-0">
+                            <Link
+                                href={`/learn/${continueCourse.slug}/lessons`}
+                                className="inline-flex items-center px-5 py-2.5 rounded-md bg-terminal-gold text-terminal-bg text-sm font-semibold hover:bg-terminal-gold/90 transition-colors"
+                            >
+                                Resume course →
+                            </Link>
+                        </div>
+                    </div>
+                </Card>
+            )}
+
+            {!loading && courses.length === 0 && (
+                <Card className="text-center py-12">
+                    <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-terminal-gold mb-2">
+                        Academy
+                    </p>
+                    <h3 className="text-lg font-semibold text-terminal-text mb-2">
+                        You are not enrolled in any course yet
+                    </h3>
+                    <p className="text-sm text-terminal-muted max-w-md mx-auto mb-6">
+                        Browse the Academy catalogue and enrol to start structured financial education.
+                    </p>
+                    <Link
+                        href="/academy"
+                        className="inline-flex items-center px-5 py-2.5 rounded-md bg-terminal-gold text-terminal-bg text-sm font-semibold"
+                    >
+                        Explore Academy →
+                    </Link>
+                </Card>
+            )}
+
+            {!loading && courses.length > 0 && (
+                <div>
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-terminal-text">Active Academy Courses</h2>
-                        <Link href="/academy" className="text-xs font-mono text-terminal-gold hover:underline">
-                            Browse Catalogue &rarr;
+                        <h3 className="text-sm font-semibold text-terminal-text">Your courses</h3>
+                        <Link
+                            href="/academy"
+                            className="text-xs font-mono text-terminal-muted hover:text-terminal-gold transition-colors"
+                        >
+                            Browse catalogue →
                         </Link>
                     </div>
-
-                    <div className="space-y-4">
-                        {loading && <p className="text-xs font-mono text-terminal-muted">LOADING YOUR COURSES...</p>}
-
-                        {!loading && courses.length === 0 && (
-                            <div className="p-4 rounded bg-terminal-bg border border-terminal-border text-xs font-mono text-terminal-muted">
-                                You have not enrolled in a course yet.{" "}
-                                <Link href="/academy" className="text-terminal-gold hover:underline">
-                                    Browse the catalogue &rarr;
-                                </Link>
-                            </div>
-                        )}
-
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {courses.map((c) => (
-                            <div key={c.courseId} className="p-4 rounded bg-terminal-bg border border-terminal-border">
-                                <div className="flex items-center justify-between gap-3 text-xs font-mono text-terminal-muted mb-2">
-                                    <Link href={`/learn/${c.slug}/lessons`} className="text-terminal-text font-bold hover:text-terminal-gold">
-                                        {c.title}
-                                    </Link>
-                                    <span className={c.percent === 100 ? "text-terminal-emerald" : "text-terminal-gold"}>
-                                        {c.percent === 100 ? "Completed" : `${c.percent}% Completed`}
+                            <Card key={c.courseId} hover className="flex flex-col">
+                                <div className="flex items-start justify-between gap-3 mb-3">
+                                    <div className="min-w-0">
+                                        <h4 className="text-sm font-semibold text-terminal-text leading-snug truncate">
+                                            {c.title}
+                                        </h4>
+                                        <p className="mt-1 text-[11px] font-mono text-terminal-muted">
+                                            {c.done}/{c.total} lessons
+                                            {c.percent === 100 && (
+                                                <span className="ml-2 text-terminal-emerald">· Completed</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <span className="shrink-0 text-sm font-mono font-bold tabular-nums text-terminal-gold">
+                                        {c.percent}%
                                     </span>
                                 </div>
-                                <div className="w-full bg-terminal-surface h-2 rounded-full overflow-hidden">
-                                    <div
-                                        className={`${c.percent === 100 ? "bg-terminal-emerald" : "bg-terminal-gold"} h-full`}
-                                        style={{ width: `${c.percent}%` }}
-                                    ></div>
-                                </div>
-                                <div className="flex items-center justify-between mt-3 text-xs font-mono">
-                                    <span className="text-terminal-muted">
-                                        {c.done}/{c.total} lessons
-                                    </span>
+                                <ProgressBar value={c.percent} size="sm" className="mb-4" />
+                                <div className="mt-auto flex items-center justify-between gap-2 pt-1">
                                     {c.certificateCode ? (
-                                        <Link href={`/learn/${c.slug}/certificate`} className="text-terminal-emerald hover:underline">
-                                            View certificate &rarr;
+                                        <Link
+                                            href={`/learn/${c.slug}/certificate`}
+                                            className="text-xs font-medium text-terminal-emerald hover:underline"
+                                        >
+                                            View certificate →
                                         </Link>
                                     ) : (
-                                        <Link href={`/learn/${c.slug}/lessons`} className="text-terminal-gold hover:underline">
-                                            {c.percent === 100 ? "Get certificate" : c.done > 0 ? "Continue" : "Start"} &rarr;
+                                        <Link
+                                            href={`/learn/${c.slug}/lessons`}
+                                            className="text-xs font-medium text-terminal-gold hover:underline"
+                                        >
+                                            {c.percent === 100
+                                                ? "Get certificate →"
+                                                : c.done > 0
+                                                  ? "Continue →"
+                                                  : "Start →"}
                                         </Link>
                                     )}
+                                    <Link
+                                        href={`/learn/${c.slug}`}
+                                        className="text-[11px] font-mono text-terminal-muted hover:text-terminal-text"
+                                    >
+                                        Details
+                                    </Link>
                                 </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
                 </div>
+            )}
 
-                <div className="p-6 rounded-lg border border-terminal-border bg-terminal-surface">
-                    <h2 className="mb-4 text-lg font-semibold text-terminal-text">The rest of the platform</h2>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {[
-                            ["/ai-opportunities/dashboard", "AI Opportunities", "Directory, membership and assistance"],
-                            ["/research", "Research library", "Published market notes"],
-                            ["/community/killzone", "Killzone Journal", "Private trading community"],
-                            ["/academy", "Academy catalogue", "Enrol in another course"],
-                            ["/watchlist", "Watchlist preview", "Sample layout · not live prices"],
-                            ["/journal", "Journal preview", "Sample layout · not your trades"],
-                        ].map(([href, title, detail]) => (
-                            <Link
-                                key={href}
-                                href={href}
-                                className="rounded-xl border border-terminal-border bg-terminal-bg p-4 transition hover:border-terminal-gold/50"
-                            >
-                                <span className="block text-sm font-semibold text-terminal-text">{title}</span>
-                                <span className="mt-1 block text-xs text-terminal-muted">{detail}</span>
-                            </Link>
-                        ))}
-                    </div>
+            <div>
+                <h3 className="text-sm font-semibold text-terminal-text mb-4">Platform</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                        {
+                            href: "/ai-opportunities/dashboard",
+                            title: "AI Opportunities",
+                            detail: "Directory, membership & assistance",
+                        },
+                        {
+                            href: "/research",
+                            title: "Research library",
+                            detail: "Published market notes & analysis",
+                        },
+                        {
+                            href: "/academy",
+                            title: "Academy catalogue",
+                            detail: "Enrol in another course",
+                        },
+                        {
+                            href: "/community/killzone",
+                            title: "Killzone Journal",
+                            detail: "Private trading community",
+                        },
+                        {
+                            href: "/watchlist",
+                            title: "Watchlist",
+                            detail: "Sample layout · not live prices",
+                        },
+                        {
+                            href: "/journal",
+                            title: "Journal",
+                            detail: "Sample layout · not your trades",
+                        },
+                    ].map((item) => (
+                        <Link key={item.href} href={item.href}>
+                            <Card hover className="h-full">
+                                <span className="block text-sm font-semibold text-terminal-text">
+                                    {item.title}
+                                </span>
+                                <span className="mt-1 block text-xs text-terminal-muted">{item.detail}</span>
+                            </Card>
+                        </Link>
+                    ))}
                 </div>
             </div>
         </div>

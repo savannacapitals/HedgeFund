@@ -123,10 +123,10 @@ export default function AdminPromotionsPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="space-y-6">
             <div className="border-b border-terminal-border pb-6 mb-6">
-                <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // PROMOTIONS</div>
-                <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">Offers, Discounts & Promo Codes</h1>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">Administration · PROMOTIONS</p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">Offers, Discounts & Promo Codes</h2>
                 <p className="text-xs font-mono text-terminal-muted mt-2 leading-relaxed max-w-3xl">
                     Automatic offers apply to everyone eligible. Code offers apply only when the customer types the code. One offer applies per order (the largest wins). The discount is worked out on the server and saved on the order, so receipts stay correct if you later end or change an offer.
                 </p>

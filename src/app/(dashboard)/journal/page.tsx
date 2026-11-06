@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/Card";
+
 interface JournalEntry {
     id: string;
     date: string;
@@ -37,40 +39,62 @@ const JOURNAL_ENTRIES: JournalEntry[] = [
 
 export default function JournalPage() {
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border-b border-terminal-border pb-6 mb-8 flex flex-wrap justify-between items-center gap-4">
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Preview</p>
-                    <h1 className="text-2xl font-semibold tracking-tight text-terminal-text md:text-4xl">Trading journal</h1>
-                    <p className="mt-3 max-w-xl text-sm text-terminal-muted">
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">
+                        Preview · Sample entries only
+                    </p>
+                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">
+                        Trading journal
+                    </h2>
+                    <p className="mt-1 text-sm text-terminal-muted max-w-xl">
                         Sample entries so you can see the layout. They are not your trades, and new entries are not saved yet.
                     </p>
                 </div>
-
-                <button type="button" disabled className="cursor-not-allowed rounded-lg bg-terminal-gold/50 px-4 py-2 text-xs font-semibold text-terminal-bg">
-                    New entry coming soon
+                <button
+                    type="button"
+                    disabled
+                    className="cursor-not-allowed rounded-md bg-terminal-gold/40 px-4 py-2 text-xs font-semibold text-terminal-bg"
+                >
+                    New entry · coming soon
                 </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {JOURNAL_ENTRIES.map((entry) => (
-                    <div key={entry.id} className="p-5 rounded-lg bg-terminal-surface border border-terminal-border font-mono text-xs">
+                    <Card key={entry.id}>
                         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                <span className={`px-2 py-0.5 rounded font-bold ${entry.type === "BUY" ? "bg-terminal-emerald/20 text-terminal-emerald" : "bg-red-500/20 text-red-400"}`}>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono">
+                                <span
+                                    className={`px-2 py-0.5 rounded font-bold ${
+                                        entry.type === "BUY"
+                                            ? "bg-terminal-emerald/20 text-terminal-emerald"
+                                            : "bg-red-500/20 text-red-400"
+                                    }`}
+                                >
                                     {entry.type}
                                 </span>
                                 <span className="text-terminal-text font-bold text-sm">{entry.asset}</span>
-                                <span className="text-terminal-muted">DATE: {entry.date}</span>
+                                <span className="text-terminal-muted">{entry.date}</span>
                             </div>
-                            <span className={`font-bold text-sm ${entry.isProfit ? "text-terminal-emerald" : "text-red-400"}`}>
+                            <span
+                                className={`font-mono font-bold text-sm tabular-nums ${
+                                    entry.isProfit ? "text-terminal-emerald" : "text-red-400"
+                                }`}
+                            >
                                 {entry.pnl}
                             </span>
                         </div>
-                        <p className="text-terminal-muted leading-relaxed">
-                            <span className="text-terminal-gold font-bold">NOTES:</span> {entry.notes}
+                        <p className="text-xs text-terminal-muted leading-relaxed font-mono">
+                            <span className="text-terminal-gold font-bold">Notes · </span>
+                            {entry.notes}
                         </p>
-                    </div>
+                        <div className="mt-3 flex gap-4 text-[11px] font-mono text-terminal-muted">
+                            <span>Entry {entry.entryPrice}</span>
+                            <span>Exit {entry.exitPrice}</span>
+                        </div>
+                    </Card>
                 ))}
             </div>
         </div>

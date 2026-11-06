@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/Card";
+
 interface WatchlistItem {
     symbol: string;
     name: string;
@@ -44,41 +46,51 @@ const WATCHLIST_ITEMS: WatchlistItem[] = [
 
 export default function WatchlistPage() {
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border-b border-terminal-border pb-6 mb-8">
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[.22em] text-terminal-gold">Preview</p>
-                <h1 className="text-2xl font-semibold tracking-tight text-terminal-text md:text-4xl">Market watchlist</h1>
-                <p className="mt-3 max-w-2xl text-sm text-terminal-muted">
-                    Illustrative layout only. These figures are not live market data and should not be used for decisions.
+        <div className="space-y-6">
+            <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">
+                    Preview · Not live prices
+                </p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">
+                    Market watchlist
+                </h2>
+                <p className="mt-1 text-sm text-terminal-muted max-w-2xl">
+                    Illustrative layout only. These figures are not live market data and must not be used for investment decisions.
                 </p>
             </div>
 
-            <div className="bg-terminal-surface rounded-lg border border-terminal-border overflow-x-auto">
-                <table className="w-full min-w-[36rem] text-left font-mono text-xs">
-                    <thead className="bg-terminal-bg border-b border-terminal-border text-terminal-muted">
-                        <tr>
-                            <th className="p-4">SYMBOL</th>
-                            <th className="p-4">ASSET NAME</th>
-                            <th className="p-4">CATEGORY</th>
-                            <th className="p-4 text-right">LAST / YIELD</th>
-                            <th className="p-4 text-right">24H CHANGE</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-terminal-border text-terminal-text">
-                        {WATCHLIST_ITEMS.map((item, idx) => (
-                            <tr key={idx} className="hover:bg-terminal-bg/50">
-                                <td className="p-4 text-terminal-gold font-bold">{item.symbol}</td>
-                                <td className="p-4">{item.name}</td>
-                                <td className="p-4 text-terminal-muted">{item.category}</td>
-                                <td className="p-4 text-right font-bold">{item.lastPrice}</td>
-                                <td className={`p-4 text-right font-bold ${item.isPositive ? "text-terminal-emerald" : "text-red-400"}`}>
-                                    {item.change}
-                                </td>
+            <Card padding="none">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[36rem] text-left font-mono text-xs">
+                        <thead className="bg-terminal-bg/60 border-b border-terminal-border text-terminal-muted">
+                            <tr>
+                                <th className="px-5 py-3 font-medium">Symbol</th>
+                                <th className="px-5 py-3 font-medium">Asset</th>
+                                <th className="px-5 py-3 font-medium">Category</th>
+                                <th className="px-5 py-3 font-medium text-right">Last / Yield</th>
+                                <th className="px-5 py-3 font-medium text-right">Change</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody className="divide-y divide-terminal-border text-terminal-text">
+                            {WATCHLIST_ITEMS.map((item) => (
+                                <tr key={item.symbol} className="hover:bg-terminal-surface/50">
+                                    <td className="px-5 py-3 text-terminal-gold font-bold">{item.symbol}</td>
+                                    <td className="px-5 py-3">{item.name}</td>
+                                    <td className="px-5 py-3 text-terminal-muted">{item.category}</td>
+                                    <td className="px-5 py-3 text-right font-bold tabular-nums">{item.lastPrice}</td>
+                                    <td
+                                        className={`px-5 py-3 text-right font-bold tabular-nums ${
+                                            item.isPositive ? "text-terminal-emerald" : "text-red-400"
+                                        }`}
+                                    >
+                                        {item.change}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
         </div>
     );
 }

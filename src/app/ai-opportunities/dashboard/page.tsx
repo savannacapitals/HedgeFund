@@ -41,9 +41,12 @@ export default async function AiDashboardPage() {
     const stageIndex = (s: string) => PROGRESS_STAGES.findIndex((x) => x.id === s);
 
     return (
-        <div className="aio-wrap" style={{ padding: "56px 0 88px" }}>
-            <span className="aio-eyebrow">Member dashboard</span>
-            <h1 className="aio-h2" style={{ fontSize: "clamp(28px,4vw,42px)" }}>Your AI Opportunities.</h1>
+        <div className="aio-wrap" style={{ padding: "48px 0 88px" }}>
+            <span className="aio-eyebrow">Member workspace · AI Opportunities</span>
+            <h1 className="aio-h2" style={{ fontSize: "clamp(26px,3.5vw,36px)", letterSpacing: "-0.02em" }}>Your opportunities dashboard</h1>
+            <p style={{ marginTop: 8, color: "var(--sc-muted)", fontSize: 14, maxWidth: 520 }}>
+                Membership status, saved platforms, progress and assistance — in one place.
+            </p>
 
             <section className="aio-grid c3" style={{ marginTop: 28 }} aria-label="Membership status">
                 <div className="aio-card" style={{ gridColumn: "span 2" }}>

@@ -129,7 +129,7 @@ export default function AdminContentPage() {
     // ------------------------------------------------------------ editor
     if (form) {
         return (
-            <div className="max-w-4xl mx-auto px-6 py-10">
+            <div className="space-y-6">
                 <button onClick={() => setForm(null)} className="text-xs font-mono text-terminal-gold hover:underline mb-4">
                     &larr; All articles
                 </button>
@@ -217,11 +217,11 @@ export default function AdminContentPage() {
 
     // ------------------------------------------------------------ list
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-terminal-border pb-6 mb-6">
                 <div>
-                    <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // CONTENT</div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">Article Publishing & Editorial</h1>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">Administration · CONTENT</p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">Article Publishing & Editorial</h2>
                 </div>
                 <button className={primaryBtnCls} onClick={() => openEditor(null)}>+ NEW ARTICLE</button>
             </div>

@@ -67,11 +67,11 @@ export default function AdminUsersPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="border-b border-terminal-border pb-6 mb-6">
-                <div className="text-xs font-mono text-terminal-gold mb-2">ADMIN // USERS & ROLES</div>
-                <h1 className="text-2xl md:text-3xl font-bold text-terminal-text">User Management & Roles</h1>
-                <p className="text-xs font-mono text-terminal-muted mt-2">Pick a role for each person to decide what they can open in the admin area.</p>
+        <div className="space-y-6">
+            <div className="pb-2">
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-terminal-gold mb-1">Administration · Access control</p>
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-terminal-text">Users & roles</h2>
+                <p className="mt-1 text-sm text-terminal-muted">Assign roles to control what each person can open in the admin area.</p>
             </div>
 
             {error && <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">{error}</div>}

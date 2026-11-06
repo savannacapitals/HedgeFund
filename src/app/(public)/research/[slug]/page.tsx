@@ -58,7 +58,7 @@ export default async function ResearchArticlePage({ params }: { params: Promise<
                             <time dateTime={article.publishedAt}>{formatDate(article.publishedAt, "long")}</time>
                             <span>{article.readingMinutes} min read</span>
                         </div>
-                        <h1 className="font-sans text-[2.15rem] leading-[1.12] tracking-[-0.015em] text-terminal-text sm:text-5xl lg:text-[3.4rem]">
+                        <h1 className="font-sans text-[1.85rem] leading-[1.15] tracking-[-0.02em] text-terminal-text sm:text-4xl lg:text-[2.75rem]">
                             {article.title}
                         </h1>
                         <p className="mt-7 text-sm text-terminal-muted">

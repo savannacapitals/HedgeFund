@@ -68,14 +68,18 @@
     --sc-chart-dot-ring: #0c171a;
     --sc-chart-grid: #263640;
 
-    /* inner pages: Tailwind terminal-* colours, as RGB channels */
-    --t-bg: 10 11 14;
-    --t-surface: 18 20 26;
-    --t-border: 30 34 45;
-    --t-muted: 138 147 166;
-    --t-text: 226 232 240;
-    --t-gold: 212 175 55;
-    --t-emerald: 16 185 129;
+    /* inner pages / dashboards: Tailwind terminal-* colours (RGB channels)
+     * Aligned to Savanna Capitals institutional palette:
+     * Obsidian #090B0A · Deep charcoal #111512 · Surface #171C18
+     * Champagne gold #C6A15B · Forest green #174D38 · Ivory #F2EFE7 · Muted #929991
+     */
+    --t-bg: 9 11 10;           /* #090B0A Obsidian black */
+    --t-surface: 17 21 18;     /* #111512 Deep charcoal */
+    --t-border: 35 42 36;      /* subtle green-grey border */
+    --t-muted: 146 153 145;    /* #929991 Muted grey */
+    --t-text: 242 239 231;     /* #F2EFE7 Ivory */
+    --t-gold: 198 161 91;      /* #C6A15B Champagne gold */
+    --t-emerald: 23 77 56;     /* #174D38 Forest green (used for positive / active) */
     --t-danger: 248 113 113;
     --t-danger-strong: 239 68 68;
 }
@@ -129,13 +133,13 @@
     --sc-chart-dot-ring: #ffffff;
     --sc-chart-grid: #cfdad7;
 
-    --t-bg: 246 247 249;
+    --t-bg: 242 239 231;         /* Ivory base */
     --t-surface: 255 255 255;
-    --t-border: 217 222 231;
-    --t-muted: 85 96 114;
-    --t-text: 17 24 39;
-    --t-gold: 133 100 12;
-    --t-emerald: 4 120 87;
+    --t-border: 210 214 208;
+    --t-muted: 100 108 98;
+    --t-text: 17 21 18;          /* Deep charcoal text */
+    --t-gold: 160 122 50;        /* Darker champagne for light mode contrast */
+    --t-emerald: 23 77 56;       /* Forest green */
     --t-danger: 185 28 28;
     --t-danger-strong: 220 38 38;
 }
