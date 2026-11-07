@@ -16,9 +16,6 @@ export default function SiteHeader() {
             <div className="header-inner">
                 <Link href="/" className="brand-lockup" aria-label="Savanna Capitals home">
                     <BrandMark />
-                    <span className="brand-name">
-                        SAVANNA<span>CAPITALS</span>
-                    </span>
                 </Link>
                 <nav className="desktop-nav" aria-label="Main navigation">
                     {MAIN_NAV.map((item) =>

@@ -79,8 +79,7 @@ export default function LoginPage() {
         <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-6 py-12">
             <div className="w-full max-w-md p-8 rounded-lg bg-terminal-surface border border-terminal-border">
                 <div className="text-center mb-8">
-                    <BrandMark height={72} centered className="mb-5" />
-                    <span className="font-mono text-xs text-terminal-gold">SAVANNA CAPITALS</span>
+                    <BrandMark height={120} centered className="mb-4" />
                     <h1 className="text-2xl font-bold text-terminal-text mt-1">Sign in</h1>
                     <p className="text-xs text-terminal-muted mt-2">Academy, AI Opportunities membership and your dashboard</p>
                 </div>

@@ -234,7 +234,7 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-terminal-bg text-terminal-text flex flex-col">
             <header className="border-b border-terminal-border/80 bg-terminal-bg/95 backdrop-blur-md sticky top-0 z-20">
                 <div className="max-w-3xl mx-auto px-5 h-14 flex items-center justify-between">
-                    <BrandMark height={32} />
+                    <BrandMark height={44} />
                     <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-terminal-muted">
                         <LockIcon />
                         <span>Secure checkout</span>
@@ -368,7 +368,7 @@ export default function CheckoutPage() {
             {/* Top bar */}
             <header className="border-b border-terminal-border/80 bg-terminal-bg/95 backdrop-blur-md sticky top-0 z-20">
                 <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-                    <BrandMark height={32} />
+                    <BrandMark height={44} />
                     <div className="flex items-center gap-3">
                         <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-terminal-muted">
                             <LockIcon />

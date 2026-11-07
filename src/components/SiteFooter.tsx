@@ -38,11 +38,8 @@ export default function SiteFooter() {
         <footer className="site-footer">
             <div className="footer-grid">
                 <div className="footer-brand">
-                    <Link href="/" className="brand-lockup">
+                    <Link href="/" className="brand-lockup" aria-label="Savanna Capitals home">
                         <BrandMark />
-                        <span className="brand-name">
-                            SAVANNA<span>CAPITALS</span>
-                        </span>
                     </Link>
                     <p>Independent thinking. African perspective. Global context.</p>
                     <p className="footer-brand-note">Research, education and guidance. Not investment advice, job placement or a guarantee of work.</p>

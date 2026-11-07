@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             publishedTime: article.publishedAt || undefined,
             section: article.category,
             tags: article.tags,
+            images: [{ url: "/brand/og-image.png", width: 1200, height: 630, alt: "Savanna Capitals" }],
         },
     };
 }

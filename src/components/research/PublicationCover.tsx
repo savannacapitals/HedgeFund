@@ -275,7 +275,8 @@ export default function PublicationCover({
                 ))}
                 {motif}
                 <rect x={14} y={14} width={W - 28} height={H - 28} fill="none" stroke={GOLD} strokeOpacity={0.3} />
-                <text x={34} y={46} fill={PALE} fillOpacity={0.85} fontSize={11} letterSpacing={3.2} fontFamily="var(--font-jetbrains-mono), ui-monospace, monospace">
+                <image href="/brand/savanna-tree.png" x={34} y={30} width={46} height={20} preserveAspectRatio="xMidYMid meet" />
+                <text x={90} y={46} fill={PALE} fillOpacity={0.85} fontSize={11} letterSpacing={3.2} fontFamily="var(--font-jetbrains-mono), ui-monospace, monospace">
                     SAVANNA RESEARCH
                 </text>
                 <text x={34} y={H - 32} fill={GOLD} fontSize={11} letterSpacing={2.6} fontFamily="var(--font-jetbrains-mono), ui-monospace, monospace">

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import BrandMark from "@/components/BrandMark";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordRequestPage() {
@@ -35,6 +36,7 @@ export default function ResetPasswordRequestPage() {
         <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-6 py-12">
             <div className="w-full max-w-md p-8 rounded-lg bg-terminal-surface border border-terminal-border">
                 <div className="text-center mb-8">
+                    <BrandMark height={96} centered className="mb-4" />
                     <span className="font-mono text-xs text-terminal-gold">ACCOUNT RECOVERY</span>
                     <h1 className="text-2xl font-bold text-terminal-text mt-1">Reset your password</h1>
                     <p className="text-xs text-terminal-muted mt-2">We will email you a link to choose a new one.</p>

@@ -86,13 +86,8 @@ export default function DashboardShell({
                 `}
             >
                 <div className="h-14 flex items-center px-4 border-b border-terminal-border shrink-0">
-                    <Link href="/" className="flex items-center gap-2.5 min-w-0">
-                        <BrandMark className="h-7 w-7 shrink-0" />
-                        {!collapsed && (
-                            <span className="text-sm font-semibold tracking-tight truncate">
-                                Savanna
-                            </span>
-                        )}
+                    <Link href="/" className="flex items-center min-w-0" aria-label="Savanna Capitals home">
+                        {collapsed ? <BrandMark variant="tree" height={18} /> : <BrandMark height={44} />}
                     </Link>
                 </div>
 
@@ -185,9 +180,8 @@ export default function DashboardShell({
                     />
                     <div className="fixed inset-y-0 left-0 z-50 w-[280px] bg-terminal-bg border-r border-terminal-border flex flex-col lg:hidden">
                         <div className="h-14 flex items-center justify-between px-4 border-b border-terminal-border">
-                            <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-                                <BrandMark className="h-7 w-7" />
-                                <span className="text-sm font-semibold">Savanna</span>
+                            <Link href="/" className="flex items-center" aria-label="Savanna Capitals home" onClick={() => setMobileOpen(false)}>
+                                <BrandMark height={44} />
                             </Link>
                             <button
                                 type="button"
