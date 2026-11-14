@@ -10,9 +10,9 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jet
 // Needed so the social-preview image gets a full web address. Set NEXT_PUBLIC_SITE_URL to your live domain in hosting.
 function siteUrl(): URL {
     try {
-        return new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+        return new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hedge-fund-ruby.vercel.app/");
     } catch {
-        return new URL("http://localhost:3000");
+        return new URL("https://hedge-fund-ruby.vercel.app/");
     }
 }
 
